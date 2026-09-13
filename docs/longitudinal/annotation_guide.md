@@ -1,6 +1,6 @@
 # Longitudinal annotation guide
 
-Version 0.1, paired with [annotation schema](annotation.schema.json) version 0.2.
+Version 0.3, paired with [annotation schema](annotation.schema.json) version 0.3.
 Provisional development policy, exercised on 12 AI-authored patients. An independent AI pass and development adjudication are recorded in the pilot
 review; no independent clinical validation is claimed. The [task definition](task_definition.md)
 owns cohort queries and cutoff rules; this guide owns annotation meaning.
@@ -70,7 +70,13 @@ rate or infer an exact last seizure. Unknown cluster spacing stays null.
 Absence applies only to the named scope and interval. No convulsions does not mean
 no epileptic seizures. `coverage: complete` requires explicit exhaustive wording;
 missing types or unmentioned treatments never establish complete negative evidence.
-The same applies to inventories of requests or patterns. Reference query reasons
+The same applies to inventories of requests or patterns.
+`all_prior_history_evidence` holds quotes explicitly covering the entire earlier
+patient history through the assertion's stated end date, such as “never taken any
+anti-seizure medication”. It requires complete coverage and an `active_interval`
+with a supported end date. Leave an unstated start date null. An unknown start,
+a current non-use report or “no medication changes” does not establish this scope.
+Omit the field when it is unsupported; it is optional for older annotations. Reference query reasons
 may require information beyond the present structured fields, such as an explicit
 statement that a correction was the first ever. Preserve that evidence; this draft
 is not yet a complete executable query representation.
@@ -109,10 +115,10 @@ rejects annotations using unavailable letters, including evidence and date ancho
 It does not prove clinical entailment, completeness, identity, or query correctness.
 The automated shape probe for clusters is not source-supported annotation evidence.
 
-Next, independently annotate the corrected 12-patient development pilot without
-seeing these references or hidden scenario truth. Record time and disagreements
-by family, temporal field and relationship; retain unresolved alternatives. Revise
-and version this guide and schema together before a full schema implementation.
+The saved independent AI pass and v0.7 review are complete for their declared
+scopes. Family-level time remains unmeasured; semantic alignment and complete
+query representation remain limited. Use the pilot review for the current evidence
+and the generation protocol for the prospective timed procedure.
 
 ## Model-facing language audit
 
@@ -195,4 +201,48 @@ Combined with a supported decision date strictly after T, this patient-wide clai
 can refute Q5 at T. A decision interval crossing T remains indeterminate. Conflicting
 positive and negative evidence must not be silently resolved. The new field is
 optional for compatibility with schema v0.1; absence never means first or not first.
-The field is exercised on patient 001 only before broader annotation migration.
+The field is exercised on patients 001 and 011; both four-request Q5 slices
+reproduce their references. This does not establish all possible negative histories.
+
+
+## Temporal conventions clarified by the v0.7 review
+
+Use `as_of` with equal start/end dates for a current state at the consultation.
+Unknown onset does not turn that point into an uninterrupted interval. Ongoing
+activity is supported only through the last documented observation; an open end
+never proves later activity. A characterization date or a stroke date is not an
+inferred epilepsy onset.
+
+Use `occurrence` for an investigation request or actual medication initiation.
+Use `as_of` for pending/not-yet-performed status. Keep `result_available` even
+when its date is imprecise. Keep exact numeric bounds unknown for words such as
+“summer” and “early April” when no stated convention justifies them. Retain the
+source wording for separate qualitative inclusion review.
+
+A proposed treatment and an actual start are different assertions. A dose attained
+later does not replace the drug's start date. Under inclusive dates, “never before
+20 May” ends on 19 May. A past occurrence may have a latest possible date at the
+reporting visit with unknown earlier bound; this does not identify its exact date.
+
+Keep the source-letter anchor for relative dates and year resolution. Equivalent
+explicit dates with and without that anchor may differ only in provenance; do not
+silently equate different dates or kinds. Preserve original model outputs when
+reporting these conventions. Clinical decisions inferred from them are semantic
+interpretation, not format repair.
+
+## Relationship review conventions (v0.8 pilot)
+
+An occurrence may belong to a recurring pattern when the source identifies it
+as the latest or another such episode. A pattern-to-occurrence link and a
+pattern-to-pattern link need not share an automatic endpoint match. Preserve
+the assertion units instead of merging them to raise agreement.
+
+Use `updates` for a later report extending the known state. Use `repeats` for
+the same reported information, including explicitly copied background; copying
+does not extend the original interval. Where both encodings are defensible,
+record the alternative and do not count it as an independent corroborating event.
+
+The patient-012 test results plausibly follow earlier requests, but the text does
+not identify the particular requests. Their reference request-result links stay
+`uncertain`. “No medication changes” alone does not support a `not_started`
+assertion. An agreement to maintain treatment alone does not prove actual use.

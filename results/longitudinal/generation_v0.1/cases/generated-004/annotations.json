@@ -1,0 +1,681 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The carried-forward diagnosis is epilepsy.",
+          "start": 79,
+          "end": 121
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.shaking",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The patient reports prolonged shaking episodes twice per month from 1 November 2024 through 20 January 2025, recorded here as epileptic. The last episode was on 20 January. These are the only event type reported from 1 November through 1 February 2025.",
+          "start": 123,
+          "end": 375
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The patient reports prolonged shaking episodes twice per month from 1 November 2024 through 20 January 2025, recorded here as epileptic. The last episode was on 20 January. These are the only event type reported from 1 November through 1 February 2025.",
+        "start": {
+          "earliest": "2024-11-01",
+          "latest": "2024-11-01"
+        },
+        "end": {
+          "earliest": "2025-01-20",
+          "latest": "2025-01-20"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "prolonged shaking episodes"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "twice per month",
+          "count": {
+            "lower": 2,
+            "upper": 2
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.latest",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The patient reports prolonged shaking episodes twice per month from 1 November 2024 through 20 January 2025, recorded here as epileptic. The last episode was on 20 January. These are the only event type reported from 1 November through 1 February 2025.",
+          "start": 123,
+          "end": 375
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The patient reports prolonged shaking episodes twice per month from 1 November 2024 through 20 January 2025, recorded here as epileptic. The last episode was on 20 January. These are the only event type reported from 1 November through 1 February 2025.",
+        "start": {
+          "earliest": "2025-01-20",
+          "latest": "2025-01-20"
+        },
+        "end": {
+          "earliest": "2025-01-20",
+          "latest": "2025-01-20"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "prolonged shaking episodes"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.inventory",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The patient reports prolonged shaking episodes twice per month from 1 November 2024 through 20 January 2025, recorded here as epileptic. The last episode was on 20 January. These are the only event type reported from 1 November through 1 February 2025.",
+          "start": 123,
+          "end": 375
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "The patient reports prolonged shaking episodes twice per month from 1 November 2024 through 20 January 2025, recorded here as epileptic. The last episode was on 20 January. These are the only event type reported from 1 November through 1 February 2025.",
+        "start": {
+          "earliest": "2024-11-01",
+          "latest": "2024-11-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "prolonged shaking episodes"
+        ],
+        "kind": "inventory",
+        "interpretation": "epileptic",
+        "scope": "all_reported",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.started",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The patient confirms starting lamotrigine on 10 January 2025.",
+          "start": 377,
+          "end": 438
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The patient confirms starting lamotrigine on 10 January 2025.",
+        "start": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "end": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "started",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L1.request",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "An EEG was requested on 5 January 2025; its result is not documented in this letter.",
+          "start": 440,
+          "end": 524
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "An EEG was requested on 5 January 2025; its result is not documented in this letter.",
+        "start": {
+          "earliest": "2025-01-05",
+          "latest": "2025-01-05"
+        },
+        "end": {
+          "earliest": "2025-01-05",
+          "latest": "2025-01-05"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "requested",
+        "result": null,
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L2.correction",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "At the review on 28 January 2025, the same prolonged shaking episodes were explicitly reinterpreted as functional non-epileptic events. This corrects the epileptic account carried forward in the 1 February letter. It was the first epileptic-to-non-epileptic reinterpretation anywhere in this patient’s history.",
+          "start": 79,
+          "end": 389
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "At the review on 28 January 2025, the same prolonged shaking episodes were explicitly reinterpreted as functional non-epileptic events. This corrects the epileptic account carried forward in the 1 February letter. It was the first epileptic-to-non-epileptic reinterpretation anywhere in this patient’s history.",
+        "start": null,
+        "end": null,
+        "kind": "unknown",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "prolonged shaking episodes"
+        ],
+        "kind": "pattern",
+        "interpretation": "non_epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.diagnosis-withdrawn",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "The epilepsy diagnosis was withdrawn on 28 January 2025 and remained withdrawn at the 1 February consultation. The patient’s last event of any kind was on 20 January; no other event types have ever been reported, and there have been no further events through today, 20 February.",
+          "start": 391,
+          "end": 669
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "negated",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The epilepsy diagnosis was withdrawn on 28 January 2025 and remained withdrawn at the 1 February consultation. The patient’s last event of any kind was on 20 January; no other event types have ever been reported, and there have been no further events through today, 20 February.",
+        "start": {
+          "earliest": "2025-01-28",
+          "latest": "2025-01-28"
+        },
+        "end": {
+          "earliest": "2025-01-28",
+          "latest": "2025-01-28"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L2.no-events",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "The epilepsy diagnosis was withdrawn on 28 January 2025 and remained withdrawn at the 1 February consultation. The patient’s last event of any kind was on 20 January; no other event types have ever been reported, and there have been no further events through today, 20 February.",
+          "start": 391,
+          "end": 669
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "The epilepsy diagnosis was withdrawn on 28 January 2025 and remained withdrawn at the 1 February consultation. The patient’s last event of any kind was on 20 January; no other event types have ever been reported, and there have been no further events through today, 20 February.",
+        "start": {
+          "earliest": "2025-01-21",
+          "latest": "2025-01-21"
+        },
+        "end": {
+          "earliest": "2025-02-20",
+          "latest": "2025-02-20"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "all events"
+        ],
+        "kind": "absence",
+        "interpretation": "not_stated",
+        "scope": "all_reported",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.performed",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "The EEG requested on 5 January was performed on 22 January 2025.",
+          "start": 671,
+          "end": 735
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The EEG requested on 5 January was performed on 22 January 2025.",
+        "start": {
+          "earliest": "2025-01-22",
+          "latest": "2025-01-22"
+        },
+        "end": {
+          "earliest": "2025-01-22",
+          "latest": "2025-01-22"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "performed",
+        "result": null,
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L2.result",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "The normal report for that same EEG was available to our clinical team on 25 January 2025.",
+          "start": 737,
+          "end": 827
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The normal report for that same EEG was available to our clinical team on 25 January 2025.",
+        "start": {
+          "earliest": "2025-01-25",
+          "latest": "2025-01-25"
+        },
+        "end": {
+          "earliest": "2025-01-25",
+          "latest": "2025-01-25"
+        },
+        "kind": "result_available",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "result",
+        "result": "normal",
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L2.stopped",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "The patient confirms stopping lamotrigine on 28 January 2025.",
+          "start": 829,
+          "end": 890
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The patient confirms stopping lamotrigine on 28 January 2025.",
+        "start": {
+          "earliest": "2025-01-28",
+          "latest": "2025-01-28"
+        },
+        "end": {
+          "earliest": "2025-01-28",
+          "latest": "2025-01-28"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "stopped",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L3.no-events",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "text": "The patient confirms no events of any kind between 20 February and today, 10 August 2025. There have been no further changes from epileptic to non-epileptic interpretation during that whole period.",
+          "start": 79,
+          "end": 276
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "The patient confirms no events of any kind between 20 February and today, 10 August 2025. There have been no further changes from epileptic to non-epileptic interpretation during that whole period.",
+        "start": {
+          "earliest": "2025-02-20",
+          "latest": "2025-02-20"
+        },
+        "end": {
+          "earliest": "2025-08-10",
+          "latest": "2025-08-10"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "all events"
+        ],
+        "kind": "absence",
+        "interpretation": "not_stated",
+        "scope": "all_reported",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.not-restarted",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "text": "The patient confirms never restarting lamotrigine at any time from 29 January through 10 August 2025.",
+          "start": 278,
+          "end": 379
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "The patient confirms never restarting lamotrigine at any time from 29 January through 10 August 2025.",
+        "start": {
+          "earliest": "2025-01-29",
+          "latest": "2025-01-29"
+        },
+        "end": {
+          "earliest": "2025-08-10",
+          "latest": "2025-08-10"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "not_started",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L3.no-requests",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "text": "No EEG was requested anywhere in the care record from 3 February through 10 August 2025.",
+          "start": 381,
+          "end": 469
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "No EEG was requested anywhere in the care record from 3 February through 10 August 2025.",
+        "start": {
+          "earliest": "2025-02-03",
+          "latest": "2025-02-03"
+        },
+        "end": {
+          "earliest": "2025-08-10",
+          "latest": "2025-08-10"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "request_inventory",
+        "result": null,
+        "request_count": 0
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "shaking-correction",
+      "earlier_assertion": "L1.shaking",
+      "later_assertion": "L2.correction",
+      "relation": "corrects_interpretation",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The patient reports prolonged shaking episodes twice per month from 1 November 2024 through 20 January 2025, recorded here as epileptic. The last episode was on 20 January. These are the only event type reported from 1 November through 1 February 2025.",
+          "start": 123,
+          "end": 375
+        },
+        {
+          "letter_id": "L2",
+          "text": "At the review on 28 January 2025, the same prolonged shaking episodes were explicitly reinterpreted as functional non-epileptic events. This corrects the epileptic account carried forward in the 1 February letter. It was the first epileptic-to-non-epileptic reinterpretation anywhere in this patient’s history.",
+          "start": 79,
+          "end": 389
+        }
+      ],
+      "decision_time": {
+        "text": "28 January 2025",
+        "start": {
+          "earliest": "2025-01-28",
+          "latest": "2025-01-28"
+        },
+        "end": {
+          "earliest": "2025-01-28",
+          "latest": "2025-01-28"
+        },
+        "kind": "decision",
+        "anchor_letter_id": null
+      },
+      "first_reinterpretation_evidence": [
+        {
+          "letter_id": "L2",
+          "text": "At the review on 28 January 2025, the same prolonged shaking episodes were explicitly reinterpreted as functional non-epileptic events. This corrects the epileptic account carried forward in the 1 February letter. It was the first epileptic-to-non-epileptic reinterpretation anywhere in this patient’s history.",
+          "start": 79,
+          "end": 389
+        }
+      ]
+    },
+    {
+      "link_id": "diagnosis-update",
+      "earlier_assertion": "L1.diagnosis",
+      "later_assertion": "L2.diagnosis-withdrawn",
+      "relation": "updates",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The carried-forward diagnosis is epilepsy.",
+          "start": 79,
+          "end": 121
+        },
+        {
+          "letter_id": "L2",
+          "text": "The epilepsy diagnosis was withdrawn on 28 January 2025 and remained withdrawn at the 1 February consultation. The patient’s last event of any kind was on 20 January; no other event types have ever been reported, and there have been no further events through today, 20 February.",
+          "start": 391,
+          "end": 669
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "EEG-performed",
+      "earlier_assertion": "L1.request",
+      "later_assertion": "L2.performed",
+      "relation": "request_performed",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "An EEG was requested on 5 January 2025; its result is not documented in this letter.",
+          "start": 440,
+          "end": 524
+        },
+        {
+          "letter_id": "L2",
+          "text": "The EEG requested on 5 January was performed on 22 January 2025.",
+          "start": 671,
+          "end": 735
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "EEG-result",
+      "earlier_assertion": "L1.request",
+      "later_assertion": "L2.result",
+      "relation": "request_has_result",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "An EEG was requested on 5 January 2025; its result is not documented in this letter.",
+          "start": 440,
+          "end": 524
+        },
+        {
+          "letter_id": "L2",
+          "text": "The EEG requested on 5 January was performed on 22 January 2025.",
+          "start": 671,
+          "end": 735
+        },
+        {
+          "letter_id": "L2",
+          "text": "The normal report for that same EEG was available to our clinical team on 25 January 2025.",
+          "start": 737,
+          "end": 827
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

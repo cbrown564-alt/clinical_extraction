@@ -1,0 +1,6 @@
+Fictional outpatient letter | generated-001 | age 41
+Consultation: 2025-02-01
+
+The diagnosis remains focal epilepsy.
+
+The patient reports 1 to 2 focal impaired-awareness seizures per month from 1 October 2024 through 1 February 2025, most recently on 20 January 2025. There have been no other event types throughout that period.

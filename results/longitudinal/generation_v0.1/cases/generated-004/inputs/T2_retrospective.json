@@ -1,0 +1,23 @@
+{
+  "patient_id": "generated-004",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-004 | age 44\nConsultation: 2025-02-01\n\nThe carried-forward diagnosis is epilepsy.\n\nThe patient reports prolonged shaking episodes twice per month from 1 November 2024 through 20 January 2025, recorded here as epileptic. The last episode was on 20 January. These are the only event type reported from 1 November through 1 February 2025.\n\nThe patient confirms starting lamotrigine on 10 January 2025.\n\nAn EEG was requested on 5 January 2025; its result is not documented in this letter.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-02-20",
+      "available_date": "2025-03-01",
+      "text": "Fictional outpatient letter | generated-004 | age 44\nConsultation: 2025-02-20\n\nAt the review on 28 January 2025, the same prolonged shaking episodes were explicitly reinterpreted as functional non-epileptic events. This corrects the epileptic account carried forward in the 1 February letter. It was the first epileptic-to-non-epileptic reinterpretation anywhere in this patient’s history.\n\nThe epilepsy diagnosis was withdrawn on 28 January 2025 and remained withdrawn at the 1 February consultation. The patient’s last event of any kind was on 20 January; no other event types have ever been reported, and there have been no further events through today, 20 February.\n\nThe EEG requested on 5 January was performed on 22 January 2025.\n\nThe normal report for that same EEG was available to our clinical team on 25 January 2025.\n\nThe patient confirms stopping lamotrigine on 28 January 2025.\n"
+    },
+    {
+      "letter_id": "L3",
+      "visit_date": "2025-08-10",
+      "available_date": "2025-08-12",
+      "text": "Fictional outpatient letter | generated-004 | age 44\nConsultation: 2025-08-10\n\nThe patient confirms no events of any kind between 20 February and today, 10 August 2025. There have been no further changes from epileptic to non-epileptic interpretation during that whole period.\n\nThe patient confirms never restarting lamotrigine at any time from 29 January through 10 August 2025.\n\nNo EEG was requested anywhere in the care record from 3 February through 10 August 2025.\n"
+    }
+  ]
+}

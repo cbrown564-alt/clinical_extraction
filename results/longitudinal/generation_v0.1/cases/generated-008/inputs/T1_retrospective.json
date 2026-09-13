@@ -1,0 +1,17 @@
+{
+  "patient_id": "generated-008",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-008 | age 48\nConsultation: 2025-02-01\n\nThe diagnosis carried forward in this outpatient letter is epilepsy.\n\nThe patient describes prolonged shaking episodes at a rate of twice per month from 1 November 2024 to 20 January 2025. They are carried forward here as epileptic seizures. The most recent episode was on 20 January. The patient reports that these were the only event type throughout 1 November 2024 to 1 February 2025.\n\nThe patient confirms that lamotrigine was actually started on 10 January 2025.\n\nAn EEG request was made on 5 January 2025. Its result is not documented in this letter, so this account does not establish when the team received it.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-02-20",
+      "available_date": "2025-03-01",
+      "text": "Fictional outpatient letter | generated-008 | age 48\nConsultation: 2025-02-20\n\nThe review of 28 January 2025 explicitly changed the interpretation of the same prolonged shaking episodes to functional non-epileptic events. The epileptic account carried forward in the 1 February letter is therefore corrected. This was the first change from an epileptic to a non-epileptic interpretation anywhere in the patient’s history.\n\nEpilepsy was explicitly ruled out on 28 January 2025; that remained the diagnostic position at the 1 February consultation. The last event of any kind occurred on 20 January, with no other event types ever reported and no further events through 20 February 2025.\n\nThe EEG performed on 22 January 2025 was the investigation requested on 5 January.\n\nThe report for that same EEG was normal. It became available to the treating clinical team on 25 January 2025.\n\nThe patient confirms that lamotrigine was stopped on 28 January 2025.\n"
+    }
+  ]
+}

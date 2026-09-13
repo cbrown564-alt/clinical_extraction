@@ -1,0 +1,17 @@
+{
+  "patient_id": "generated-010",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-010 | age 50\nConsultation: 2025-02-01\n\nDx: established focal epilepsy.\n\nPattern A: staring sz, patient reports 2 to 4/month, 1 Nov 2024–1 Feb 2025. Clinician: epileptic.\n\nPattern B: separate right-hand jerks; clinician: epileptic. Patient: 1 to 2 clusters/month, 3 to 5 jerks/cluster, active 1 Nov 2024–1 Feb 2025 alongside A.\n\nLamotrigine proposed 15 Jan 2025. Actual start not established today.\n\nEEG requested 10 Jan 2025. Result information omitted.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-07-15",
+      "available_date": "2025-07-15",
+      "text": "Fictional outpatient letter | generated-010 | age 50\nConsultation: 2025-07-15\n\nPatient: same A and separate B active 2 Feb–15 Jul 2025. A staring: 2 to 4/month. B right-hand jerks: 1 to 2 clusters/month, 3 to 5/cluster. Clinician: both epileptic.\n\nPatient: never taken lamotrigine, entire history through 15 Jul 2025. Jan proposal not enacted.\n"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "patient_id": "generated-001",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-001 | age 41\nConsultation: 2025-02-01\n\nThe diagnosis remains focal epilepsy.\n\nThe patient reports 1 to 2 focal impaired-awareness seizures per month from 1 October 2024 through 1 February 2025, most recently on 20 January 2025. There have been no other event types throughout that period.\n"
+    }
+  ]
+}

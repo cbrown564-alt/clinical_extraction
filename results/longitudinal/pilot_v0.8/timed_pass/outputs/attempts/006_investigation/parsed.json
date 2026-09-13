@@ -1,0 +1,77 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "a1",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 914,
+          "end": 931,
+          "text": "No EEG requested."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "negated",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-15",
+          "latest": "2025-02-15"
+        },
+        "end": {
+          "earliest": "2025-02-15",
+          "latest": "2025-02-15"
+        },
+        "kind": "decision",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "requested",
+        "result": null,
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "a2",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 619,
+          "end": 636,
+          "text": "No EEG requested."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "negated",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-06-25",
+          "latest": "2025-06-25"
+        },
+        "end": {
+          "earliest": "2025-06-25",
+          "latest": "2025-06-25"
+        },
+        "kind": "decision",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "requested",
+        "result": null,
+        "request_count": null
+      }
+    }
+  ],
+  "links": []
+}

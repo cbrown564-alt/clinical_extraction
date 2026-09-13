@@ -1,0 +1,212 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "This outpatient review concerns the patient’s established focal epilepsy.",
+          "start": 79,
+          "end": 152
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.absence",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The patient reports no epileptic seizures at all between 1 November 2024 and today, 1 February 2025. In particular, the patient disputes that the caregiver’s reported episode on 15 January occurred.",
+          "start": 154,
+          "end": 352
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "The patient reports no epileptic seizures at all between 1 November 2024 and today, 1 February 2025. In particular, the patient disputes that the caregiver’s reported episode on 15 January occurred.",
+        "start": {
+          "earliest": "2024-11-01",
+          "latest": "2024-11-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "all epileptic seizures"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "all_epileptic",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.caregiver",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The caregiver gives a different account, reporting a focal seizure on 15 January 2025. I cannot resolve whether that specific episode occurred or whether it was epileptic.",
+          "start": 354,
+          "end": 525
+        }
+      ],
+      "reporter": "caregiver",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The caregiver gives a different account, reporting a focal seizure on 15 January 2025. I cannot resolve whether that specific episode occurred or whether it was epileptic.",
+        "start": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.uncertain",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The caregiver gives a different account, reporting a focal seizure on 15 January 2025. I cannot resolve whether that specific episode occurred or whether it was epileptic.",
+          "start": 354,
+          "end": 525
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "uncertain",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The caregiver gives a different account, reporting a focal seizure on 15 January 2025. I cannot resolve whether that specific episode occurred or whether it was epileptic.",
+        "start": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "uncertain",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.undated",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "At this delayed follow-up there is no reliable diary. The patient recalls some spells since February but cannot give their dates or characterize the events. Their epileptic nature remains uncertain, and nothing obtained today resolves the disputed January episode.",
+          "start": 79,
+          "end": 343
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "uncertain",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "At this delayed follow-up there is no reliable diary. The patient recalls some spells since February but cannot give their dates or characterize the events. Their epileptic nature remains uncertain, and nothing obtained today resolves the disputed January episode.",
+        "start": null,
+        "end": null,
+        "kind": "unknown",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "spells"
+        ],
+        "kind": "pattern",
+        "interpretation": "uncertain",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "reporter-disagreement",
+      "earlier_assertion": "L1.absence",
+      "later_assertion": "L1.caregiver",
+      "relation": "contradicts",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The patient reports no epileptic seizures at all between 1 November 2024 and today, 1 February 2025. In particular, the patient disputes that the caregiver’s reported episode on 15 January occurred.",
+          "start": 154,
+          "end": 352
+        },
+        {
+          "letter_id": "L1",
+          "text": "The caregiver gives a different account, reporting a focal seizure on 15 January 2025. I cannot resolve whether that specific episode occurred or whether it was epileptic.",
+          "start": 354,
+          "end": 525
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

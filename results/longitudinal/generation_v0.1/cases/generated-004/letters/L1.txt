@@ -1,0 +1,10 @@
+Fictional outpatient letter | generated-004 | age 44
+Consultation: 2025-02-01
+
+The carried-forward diagnosis is epilepsy.
+
+The patient reports prolonged shaking episodes twice per month from 1 November 2024 through 20 January 2025, recorded here as epileptic. The last episode was on 20 January. These are the only event type reported from 1 November through 1 February 2025.
+
+The patient confirms starting lamotrigine on 10 January 2025.
+
+An EEG was requested on 5 January 2025; its result is not documented in this letter.

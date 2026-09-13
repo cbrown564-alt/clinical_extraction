@@ -1,0 +1,574 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Dx: established focal epilepsy.",
+          "start": 79,
+          "end": 110
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.staring",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Pattern A: staring sz, patient reports 2 to 4/month, 1 Nov 2024–1 Feb 2025. Clinician: epileptic.",
+          "start": 112,
+          "end": 209
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "Pattern A: staring sz, patient reports 2 to 4/month, 1 Nov 2024–1 Feb 2025. Clinician: epileptic.",
+        "start": {
+          "earliest": "2024-11-01",
+          "latest": "2024-11-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "staring seizures"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "Pattern A: staring sz, patient reports 2 to 4/month, 1 Nov 2024–1 Feb 2025. Clinician: epileptic.",
+          "count": {
+            "lower": 2,
+            "upper": 4
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.jerks",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Pattern B: separate right-hand jerks; clinician: epileptic. Patient: 1 to 2 clusters/month, 3 to 5 jerks/cluster, active 1 Nov 2024–1 Feb 2025 alongside A.",
+          "start": 211,
+          "end": 366
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "Pattern B: separate right-hand jerks; clinician: epileptic. Patient: 1 to 2 clusters/month, 3 to 5 jerks/cluster, active 1 Nov 2024–1 Feb 2025 alongside A.",
+        "start": {
+          "earliest": "2024-11-01",
+          "latest": "2024-11-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "right-hand jerks"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "clusters",
+          "text": "Pattern B: separate right-hand jerks; clinician: epileptic. Patient: 1 to 2 clusters/month, 3 to 5 jerks/cluster, active 1 Nov 2024–1 Feb 2025 alongside A.",
+          "count": {
+            "lower": 1,
+            "upper": 2
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": {
+            "lower": 3,
+            "upper": 5
+          },
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.plan",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Lamotrigine proposed 15 Jan 2025. Actual start not established today.",
+          "start": 368,
+          "end": 437
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "Lamotrigine proposed 15 Jan 2025. Actual start not established today.",
+        "start": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "proposed",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L1.request",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "EEG requested 10 Jan 2025. Result information omitted.",
+          "start": 439,
+          "end": 493
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "EEG requested 10 Jan 2025. Result information omitted.",
+        "start": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "end": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "requested",
+        "result": null,
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L2.staring",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "Patient: same A and separate B active 2 Feb–15 Jul 2025. A staring: 2 to 4/month. B right-hand jerks: 1 to 2 clusters/month, 3 to 5/cluster. Clinician: both epileptic.",
+          "start": 79,
+          "end": 246
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "Patient: same A and separate B active 2 Feb–15 Jul 2025. A staring: 2 to 4/month. B right-hand jerks: 1 to 2 clusters/month, 3 to 5/cluster. Clinician: both epileptic.",
+        "start": {
+          "earliest": "2025-02-02",
+          "latest": "2025-02-02"
+        },
+        "end": {
+          "earliest": "2025-07-15",
+          "latest": "2025-07-15"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "staring seizures"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "Patient: same A and separate B active 2 Feb–15 Jul 2025. A staring: 2 to 4/month. B right-hand jerks: 1 to 2 clusters/month, 3 to 5/cluster. Clinician: both epileptic.",
+          "count": {
+            "lower": 2,
+            "upper": 4
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L2.jerks",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "Patient: same A and separate B active 2 Feb–15 Jul 2025. A staring: 2 to 4/month. B right-hand jerks: 1 to 2 clusters/month, 3 to 5/cluster. Clinician: both epileptic.",
+          "start": 79,
+          "end": 246
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "Patient: same A and separate B active 2 Feb–15 Jul 2025. A staring: 2 to 4/month. B right-hand jerks: 1 to 2 clusters/month, 3 to 5/cluster. Clinician: both epileptic.",
+        "start": {
+          "earliest": "2025-02-02",
+          "latest": "2025-02-02"
+        },
+        "end": {
+          "earliest": "2025-07-15",
+          "latest": "2025-07-15"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "right-hand jerks"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "clusters",
+          "text": "Patient: same A and separate B active 2 Feb–15 Jul 2025. A staring: 2 to 4/month. B right-hand jerks: 1 to 2 clusters/month, 3 to 5/cluster. Clinician: both epileptic.",
+          "count": {
+            "lower": 1,
+            "upper": 2
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": {
+            "lower": 3,
+            "upper": 5
+          },
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L2.not-started",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "Patient: never taken lamotrigine, entire history through 15 Jul 2025. Jan proposal not enacted.",
+          "start": 248,
+          "end": 343
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "Patient: never taken lamotrigine, entire history through 15 Jul 2025. Jan proposal not enacted.",
+        "start": null,
+        "end": {
+          "earliest": "2025-07-15",
+          "latest": "2025-07-15"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "not_started",
+        "condition": null
+      },
+      "all_prior_history_evidence": [
+        {
+          "letter_id": "L2",
+          "text": "Patient: never taken lamotrigine, entire history through 15 Jul 2025. Jan proposal not enacted.",
+          "start": 248,
+          "end": 343
+        }
+      ]
+    },
+    {
+      "assertion_id": "L3.started",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "text": "Patient confirms lamotrigine started 25 Jul 2025, after Jul clinic.",
+          "start": 79,
+          "end": 146
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "Patient confirms lamotrigine started 25 Jul 2025, after Jul clinic.",
+        "start": {
+          "earliest": "2025-07-25",
+          "latest": "2025-07-25"
+        },
+        "end": {
+          "earliest": "2025-07-25",
+          "latest": "2025-07-25"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "started",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L3.result",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "text": "EEG: the 10 Jan request; normal report first available to team 20 Feb 2025.",
+          "start": 148,
+          "end": 223
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "EEG: the 10 Jan request; normal report first available to team 20 Feb 2025.",
+        "start": {
+          "earliest": "2025-02-20",
+          "latest": "2025-02-20"
+        },
+        "end": {
+          "earliest": "2025-02-20",
+          "latest": "2025-02-20"
+        },
+        "kind": "result_available",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "result",
+        "result": "normal",
+        "request_count": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "two-patterns-L1",
+      "earlier_assertion": "L1.staring",
+      "later_assertion": "L1.jerks",
+      "relation": "overlaps_active",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Pattern A: staring sz, patient reports 2 to 4/month, 1 Nov 2024–1 Feb 2025. Clinician: epileptic.",
+          "start": 112,
+          "end": 209
+        },
+        {
+          "letter_id": "L1",
+          "text": "Pattern B: separate right-hand jerks; clinician: epileptic. Patient: 1 to 2 clusters/month, 3 to 5 jerks/cluster, active 1 Nov 2024–1 Feb 2025 alongside A.",
+          "start": 211,
+          "end": 366
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "same-staring",
+      "earlier_assertion": "L1.staring",
+      "later_assertion": "L2.staring",
+      "relation": "updates",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Pattern A: staring sz, patient reports 2 to 4/month, 1 Nov 2024–1 Feb 2025. Clinician: epileptic.",
+          "start": 112,
+          "end": 209
+        },
+        {
+          "letter_id": "L2",
+          "text": "Patient: same A and separate B active 2 Feb–15 Jul 2025. A staring: 2 to 4/month. B right-hand jerks: 1 to 2 clusters/month, 3 to 5/cluster. Clinician: both epileptic.",
+          "start": 79,
+          "end": 246
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "same-jerks",
+      "earlier_assertion": "L1.jerks",
+      "later_assertion": "L2.jerks",
+      "relation": "updates",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Pattern B: separate right-hand jerks; clinician: epileptic. Patient: 1 to 2 clusters/month, 3 to 5 jerks/cluster, active 1 Nov 2024–1 Feb 2025 alongside A.",
+          "start": 211,
+          "end": 366
+        },
+        {
+          "letter_id": "L2",
+          "text": "Patient: same A and separate B active 2 Feb–15 Jul 2025. A staring: 2 to 4/month. B right-hand jerks: 1 to 2 clusters/month, 3 to 5/cluster. Clinician: both epileptic.",
+          "start": 79,
+          "end": 246
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "two-patterns-L2",
+      "earlier_assertion": "L2.staring",
+      "later_assertion": "L2.jerks",
+      "relation": "overlaps_active",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "Patient: same A and separate B active 2 Feb–15 Jul 2025. A staring: 2 to 4/month. B right-hand jerks: 1 to 2 clusters/month, 3 to 5/cluster. Clinician: both epileptic.",
+          "start": 79,
+          "end": 246
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "plan-not-enacted",
+      "earlier_assertion": "L1.plan",
+      "later_assertion": "L2.not-started",
+      "relation": "plan_not_enacted",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Lamotrigine proposed 15 Jan 2025. Actual start not established today.",
+          "start": 368,
+          "end": 437
+        },
+        {
+          "letter_id": "L2",
+          "text": "Patient: never taken lamotrigine, entire history through 15 Jul 2025. Jan proposal not enacted.",
+          "start": 248,
+          "end": 343
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "EEG-result",
+      "earlier_assertion": "L1.request",
+      "later_assertion": "L3.result",
+      "relation": "request_has_result",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "EEG requested 10 Jan 2025. Result information omitted.",
+          "start": 439,
+          "end": 493
+        },
+        {
+          "letter_id": "L3",
+          "text": "EEG: the 10 Jan request; normal report first available to team 20 Feb 2025.",
+          "start": 148,
+          "end": 223
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

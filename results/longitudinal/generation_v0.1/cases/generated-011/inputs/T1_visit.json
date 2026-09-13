@@ -1,0 +1,11 @@
+{
+  "patient_id": "generated-011",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-011 | age 51\nConsultation: 2025-02-01\n\nDx: established focal epilepsy.\n\nPatient: no epileptic sz at all, 1 Nov 2024–1 Feb 2025. Denies caregiver’s 15 Jan episode.\n\nCaregiver: focal sz 15 Jan 2025. Clinician: occurrence and epileptic nature unresolved.\n"
+    }
+  ]
+}

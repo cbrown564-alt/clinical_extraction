@@ -1,0 +1,131 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "authored-006-a1",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 771,
+          "end": 816,
+          "text": "She continues lamotrigine 100 mg twice daily."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": null,
+        "kind": "active_interval",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "authored-006-a2",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 562,
+          "end": 618,
+          "text": "we agreed to increase lamotrigine to 150 mg twice daily."
+        }
+      ],
+      "reporter": "mixed",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-06-25",
+          "latest": "2025-06-25"
+        },
+        "end": {
+          "earliest": "2025-06-25",
+          "latest": "2025-06-25"
+        },
+        "kind": "decision",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "proposed",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "authored-006-a3",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 142,
+          "end": 214,
+          "text": "Fatima tolerated the increase of lamotrigine to 150 mg twice daily well."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": null,
+        "kind": "active_interval",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "taking",
+        "condition": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "authored-006-l1",
+      "earlier_assertion": "authored-006-a1",
+      "later_assertion": "authored-006-a2",
+      "relation": "updates",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 562,
+          "end": 618,
+          "text": "we agreed to increase lamotrigine to 150 mg twice daily."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "authored-006-l2",
+      "earlier_assertion": "authored-006-a2",
+      "later_assertion": "authored-006-a3",
+      "relation": "updates",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 142,
+          "end": 214,
+          "text": "Fatima tolerated the increase of lamotrigine to 150 mg twice daily well."
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

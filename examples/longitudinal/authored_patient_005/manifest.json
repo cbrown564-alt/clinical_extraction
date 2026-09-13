@@ -1,6 +1,6 @@
 {
   "case_id": "authored-005",
-  "version": "0.5",
+  "version": "0.8",
   "task_definition_version": "0.2",
   "origin": "AI-authored fictional development example (Sparse dates and fuzzy temporal bounds with outpatient EEG); no source seed or real patient",
   "inspection_policy": "development_only",

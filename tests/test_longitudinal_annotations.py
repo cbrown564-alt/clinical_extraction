@@ -301,3 +301,146 @@ def test_q5_evaluator_requires_permitted_correction_and_decision_time() -> None:
     hidden = {**request, "information_cutoff": "2025-01-15"}
     with pytest.raises(ValueError, match="cutoff"):
         evaluate_q5(annotations, documents, hidden)
+    altered = deepcopy(annotations)
+    altered["links"][0]["certainty"] = "uncertain"
+    assert evaluate_q5(altered, documents, request)["status"] == "indeterminate"
+    altered = deepcopy(annotations)
+    # A possible occurrence crossing the first day is not definitely in scope.
+    for a in altered["assertions"]:
+        if a["assertion_id"] in ("L1.staring", "L2.staring"):
+            a["time"] = {
+                "kind": "occurrence",
+                "text": "boundary probe",
+                "anchor_letter_id": None,
+                "start": {"earliest": "2025-01-15", "latest": "2025-01-16"},
+                "end": {"earliest": "2025-01-15", "latest": "2025-01-16"},
+            }
+    assert evaluate_q5(altered, documents, request)["status"] == "indeterminate"
+    for a in altered["assertions"]:
+        if a["assertion_id"] in ("L1.staring", "L2.staring"):
+            a["time"]["start"] = a["time"]["end"] = {
+                "earliest": "2025-01-16",
+                "latest": "2025-01-16",
+            }
+    assert evaluate_q5(altered, documents, request)["status"] == "eligible"
+
+
+def test_query_witnesses_keep_plans_dates_and_evidence_separate() -> None:
+    # Admission: new Q1-Q4 witness path needs one boundary check per new mechanism.
+    from scripts.longitudinal.evaluate_query_witnesses import evaluate_query
+
+    case = Path("examples/longitudinal/authored_patient_010")
+    annotations, documents, _ = load_example(case)
+    requests = {
+        r["request_id"]: r for r in json.loads((case / "manifest.json").read_text())["requests"]
+    }
+    assert (
+        evaluate_query(annotations, documents, requests["T1_visit_Q3"])["status"] == "indeterminate"
+    )
+    assert (
+        evaluate_query(annotations, documents, requests["T1_retrospective_Q3"])["status"]
+        == "eligible"
+    )
+    assert (
+        evaluate_query(annotations, documents, requests["T2_visit_Q4"])["status"] == "indeterminate"
+    )
+    # Directly ask at the clinical-result date, with the reporting letter available later.
+    request = {
+        **requests["T2_retrospective_Q4"],
+        "index_date": "2025-02-16",
+        "lookback_180_start": "2024-08-21",
+        "lookback_90_start": "2024-11-19",
+    }
+    assert evaluate_query(annotations, documents, request)["status"] == "eligible"
+    no_links = {**annotations, "links": []}
+    assert evaluate_query(no_links, documents, request)["status"] == "indeterminate"
+    changed = deepcopy(annotations)
+    for a in changed["assertions"]:
+        if a["content"]["family"] == "investigation" and a["content"]["status"] == "result":
+            a["time"]["start"] = a["time"]["end"] = {
+                "earliest": "2025-02-17",
+                "latest": "2025-02-17",
+            }
+    assert evaluate_query(changed, documents, request)["status"] == "indeterminate"
+    for a in changed["assertions"]:
+        a["evidence"] = []
+    assert evaluate_query(changed, documents, requests["T1_visit_Q1"])["status"] == "indeterminate"
+
+
+def test_alignment_preserves_ambiguous_endpoints_and_status() -> None:
+    # Admission: same-family paragraph overlap must not force a clinical identity match.
+    from scripts.longitudinal.review_pilot_alignment import align_assertions
+
+    a, documents, _ = load_example(EXAMPLE)
+    plan = next(x for x in a["assertions"] if x["assertion_id"] == "L1.plan")
+    other = deepcopy(plan)
+    other["assertion_id"] = "different"
+    other["content"]["name"] = "Lamotrigine"
+    mapping, candidates = align_assertions([plan], [other], documents)
+    assert mapping == {"different": "L1.plan"}
+    duplicate = {**plan, "assertion_id": "second"}
+    assert align_assertions([plan, duplicate], [other], documents)[0] == {}
+    other["content"]["status"] = "started"
+    assert align_assertions([plan], [other], documents)[0] == {}
+
+
+def test_q5_second_case_and_temporal_reference_corrections() -> None:
+    # Admission: extends representative Q5 and existing time-kind checks to reviewed defects.
+    from scripts.longitudinal.evaluate_q5_slice import evaluate_q5
+
+    case = Path("examples/longitudinal/authored_patient_011")
+    annotations, documents, _ = load_example(case)
+    requests = {
+        r["request_id"]: r for r in json.loads((case / "manifest.json").read_text())["requests"]
+    }
+    assert (
+        evaluate_q5(annotations, documents, requests["T1_retrospective_Q5"])["status"]
+        == "ineligible"
+    )
+    for number in ("005", "010"):
+        a, _, _ = load_example(Path(f"examples/longitudinal/authored_patient_{number}"))
+        pending = next(x for x in a["assertions"] if x["assertion_id"] == "L1.pending")
+        assert pending["time"]["kind"] == "as_of"
+
+
+def test_query_conflict_cannot_be_bypassed_by_same_pattern_occurrence() -> None:
+    # Admission: the first replay exposed a harmful eligible answer from a split assertion.
+    from scripts.longitudinal.evaluate_query_witnesses import evaluate_query
+
+    case = Path("examples/longitudinal/authored_patient_006")
+    a, docs, _ = load_example(case)
+    request = next(
+        r
+        for r in json.loads((case / "manifest.json").read_text())["requests"]
+        if r["request_id"] == "T1_retrospective_Q1"
+    )
+    assert evaluate_query(a, docs, request)["status"] == "indeterminate"
+
+
+def test_complete_prior_history_requires_its_own_grounded_evidence() -> None:
+    # Admission: pin unknown start versus explicit lifelong scope at the existing evidence boundary.
+    from scripts.longitudinal.evaluate_query_witnesses import evaluate_query
+
+    a, docs, schema = load_example(EXAMPLE)
+    request = next(
+        r
+        for r in json.loads((EXAMPLE / "manifest.json").read_text())["requests"]
+        if r["request_id"] == "T1_retrospective_Q3"
+    )
+    no_start = next(x for x in a["assertions"] if x["assertion_id"] == "L2.no_start")
+    no_start["all_prior_history_evidence"] = no_start["evidence"]
+    check_annotations(a, docs, schema)
+    assert evaluate_query(a, docs, request)["status"] == "ineligible"
+    no_start["coverage"] = "not_stated"
+    with pytest.raises(ValueError, match="Complete prior history"):
+        check_annotations(a, docs, schema)
+    no_start["coverage"] = "complete"
+    visit = {**request, "information_cutoff": request["index_date"]}
+    assert evaluate_query(a, docs, visit)["status"] == "indeterminate"
+    no_start["all_prior_history_evidence"] = []
+    assert evaluate_query(a, docs, request)["status"] == "indeterminate"
+    no_start["all_prior_history_evidence"] = [
+        {"letter_id": "L2", "start": 0, "end": 5, "text": "invented"}
+    ]
+    with pytest.raises(ValueError, match="span"):
+        check_annotations(a, docs, schema)

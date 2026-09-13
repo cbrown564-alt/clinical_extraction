@@ -1,0 +1,12 @@
+Fictional outpatient letter | generated-002 | age 42
+Consultation: 2025-02-01
+
+The established diagnosis is focal epilepsy.
+
+The patient reports staring seizures 2 to 4 times per month from 1 November 2024 through 1 February 2025. I regard these as epileptic.
+
+A separate pattern of right-hand jerks is also epileptic. The patient reports 1 to 2 clusters per month, each containing 3 to 5 jerks, throughout the same period from 1 November 2024 through 1 February 2025.
+
+Lamotrigine was proposed on 15 January 2025; this letter does not establish whether it has been started.
+
+An EEG was requested on 10 January 2025. There is no result information in this letter.

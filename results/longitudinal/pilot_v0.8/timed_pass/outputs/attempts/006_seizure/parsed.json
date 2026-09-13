@@ -1,0 +1,433 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "a_l1_caregiver_nocturnal_pattern",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 253,
+          "end": 437,
+          "text": "Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing."
+        }
+      ],
+      "reporter": "caregiver",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": null,
+        "kind": "active_interval",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal seizures"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "roughly two to three times a week",
+          "count": {
+            "lower": 2,
+            "upper": 3
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "week"
+          },
+          "events_per_cluster": null,
+          "approximate": true
+        }
+      }
+    },
+    {
+      "assertion_id": "a_l1_caregiver_recent_occurrence",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 438,
+          "end": 515,
+          "text": "The partner states the most recent nocturnal seizure was on 12 February 2025."
+        }
+      ],
+      "reporter": "caregiver",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "12 February 2025",
+        "start": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "end": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "a_l1_patient_denies_nocturnal_events",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 569,
+          "end": 614,
+          "text": "firmly denies that any nocturnal events occur"
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "negated",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": null,
+        "kind": "active_interval",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal events"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "a_l1_patient_seizure_free",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 620,
+          "end": 656,
+          "text": "insists she is entirely seizure-free"
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": null,
+        "kind": "active_interval",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "seizure"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "all_epileptic",
+        "burden": {
+          "kind": "freedom",
+          "text": "entirely seizure-free",
+          "count": null,
+          "period": null,
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "a_l2_caregiver_video_occurrence",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 170,
+          "end": 289,
+          "text": "Her partner captured a clear home video on 10 June 2025 showing nocturnal hypermotor tonic activity lasting 45 seconds."
+        }
+      ],
+      "reporter": "caregiver",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "10 June 2025",
+        "start": {
+          "earliest": "2025-06-10",
+          "latest": "2025-06-10"
+        },
+        "end": {
+          "earliest": "2025-06-10",
+          "latest": "2025-06-10"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal hypermotor tonic activity"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "a_l2_patient_acknowledges_seizures",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 290,
+          "end": 427,
+          "text": "Having viewed the video, Fatima now acknowledges that nocturnal seizures are indeed taking place despite her lack of subjective awareness."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": null,
+        "kind": "active_interval",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal seizures"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "a_l2_caregiver_continued_pattern",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 428,
+          "end": 507,
+          "text": "The partner reports similar nocturnal seizures continued weekly until mid-June."
+        }
+      ],
+      "reporter": "caregiver",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "until mid-June",
+        "start": null,
+        "end": {
+          "earliest": "2025-06-11",
+          "latest": "2025-06-20"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal seizures"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "weekly",
+          "count": {
+            "lower": 1,
+            "upper": 1
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "week"
+          },
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "a_l3_mixed_cessation",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 215,
+          "end": 342,
+          "text": "Both Fatima and her partner confirm complete cessation of nocturnal seizures since early August 2025, with no further episodes."
+        }
+      ],
+      "reporter": "mixed",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "since early August 2025",
+        "start": {
+          "earliest": "2025-08-01",
+          "latest": "2025-08-10"
+        },
+        "end": {
+          "earliest": "2025-09-30",
+          "latest": "2025-09-30"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "nocturnal seizures"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "freedom",
+          "text": "complete cessation of nocturnal seizures since early August 2025, with no further episodes",
+          "count": null,
+          "period": null,
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "link_l1_partner_fatima_contradiction",
+      "earlier_assertion": "a_l1_caregiver_nocturnal_pattern",
+      "later_assertion": "a_l1_patient_denies_nocturnal_events",
+      "relation": "contradicts",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 683,
+          "end": 770,
+          "text": "Because of this direct informant discordance, I have recorded both accounts separately."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "link_l1_pattern_and_recent_occurrence",
+      "earlier_assertion": "a_l1_caregiver_nocturnal_pattern",
+      "later_assertion": "a_l1_caregiver_recent_occurrence",
+      "relation": "same_pattern",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 438,
+          "end": 515,
+          "text": "The partner states the most recent nocturnal seizure was on 12 February 2025."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "link_patient_acknowledgment_updates_denial",
+      "earlier_assertion": "a_l1_patient_denies_nocturnal_events",
+      "later_assertion": "a_l2_patient_acknowledges_seizures",
+      "relation": "updates",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 290,
+          "end": 427,
+          "text": "Having viewed the video, Fatima now acknowledges that nocturnal seizures are indeed taking place despite her lack of subjective awareness."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "link_caregiver_l1_l2_same_pattern",
+      "earlier_assertion": "a_l1_caregiver_nocturnal_pattern",
+      "later_assertion": "a_l2_caregiver_continued_pattern",
+      "relation": "same_pattern",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 428,
+          "end": 507,
+          "text": "The partner reports similar nocturnal seizures continued weekly until mid-June."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "link_l2_video_same_pattern",
+      "earlier_assertion": "a_l2_video_occurrence",
+      "later_assertion": "a_l2_caregiver_continued_pattern",
+      "relation": "same_pattern",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 428,
+          "end": 507,
+          "text": "The partner reports similar nocturnal seizures continued weekly until mid-June."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "link_l3_cessation_same_pattern",
+      "earlier_assertion": "a_l2_caregiver_continued_pattern",
+      "later_assertion": "a_l3_mixed_cessation",
+      "relation": "same_pattern",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 215,
+          "end": 342,
+          "text": "Both Fatima and her partner confirm complete cessation of nocturnal seizures since early August 2025, with no further episodes."
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

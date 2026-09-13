@@ -1,0 +1,322 @@
+{
+  "evidence": [
+    {
+      "evidence_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "text": "The diagnosis carried forward in this outpatient letter is epilepsy.",
+      "start": 79,
+      "end": 147
+    },
+    {
+      "evidence_id": "L1.shaking",
+      "letter_id": "L1",
+      "text": "The patient describes prolonged shaking episodes at a rate of twice per month from 1 November 2024 to 20 January 2025. They are carried forward here as epileptic seizures. The most recent episode was on 20 January. The patient reports that these were the only event type throughout 1 November 2024 to 1 February 2025.",
+      "start": 149,
+      "end": 466
+    },
+    {
+      "evidence_id": "L1.started",
+      "letter_id": "L1",
+      "text": "The patient confirms that lamotrigine was actually started on 10 January 2025.",
+      "start": 468,
+      "end": 546
+    },
+    {
+      "evidence_id": "L1.request",
+      "letter_id": "L1",
+      "text": "An EEG request was made on 5 January 2025. Its result is not documented in this letter, so this account does not establish when the team received it.",
+      "start": 548,
+      "end": 697
+    },
+    {
+      "evidence_id": "L2.correction",
+      "letter_id": "L2",
+      "text": "The review of 28 January 2025 explicitly changed the interpretation of the same prolonged shaking episodes to functional non-epileptic events. The epileptic account carried forward in the 1 February letter is therefore corrected. This was the first change from an epileptic to a non-epileptic interpretation anywhere in the patient’s history.",
+      "start": 79,
+      "end": 421
+    },
+    {
+      "evidence_id": "L2.diagnosis-withdrawn",
+      "letter_id": "L2",
+      "text": "Epilepsy was explicitly ruled out on 28 January 2025; that remained the diagnostic position at the 1 February consultation. The last event of any kind occurred on 20 January, with no other event types ever reported and no further events through 20 February 2025.",
+      "start": 423,
+      "end": 685
+    },
+    {
+      "evidence_id": "L2.performed",
+      "letter_id": "L2",
+      "text": "The EEG performed on 22 January 2025 was the investigation requested on 5 January.",
+      "start": 687,
+      "end": 769
+    },
+    {
+      "evidence_id": "L2.result",
+      "letter_id": "L2",
+      "text": "The report for that same EEG was normal. It became available to the treating clinical team on 25 January 2025.",
+      "start": 771,
+      "end": 881
+    },
+    {
+      "evidence_id": "L2.stopped",
+      "letter_id": "L2",
+      "text": "The patient confirms that lamotrigine was stopped on 28 January 2025.",
+      "start": 883,
+      "end": 952
+    },
+    {
+      "evidence_id": "L3.no-events",
+      "letter_id": "L3",
+      "text": "The patient confirms that there were no events of any kind throughout 20 February to 10 August 2025. Review of the same entire period also establishes that there were no further changes from an epileptic to a non-epileptic interpretation.",
+      "start": 79,
+      "end": 317
+    },
+    {
+      "evidence_id": "L3.not-restarted",
+      "letter_id": "L3",
+      "text": "Since stopping lamotrigine on 28 January, the patient confirms that it was never restarted at any time between 29 January and 10 August 2025.",
+      "start": 319,
+      "end": 460
+    },
+    {
+      "evidence_id": "L3.no-requests",
+      "letter_id": "L3",
+      "text": "Review of the care record establishes that no EEG request was made anywhere during 3 February to 10 August 2025.",
+      "start": 462,
+      "end": 574
+    }
+  ],
+  "links": [
+    {
+      "link_id": "shaking-correction",
+      "earlier_evidence": "L1.shaking",
+      "later_evidence": "L2.correction",
+      "supporting_evidence": [],
+      "relation": "corrects_interpretation"
+    },
+    {
+      "link_id": "diagnosis-update",
+      "earlier_evidence": "L1.diagnosis",
+      "later_evidence": "L2.diagnosis-withdrawn",
+      "supporting_evidence": [],
+      "relation": "updates"
+    },
+    {
+      "link_id": "EEG-performed",
+      "earlier_evidence": "L1.request",
+      "later_evidence": "L2.performed",
+      "supporting_evidence": [],
+      "relation": "request_performed"
+    },
+    {
+      "link_id": "EEG-result",
+      "earlier_evidence": "L1.request",
+      "later_evidence": "L2.result",
+      "supporting_evidence": [
+        "L2.performed"
+      ],
+      "relation": "request_has_result"
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L1.shaking"
+      ],
+      "reason": "The permitted letter documents epilepsy and a January epileptic event inside the 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.shaking"
+      ],
+      "reason": "Only one event pattern is explicitly reported throughout the complete 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.started"
+      ],
+      "reason": "Actual initiation on 10 January is within this 180-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.request"
+      ],
+      "reason": "No result availability is documented at this cutoff and there is no exhaustive request inventory.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "No dated correction or complete reassessment history is documented at this cutoff.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q1",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L2.diagnosis-withdrawn"
+      ],
+      "reason": "The later letter explicitly rules out epilepsy by the first index. This documented diagnostic withdrawal remains unreversed at the second index.",
+      "link_ids": [
+        "diagnosis-update"
+      ]
+    },
+    {
+      "request_id": "T1_retrospective_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.shaking",
+        "L2.correction"
+      ],
+      "reason": "Only one event pattern is explicitly reported throughout the first lookback; its later non-epileptic interpretation cannot create a second epileptic pattern.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q3",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.started"
+      ],
+      "reason": "Actual initiation on 10 January is within this 180-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q4",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.request",
+        "L2.performed",
+        "L2.result"
+      ],
+      "reason": "The January request is explicitly matched to a report available to the team on 25 January, before T1, despite later letter availability.",
+      "link_ids": [
+        "EEG-result"
+      ]
+    },
+    {
+      "request_id": "T1_retrospective_Q5",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.shaking",
+        "L2.correction"
+      ],
+      "reason": "A January episode previously documented as epileptic is explicitly reinterpreted; the decision on 28 January is before T1, although its letter is available later.",
+      "link_ids": [
+        "shaking-correction"
+      ]
+    },
+    {
+      "request_id": "T2_visit_Q1",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L2.diagnosis-withdrawn"
+      ],
+      "reason": "The later letter explicitly rules out epilepsy by the first index. This documented diagnostic withdrawal remains unreversed at the second index.",
+      "link_ids": [
+        "diagnosis-update"
+      ]
+    },
+    {
+      "request_id": "T2_visit_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The permitted letters do not observe the second 90-day interval; do not extend February absence through July.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.started",
+        "L2.stopped"
+      ],
+      "reason": "The January course predates the second lookback; stopping in January alone does not exclude a later start before 31 July.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.request"
+      ],
+      "reason": "The known January request predates this lookback and other requests are not exhausted.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L2.correction"
+      ],
+      "reason": "The documented correction concerns January events before this lookback. Reclassification history for the remainder of the lookback is not covered.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L2.diagnosis-withdrawn"
+      ],
+      "reason": "The later letter explicitly rules out epilepsy by the first index. This documented diagnostic withdrawal remains unreversed at the second index.",
+      "link_ids": [
+        "diagnosis-update"
+      ]
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L3.no-events"
+      ],
+      "reason": "Explicit absence of all events covers the entire second 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L3.not-restarted"
+      ],
+      "reason": "Explicit non-reinitiation from 29 January to 10 August covers the entire second lookback, 2 February to 31 July.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L3.no-requests"
+      ],
+      "reason": "The EEG no-request inventory covers 3 February through 10 August, but this lookback starts on 2 February. The uncovered first day prevents a definitive negative, and no qualifying request/result is established.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L2.diagnosis-withdrawn",
+        "L2.correction",
+        "L3.no-events"
+      ],
+      "reason": "The only ever earlier pattern last occurred on 20 January, outside the second lookback. The two later letters cover absence of any further events through 10 August and no further reinterpretations; no qualifying event from the second lookback exists.",
+      "link_ids": []
+    }
+  ],
+  "case_id": "generated-008",
+  "version": "2",
+  "reference_kind": "provisional same-assistant text review; not expert gold"
+}

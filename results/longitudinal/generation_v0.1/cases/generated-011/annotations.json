@@ -1,0 +1,212 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Dx: established focal epilepsy.",
+          "start": 79,
+          "end": 110
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.absence",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Patient: no epileptic sz at all, 1 Nov 2024–1 Feb 2025. Denies caregiver’s 15 Jan episode.",
+          "start": 112,
+          "end": 202
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "Patient: no epileptic sz at all, 1 Nov 2024–1 Feb 2025. Denies caregiver’s 15 Jan episode.",
+        "start": {
+          "earliest": "2024-11-01",
+          "latest": "2024-11-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "all epileptic seizures"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "all_epileptic",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.caregiver",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Caregiver: focal sz 15 Jan 2025. Clinician: occurrence and epileptic nature unresolved.",
+          "start": 204,
+          "end": 291
+        }
+      ],
+      "reporter": "caregiver",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "Caregiver: focal sz 15 Jan 2025. Clinician: occurrence and epileptic nature unresolved.",
+        "start": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.uncertain",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Caregiver: focal sz 15 Jan 2025. Clinician: occurrence and epileptic nature unresolved.",
+          "start": 204,
+          "end": 291
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "uncertain",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "Caregiver: focal sz 15 Jan 2025. Clinician: occurrence and epileptic nature unresolved.",
+        "start": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "uncertain",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.undated",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "No diary. Patient: some spells since Feb, dates/features unclear. Epileptic nature uncertain. Jan dispute unresolved.",
+          "start": 79,
+          "end": 196
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "uncertain",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "No diary. Patient: some spells since Feb, dates/features unclear. Epileptic nature uncertain. Jan dispute unresolved.",
+        "start": null,
+        "end": null,
+        "kind": "unknown",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "spells"
+        ],
+        "kind": "pattern",
+        "interpretation": "uncertain",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "reporter-disagreement",
+      "earlier_assertion": "L1.absence",
+      "later_assertion": "L1.caregiver",
+      "relation": "contradicts",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "Patient: no epileptic sz at all, 1 Nov 2024–1 Feb 2025. Denies caregiver’s 15 Jan episode.",
+          "start": 112,
+          "end": 202
+        },
+        {
+          "letter_id": "L1",
+          "text": "Caregiver: focal sz 15 Jan 2025. Clinician: occurrence and epileptic nature unresolved.",
+          "start": 204,
+          "end": 291
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

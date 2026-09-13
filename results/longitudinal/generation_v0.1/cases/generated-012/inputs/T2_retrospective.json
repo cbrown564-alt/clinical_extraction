@@ -1,0 +1,23 @@
+{
+  "patient_id": "generated-012",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-012 | age 52\nConsultation: 2025-02-01\n\nCarried-forward Dx: epilepsy.\n\nPatient: prolonged shaking, 2/month, 1 Nov 2024–20 Jan 2025; last 20 Jan. Recorded as epileptic. Only event type reported throughout 1 Nov 2024–1 Feb 2025.\n\nPatient confirms lamotrigine start: 10 Jan 2025.\n\nEEG requested 5 Jan 2025. Result not documented here.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-02-20",
+      "available_date": "2025-03-01",
+      "text": "Fictional outpatient letter | generated-012 | age 52\nConsultation: 2025-02-20\n\n28 Jan 2025 review: same prolonged shaking episodes reinterpreted as functional non-epileptic events. Corrects epileptic account carried forward in 1 Feb letter. First such reinterpretation anywhere in patient history.\n\nEpilepsy ruled out 28 Jan 2025, still ruled out at 1 Feb consultation. Last event of any kind 20 Jan; no other types ever reported; no further events through 20 Feb.\n\nEEG from 5 Jan request performed 22 Jan 2025.\n\nSame EEG: normal report available to team 25 Jan 2025.\n\nPatient confirms lamotrigine stopped 28 Jan 2025.\n"
+    },
+    {
+      "letter_id": "L3",
+      "visit_date": "2025-08-10",
+      "available_date": "2025-08-12",
+      "text": "Fictional outpatient letter | generated-012 | age 52\nConsultation: 2025-08-10\n\nPatient: no events of any kind, 20 Feb–10 Aug 2025. No further epileptic-to-non-epileptic reclassifications in entire period.\n\nPatient: lamotrigine never restarted, 29 Jan–10 Aug 2025 inclusive.\n\nRecords: zero EEG requests, 3 Feb–10 Aug 2025 inclusive.\n"
+    }
+  ]
+}

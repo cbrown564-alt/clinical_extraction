@@ -1,0 +1,6 @@
+Fictional outpatient letter | generated-001 | age 41
+Consultation: 2025-07-31
+
+Background copied from the February letter: the diagnosis remains focal epilepsy.
+
+The patient reports the same focal impaired-awareness pattern, 1 to 2 seizures per month from 2 February through 31 July 2025, most recently on 20 July. No other event types occurred in this whole interval.

@@ -1,0 +1,4 @@
+Fictional outpatient letter | generated-009 | age 49
+Consultation: 2025-11-20
+
+Attendance: appointment administration only. No clinical review.

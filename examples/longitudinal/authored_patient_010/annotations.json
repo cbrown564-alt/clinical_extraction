@@ -597,8 +597,8 @@
           "earliest": "2025-01-18",
           "latest": "2025-01-18"
         },
-        "kind": "occurrence",
-        "anchor_letter_id": null
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
       },
       "content": {
         "family": "investigation",

@@ -1,0 +1,4 @@
+Fictional outpatient letter | generated-001 | age 41
+Consultation: 2025-11-20
+
+The patient attended to arrange a new appointment. No clinical review took place.

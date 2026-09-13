@@ -1,0 +1,361 @@
+{
+  "date": "2026-09-10",
+  "reviewer": "Codex development review",
+  "source_letters_changed": false,
+  "query_answers_changed": false,
+  "schema_version": "0.2",
+  "changes": [
+    {
+      "case": "authored_patient_005",
+      "id": "L1.pending",
+      "before": {
+        "assertion_id": "L1.pending",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 621,
+            "end": 769,
+            "text": "I requested a routine outpatient EEG today to reassess his baseline epileptiform activity. It has not yet been performed. Follow-up in five months.\n"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-01",
+            "latest": "2025-02-01"
+          },
+          "end": {
+            "earliest": "2025-02-01",
+            "latest": "2025-02-01"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "pending",
+          "result": null,
+          "request_count": null
+        }
+      },
+      "after": {
+        "assertion_id": "L1.pending",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 621,
+            "end": 769,
+            "text": "I requested a routine outpatient EEG today to reassess his baseline epileptiform activity. It has not yet been performed. Follow-up in five months.\n"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-01",
+            "latest": "2025-02-01"
+          },
+          "end": {
+            "earliest": "2025-02-01",
+            "latest": "2025-02-01"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "pending",
+          "result": null,
+          "request_count": null
+        }
+      }
+    },
+    {
+      "case": "authored_patient_005",
+      "id": "L2.result",
+      "before": {
+        "assertion_id": "L2.result",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 177,
+            "end": 524,
+            "text": "The routine outpatient EEG requested on 1 February was performed in late March. Its report became available to our clinical team in early April and demonstrated left frontotemporal sharp waves consistent with his focal lesion. He experienced another focal motor attack sometime in late spring, probably May 2025. He reports no other seizure types."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "early April",
+          "start": null,
+          "end": null,
+          "kind": "unknown",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "result",
+          "result": "left frontotemporal sharp waves consistent with his focal lesion",
+          "request_count": null
+        }
+      },
+      "after": {
+        "assertion_id": "L2.result",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 177,
+            "end": 524,
+            "text": "The routine outpatient EEG requested on 1 February was performed in late March. Its report became available to our clinical team in early April and demonstrated left frontotemporal sharp waves consistent with his focal lesion. He experienced another focal motor attack sometime in late spring, probably May 2025. He reports no other seizure types."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "early April",
+          "start": null,
+          "end": null,
+          "kind": "result_available",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "result",
+          "result": "left frontotemporal sharp waves consistent with his focal lesion",
+          "request_count": null
+        }
+      }
+    },
+    {
+      "case": "authored_patient_008",
+      "id": "L1.lev_start",
+      "before": {
+        "assertion_id": "L1.lev_start",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 202,
+            "end": 364,
+            "text": "Her last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "unknown",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "started",
+          "condition": null
+        }
+      },
+      "after": {
+        "assertion_id": "L1.lev_start",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 202,
+            "end": 364,
+            "text": "Her last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "We initiated",
+          "start": {
+            "earliest": null,
+            "latest": "2023-08-10"
+          },
+          "end": {
+            "earliest": null,
+            "latest": "2023-08-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "started",
+          "condition": null
+        }
+      }
+    },
+    {
+      "case": "authored_patient_010",
+      "id": "L1.pending",
+      "before": {
+        "assertion_id": "L1.pending",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 549,
+            "end": 855,
+            "text": "Today, 18 January 2025, we agreed to start lamotrigine at 25 mg once daily, titrating by 25 mg every two weeks towards an initial target dose of 100 mg daily. I also requested a routine outpatient EEG today to establish baseline cortical activity. It has not yet been performed. Follow-up in three months.\n"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-01-18",
+            "latest": "2025-01-18"
+          },
+          "end": {
+            "earliest": "2025-01-18",
+            "latest": "2025-01-18"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "pending",
+          "result": null,
+          "request_count": null
+        }
+      },
+      "after": {
+        "assertion_id": "L1.pending",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 549,
+            "end": 855,
+            "text": "Today, 18 January 2025, we agreed to start lamotrigine at 25 mg once daily, titrating by 25 mg every two weeks towards an initial target dose of 100 mg daily. I also requested a routine outpatient EEG today to establish baseline cortical activity. It has not yet been performed. Follow-up in three months.\n"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-01-18",
+            "latest": "2025-01-18"
+          },
+          "end": {
+            "earliest": "2025-01-18",
+            "latest": "2025-01-18"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "pending",
+          "result": null,
+          "request_count": null
+        }
+      }
+    },
+    {
+      "case": "authored_patient_011",
+      "id": "L1.shaking__L2.shaking_revised",
+      "before": {
+        "link_id": "L1.shaking__L2.shaking_revised",
+        "earlier_assertion": "L1.shaking",
+        "later_assertion": "L2.shaking_revised",
+        "relation": "corrects_interpretation",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 453,
+            "end": 959,
+            "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+          }
+        ],
+        "decision_time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-06-20",
+            "latest": "2025-06-20"
+          },
+          "end": {
+            "earliest": "2025-06-20",
+            "latest": "2025-06-20"
+          },
+          "kind": "decision",
+          "anchor_letter_id": null
+        }
+      },
+      "after": {
+        "link_id": "L1.shaking__L2.shaking_revised",
+        "earlier_assertion": "L1.shaking",
+        "later_assertion": "L2.shaking_revised",
+        "relation": "corrects_interpretation",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 453,
+            "end": 959,
+            "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+          }
+        ],
+        "decision_time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-06-20",
+            "latest": "2025-06-20"
+          },
+          "end": {
+            "earliest": "2025-06-20",
+            "latest": "2025-06-20"
+          },
+          "kind": "decision",
+          "anchor_letter_id": null
+        },
+        "first_reinterpretation_evidence": [
+          {
+            "letter_id": "L2",
+            "start": 724,
+            "end": 854,
+            "text": "This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier."
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "case_id": "authored-001",
-  "version": "0.6",
+  "version": "0.8",
   "task_definition_version": "0.2",
   "origin": "AI-authored fictional development example; no source seed or real patient",
   "inspection_policy": "development_only",

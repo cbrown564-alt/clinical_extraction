@@ -1,0 +1,8 @@
+Fictional outpatient letter | generated-011 | age 51
+Consultation: 2025-02-01
+
+Dx: established focal epilepsy.
+
+Patient: no epileptic sz at all, 1 Nov 2024–1 Feb 2025. Denies caregiver’s 15 Jan episode.
+
+Caregiver: focal sz 15 Jan 2025. Clinician: occurrence and epileptic nature unresolved.

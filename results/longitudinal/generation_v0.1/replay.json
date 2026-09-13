@@ -1,0 +1,188 @@
+{
+  "byte_identical": true,
+  "accepted_patients": 12,
+  "planned_patients": 12,
+  "cases": [
+    {
+      "patient_id": "generated-001",
+      "sha256": {
+        "annotations.json": "f7b1ae7421d3d7228376fc02dc600b6679b8b0cc32290ca5f70432f8f2f3f6fa",
+        "inputs/T1_retrospective.json": "2549f2978a0351e10c6756d0001acc579a90314aa81c3b09ac73d082b7d95ac7",
+        "inputs/T1_visit.json": "23159445c0b2aafaa3f3a6c07384259a878830edd5f2cb43bc3bc13fc158ba3d",
+        "inputs/T2_retrospective.json": "aacfd13b84b145f3a592ddfa1ed6b8670d72812918a0efad3f78975f89529169",
+        "inputs/T2_visit.json": "2549f2978a0351e10c6756d0001acc579a90314aa81c3b09ac73d082b7d95ac7",
+        "letters/L1.txt": "068b4a05a36f5aafc7caf5496a64808ca44a00b24e160e9c100b2bad6e863432",
+        "letters/L2.txt": "c6135752a73a272bf496fa57e4b3fd08d4b6677a51712d51e5f1228a779abe24",
+        "letters/L3.txt": "9360e4dc1f232cf8d9dea38909713f8618353d9eb512427442a9ce8035292284",
+        "manifest.json": "c1a0d246efa9b0d9923fcb7d0c74483a47d4682344c2d7603909ccb14330df2a",
+        "reference.json": "d3a7e1a4474c86d3aebb140311701f1ba4d5e01a45fa75a87757dc5024690418"
+      }
+    },
+    {
+      "patient_id": "generated-002",
+      "sha256": {
+        "annotations.json": "facd0c336301d1dc9e35c02e1046bec099bc4698e0d87a8ebbc29c4f903b572b",
+        "inputs/T1_retrospective.json": "4c0d173e20161e22703205d7896dfd504f3ac53fe04add043f2aeea8a1b27e53",
+        "inputs/T1_visit.json": "537d58ed60f6ee2b20bb6ffddca7a5e0c0d089d2d892e2f64dc85487fdb7eb3c",
+        "inputs/T2_retrospective.json": "69225375a9a829ebf32ca31c6bddf324b799c8f8275c882be0bf25f006ac1dc0",
+        "inputs/T2_visit.json": "4c0d173e20161e22703205d7896dfd504f3ac53fe04add043f2aeea8a1b27e53",
+        "letters/L1.txt": "fe7d559c9249c848d9632579ca310da7b7c53a32121e6579b53074885b875c9b",
+        "letters/L2.txt": "09a4cb760e70f877841262072ec583336087fbfea590de57974846a595bdcc7f",
+        "letters/L3.txt": "42e65a008c1da616ebd5da71c0ab3084b1382954a454ad7960cd544b813414bb",
+        "manifest.json": "78659ed77c07e189ec22c8259f8d7d08d5bb274c967bca3101f02b6f13f4c3aa",
+        "reference.json": "9922aab9b606d960ac7c2c6c05ded220341b422eb5f42d555b36c91a896f1707"
+      }
+    },
+    {
+      "patient_id": "generated-003",
+      "sha256": {
+        "annotations.json": "d3bef1d76c2cab4f02ff248a1c923537b81d9ed66f0f9c59b540763a9f71af05",
+        "inputs/T1_retrospective.json": "71c0fdaf1fff6eab4b36d30c21518dcab18dc8931232a6a84b934d94257ce7d5",
+        "inputs/T1_visit.json": "71c0fdaf1fff6eab4b36d30c21518dcab18dc8931232a6a84b934d94257ce7d5",
+        "inputs/T2_retrospective.json": "bc1cd3a959362e9907458c738c8e656dcc10590331c1a5b16d749a1dd0570e3c",
+        "inputs/T2_visit.json": "71c0fdaf1fff6eab4b36d30c21518dcab18dc8931232a6a84b934d94257ce7d5",
+        "letters/L1.txt": "25551ea52f086194e27c52e92d6958e06af7924a1be28cd80f08b12e98a1cc40",
+        "letters/L2.txt": "c903fdc36a5d7b280b22e1985c02bcefef71487ac87474dfa0f2b8505ddfdf1d",
+        "letters/L3.txt": "a4fe233277da0424ef781c5b489ff429b70b759856caee6612283ee83dbb6bf2",
+        "manifest.json": "38e65275cf5e66ea98e1e737eede6009e25452bc8c37e68cb27766586d3b84bd",
+        "reference.json": "16cfaf62f8808dea13b4a91d2da3469ad9e4786e4008dd14287368331427a91f"
+      }
+    },
+    {
+      "patient_id": "generated-004",
+      "sha256": {
+        "annotations.json": "fc8d1262b98ce55f9cbfb108853a400eb27a10b0a54eec3d10d6bf3bfad955e2",
+        "inputs/T1_retrospective.json": "f2207f732c38386248eba643ac4dffa7bfcb6aa330c55d1c2b50850a39f25751",
+        "inputs/T1_visit.json": "d4d69a4a2b2c9403ae0c69092cc70509263f255be199cc46274a6f9551c8d161",
+        "inputs/T2_retrospective.json": "3033f93df63687fc355d4c8a8d92d42aec399f67f36a3f507632b2693d293cdd",
+        "inputs/T2_visit.json": "f2207f732c38386248eba643ac4dffa7bfcb6aa330c55d1c2b50850a39f25751",
+        "letters/L1.txt": "d4da9a68adf3f30e8761d47d0deed50898a45881e7bd89a4a2ad413e932ff24a",
+        "letters/L2.txt": "c7afce6782970182adbb616a24c829e039c4bc846f119fc4dcf6230990b6096f",
+        "letters/L3.txt": "d054faa81975d75651259219d77bda1d7f609a3285afafbc3b5e401b796a4885",
+        "manifest.json": "703e0befd187925e7db29f9fa6657e00a2e3a9bdc1388e7fb037dbbd0e8ec335",
+        "reference.json": "fe483fe3884675504dec0a935a86673d89a07c653b6eeeaff46a8693fdc704dd"
+      }
+    },
+    {
+      "patient_id": "generated-005",
+      "sha256": {
+        "annotations.json": "38364c1a69a79419a6619617d4f041c0ad92aff18071c99de32035bc14ab6ec7",
+        "inputs/T1_retrospective.json": "d6bfa44bb692e9be3f757b58a91cb44328d5d6d8c6c8967abf1caad40cd41f49",
+        "inputs/T1_visit.json": "f600acb06cb4e9099dc2d56f3af20fbde0f4d546f396ab09c63d8b581f9bef23",
+        "inputs/T2_retrospective.json": "3199179414f77d5b3db5d9c7161068f8c8cca43d076b43f09df975577534aea8",
+        "inputs/T2_visit.json": "d6bfa44bb692e9be3f757b58a91cb44328d5d6d8c6c8967abf1caad40cd41f49",
+        "letters/L1.txt": "bd53a113316b144cb30c30cd08352d1cc97f6046c2d962a1e3fd51db79fd1bed",
+        "letters/L2.txt": "7fa81fae62fb316f4fcb5a1176afe7a175c141bf435039a52e511cd62ad59a44",
+        "letters/L3.txt": "26a5ae542bf7c2cee5f15c44181ee1423655334dde59068b14ec081be0dc4384",
+        "manifest.json": "fc7a9a1e38e5589f0d2afb1f51acf55097a0e32a4ae5bd233cae12bf794574b1",
+        "reference.json": "20855f4a81c8bf92d7c626f14e2a897f8b524de64fbc56a1cb6fa35003ebb125"
+      }
+    },
+    {
+      "patient_id": "generated-006",
+      "sha256": {
+        "annotations.json": "c9d2b50a35faeba3a1201b6fb0f1e7be73cd45a36fbb7e57b59547f7661a49ca",
+        "inputs/T1_retrospective.json": "265ddf4eb82fd0bd5bdaf507fa117f05b48d13792102826acdbc599f53de4804",
+        "inputs/T1_visit.json": "6533946bfccb409876810519214f649d888a360a56d552525a53cfadcd9038da",
+        "inputs/T2_retrospective.json": "a52bb2991e42532d50d7036958e0ef806f4bd1da97eeec899974aa2fdaa09a11",
+        "inputs/T2_visit.json": "265ddf4eb82fd0bd5bdaf507fa117f05b48d13792102826acdbc599f53de4804",
+        "letters/L1.txt": "b50797b952c343d6624ec34c835fddd52d543fd393e9d482a667192cbde0cbc4",
+        "letters/L2.txt": "21e778f1de8dd1b54b52a7722960a34780e0cb23f0364ab81a21aad34b1def99",
+        "letters/L3.txt": "bf2f54edb1dff371b79e9c66d1acf9e898faa2ecbdbcf28a3dd5b8c0bf9b68b3",
+        "manifest.json": "45793b038511827036361fb8aa6da9f310c6f13158de6a3c72f0854cc6a7d931",
+        "reference.json": "01812c3190e29845334ec4e4410b52ab9b31246bb09ff9dd9a0f1db0e2fcb3c0"
+      }
+    },
+    {
+      "patient_id": "generated-007",
+      "sha256": {
+        "annotations.json": "934c7f56276c7d1604434d3c1687c68bfe2a4e82d03033d584890c76751c8bd6",
+        "inputs/T1_retrospective.json": "f12ddd9a15a4cc1029707b02ef9b1ae9ac890effb86a4b0af073a30f0058f353",
+        "inputs/T1_visit.json": "f12ddd9a15a4cc1029707b02ef9b1ae9ac890effb86a4b0af073a30f0058f353",
+        "inputs/T2_retrospective.json": "2ffd8d4b3c24bfd7273d42f5a4724cb84e10e99c3f692c2c2d7cc7bf0b7f43d9",
+        "inputs/T2_visit.json": "f12ddd9a15a4cc1029707b02ef9b1ae9ac890effb86a4b0af073a30f0058f353",
+        "letters/L1.txt": "2e9521bb308520a6bb14287882e4f28f6fe6ed5a0668181c90ad75e9dab0d64d",
+        "letters/L2.txt": "a6a5ef008349829b0d64dc25093b10470ad031417e3c0e169f0361a765f8c22d",
+        "letters/L3.txt": "b3fd1a6f6c8d20f2498558059b9c4191ea802f2df98cdc152c67c51ea4bb7c09",
+        "manifest.json": "9244dc145e0ff77d9d36f23a99e32685adf4f1012de6eaaef9de4cbca027ec4d",
+        "reference.json": "2cb5b4eabd48560ce33cd520070be4cbe1da0a108555b5d3779f514873057dd8"
+      }
+    },
+    {
+      "patient_id": "generated-008",
+      "sha256": {
+        "annotations.json": "3484ca525d9352e1cc72c4a071c050409084811b57d24335af9dc7e9e947521c",
+        "inputs/T1_retrospective.json": "679a7e7502201db3e0884d0273b4eb01fac7df26f151a98df767c50a96d6f6cc",
+        "inputs/T1_visit.json": "92976f15089ec694dd958486f0de2f2f4d37cd69ac6b74f0efefb08a99975bf8",
+        "inputs/T2_retrospective.json": "bb8e206f3e91991d01cea6abd5016c2574b28f0a6273b4873f937e841422b2ad",
+        "inputs/T2_visit.json": "679a7e7502201db3e0884d0273b4eb01fac7df26f151a98df767c50a96d6f6cc",
+        "letters/L1.txt": "c566a425b96cfa6501b2fd07f364fb68c5f6ff4f68f566f195f32d97a4199bc0",
+        "letters/L2.txt": "ec7316a05dbf1e1429aec77fc790b6589b34f9d6d205716d8141d627bb4975b2",
+        "letters/L3.txt": "e546cb1282d847c97d3e6fde1e8c3405963ef7ace6a5a5af8682eea544b520ba",
+        "manifest.json": "4308373c83b995861b5733f6940826de7a3a4fc48bb52d074186d0450a8b6d1e",
+        "reference.json": "0f3ccab92487a0287d656605f635ec89ad8c6eca6cfc0725206bac1c41865b6a"
+      }
+    },
+    {
+      "patient_id": "generated-009",
+      "sha256": {
+        "annotations.json": "b3720e3e7c8613e9ceb8e16641a394d169cf92c6c7371f92b9d8d2c2a6ec2148",
+        "inputs/T1_retrospective.json": "5d6b2c8f43a196f7ef6c3144f0ca188c511f8393fed06e18c309ad9e77b72d85",
+        "inputs/T1_visit.json": "cf3dd756a7b004dc25f3aba9d748c426fcb0306f19c54756a8909b577bb8e9a2",
+        "inputs/T2_retrospective.json": "272f9b45766d7a55b25f5630473597a76f39ff32cccabfbb31ad784fe347e020",
+        "inputs/T2_visit.json": "5d6b2c8f43a196f7ef6c3144f0ca188c511f8393fed06e18c309ad9e77b72d85",
+        "letters/L1.txt": "1da8bf7142fec4d9e73f3abb15504c8ee1e08ebf945b2000c6426e08f0123c2c",
+        "letters/L2.txt": "206a97a89009666678846741ad6ced21d4a5c8802f289c36e91268589fb8266d",
+        "letters/L3.txt": "8af503220330fb8a518286edca4cec5590c936c8a2232cccaed104b383a35927",
+        "manifest.json": "e7fe70e7a62b90b6d043f8c3dae989eecc412f6579b155391d1a8689742f0f55",
+        "reference.json": "520ebc48c2114d241fb1f170f60b6eb84df34e7526cd46014446b2557dfde234"
+      }
+    },
+    {
+      "patient_id": "generated-010",
+      "sha256": {
+        "annotations.json": "8d451b7091651a79c09ec227d8386b46e802b82683f6980c902f694225b16e03",
+        "inputs/T1_retrospective.json": "a711a132d173053a7ff3c565f8003e1c2762dcfd63b2d9b4a8b88311c4838c0d",
+        "inputs/T1_visit.json": "08092ee30d9426c5b61d3eab25c9843bc973642db8a37d949b9168edab71c6aa",
+        "inputs/T2_retrospective.json": "33f5099278ca85cd93f04aa252e46cf79e0123dd8dd45e2a4d332c8579309549",
+        "inputs/T2_visit.json": "a711a132d173053a7ff3c565f8003e1c2762dcfd63b2d9b4a8b88311c4838c0d",
+        "letters/L1.txt": "8f2f46499ac9d5619f23cac978a549246bd6facc25887abe72ab4a5402f993ea",
+        "letters/L2.txt": "07a13b85e50ab463cb74419b4794271439110bfcc114d844021874939ad03a8f",
+        "letters/L3.txt": "856b6e9e93aa7daf7655d7a44095c583aca027f1bbab8103572b24ebd968dae6",
+        "manifest.json": "06610c8776cfe516a820c4195520498c3353416e5dd7fda9ead8c5f788f271e8",
+        "reference.json": "7786e3882d388d677c6e7250cefe92ddd9662799ff3df57b664b5ee2db93d08f"
+      }
+    },
+    {
+      "patient_id": "generated-011",
+      "sha256": {
+        "annotations.json": "7386acb7c8ab7d19f6da0385b03d2db1ea13d303f231e712d0717c0444a0c745",
+        "inputs/T1_retrospective.json": "812d5dccb8d8c4c6b2d12a8f801bf1c9cce2c4fe1bea029edeca215a1d79aebb",
+        "inputs/T1_visit.json": "812d5dccb8d8c4c6b2d12a8f801bf1c9cce2c4fe1bea029edeca215a1d79aebb",
+        "inputs/T2_retrospective.json": "b44ab83b84ac49a87f2140bf49bba2eaa2f78580321530d1b8fbf0f38fd2292b",
+        "inputs/T2_visit.json": "812d5dccb8d8c4c6b2d12a8f801bf1c9cce2c4fe1bea029edeca215a1d79aebb",
+        "letters/L1.txt": "ee471a16c47cd4a5dc73dd1ced78c3ef9556f7c1bbdb4b9fcba4beebf03a559f",
+        "letters/L2.txt": "4a6d4f54841c6651ed21c5ce62179d86f5f10aa735e3d4cbbe4eae6c90b37711",
+        "letters/L3.txt": "cbc157f1ee750d402bd9abd3bdca5394854d34576e8a2dbf47e0707ee9c9061c",
+        "manifest.json": "ce3fb29dd6d37d761cf197c6f9cf1bb2f6e5fb2799e7bd4db989a536f8ca3257",
+        "reference.json": "60f0fb1069b34788cc262b0848225590a5e6867e491c98a3761e667285be2394"
+      }
+    },
+    {
+      "patient_id": "generated-012",
+      "sha256": {
+        "annotations.json": "1418f0159ae2feba9a94cccc3d7051a9de9c13ba393ecd462ebe1d212688ba00",
+        "inputs/T1_retrospective.json": "b22385453019cba7f4fcad3473bb194637aad437b5b176227ac3caae3b3b6b2c",
+        "inputs/T1_visit.json": "50d749c9a6010a830d052f5233c5f8709e56cbac23ded03c28c8982c32fa95da",
+        "inputs/T2_retrospective.json": "33aecef43d445261b690e5cac8b14f2d65634c8e9a8f321ee0c1ac38ffc8b125",
+        "inputs/T2_visit.json": "b22385453019cba7f4fcad3473bb194637aad437b5b176227ac3caae3b3b6b2c",
+        "letters/L1.txt": "cbfc04ea66b1c372c294cbcafed54aaab439ddb6f9dcd82dfce5d35bb518036a",
+        "letters/L2.txt": "06f7769adca6a1701045eb371f6cdc76020ee6854c0df298748f2ee5144fcd8c",
+        "letters/L3.txt": "a4abcff7b498b8c427c43ca4e21ad3cf4d0c61bcfeca7980ab78b32b769baef5",
+        "manifest.json": "aa659c68e207460a35957dca2fad7886ccbaa289ca6493c759654e2b4e362ac1",
+        "reference.json": "45640f3e3123a18d7017eaa05b8a8a9df36e2d74f9e56bbe26ab930da262ad14"
+      }
+    }
+  ],
+  "mode": "saved-output replay"
+}

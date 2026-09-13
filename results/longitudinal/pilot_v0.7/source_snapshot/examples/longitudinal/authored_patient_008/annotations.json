@@ -1,0 +1,468 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 102,
+          "end": 200,
+          "text": "Hannah was seen in clinic today following a first referral. She has a diagnosis of focal epilepsy."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2023-08-10",
+          "latest": "2023-08-10"
+        },
+        "end": {
+          "earliest": "2023-08-10",
+          "latest": "2023-08-10"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L2.diagnosis",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 95,
+          "end": 244,
+          "text": "Hannah re-attended clinic today after an eighteen-month interval, having missed scheduled interim appointments. Her diagnosis remains focal epilepsy."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-20",
+          "latest": "2025-02-20"
+        },
+        "end": {
+          "earliest": "2025-02-20",
+          "latest": "2025-02-20"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.last_focal",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 202,
+          "end": 364,
+          "text": "Her last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2023-07-15",
+          "latest": "2023-07-15"
+        },
+        "end": {
+          "earliest": "2023-07-15",
+          "latest": "2023-07-15"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.lev_start",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 202,
+          "end": 364,
+          "text": "Her last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": null,
+        "kind": "unknown",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "started",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L1.absence",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 202,
+          "end": 364,
+          "text": "Her last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "since starting medication",
+        "start": null,
+        "end": {
+          "earliest": "2023-08-10",
+          "latest": "2023-08-10"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "all epileptic seizures"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "all_epileptic",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.lev_stop",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 246,
+          "end": 654,
+          "text": "She explained that she discontinued levetiracetam on her own initiative in early 2024. She remained relatively well until 12 February 2025, when she suffered an explosive cluster of three generalized convulsive seizures within twelve hours, prompting emergency department admission and intravenous lorazepam. No other seizure types occurred. She was restarted on levetiracetam 500 mg twice daily in hospital."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "early 2024",
+        "start": null,
+        "end": null,
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "stopped",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L2.cluster",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 246,
+          "end": 654,
+          "text": "She explained that she discontinued levetiracetam on her own initiative in early 2024. She remained relatively well until 12 February 2025, when she suffered an explosive cluster of three generalized convulsive seizures within twelve hours, prompting emergency department admission and intravenous lorazepam. No other seizure types occurred. She was restarted on levetiracetam 500 mg twice daily in hospital."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "end": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "generalized convulsive seizure"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "clusters",
+          "text": "cluster of three generalized convulsive seizures within twelve hours",
+          "count": {
+            "lower": 1,
+            "upper": 1
+          },
+          "period": null,
+          "events_per_cluster": {
+            "lower": 3,
+            "upper": 3
+          },
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L2.lev_restart",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 246,
+          "end": 654,
+          "text": "She explained that she discontinued levetiracetam on her own initiative in early 2024. She remained relatively well until 12 February 2025, when she suffered an explosive cluster of three generalized convulsive seizures within twelve hours, prompting emergency department admission and intravenous lorazepam. No other seizure types occurred. She was restarted on levetiracetam 500 mg twice daily in hospital."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": null,
+        "kind": "unknown",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "started",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L2.lorazepam",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 246,
+          "end": 654,
+          "text": "She explained that she discontinued levetiracetam on her own initiative in early 2024. She remained relatively well until 12 February 2025, when she suffered an explosive cluster of three generalized convulsive seizures within twelve hours, prompting emergency department admission and intravenous lorazepam. No other seizure types occurred. She was restarted on levetiracetam 500 mg twice daily in hospital."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "end": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "lorazepam",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L2.cluster_inventory",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 246,
+          "end": 654,
+          "text": "She explained that she discontinued levetiracetam on her own initiative in early 2024. She remained relatively well until 12 February 2025, when she suffered an explosive cluster of three generalized convulsive seizures within twelve hours, prompting emergency department admission and intravenous lorazepam. No other seizure types occurred. She was restarted on levetiracetam 500 mg twice daily in hospital."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "end": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "generalized convulsive seizure"
+        ],
+        "kind": "inventory",
+        "interpretation": "epileptic",
+        "scope": "all_reported",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L3.levetiracetam",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 91,
+          "end": 326,
+          "text": "Hannah attended for review. She reports full adherence to levetiracetam 500 mg twice daily. She has remained entirely seizure-free since her discharge following the February cluster, with no events between 13 February and 15 June 2025."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-06-15",
+          "latest": "2025-06-15"
+        },
+        "end": {
+          "earliest": "2025-06-15",
+          "latest": "2025-06-15"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "medication",
+        "name": "levetiracetam",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L3.absence",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 91,
+          "end": 326,
+          "text": "Hannah attended for review. She reports full adherence to levetiracetam 500 mg twice daily. She has remained entirely seizure-free since her discharge following the February cluster, with no events between 13 February and 15 June 2025."
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-13",
+          "latest": "2025-02-13"
+        },
+        "end": {
+          "earliest": "2025-06-15",
+          "latest": "2025-06-15"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "all epileptic seizures"
+        ],
+        "kind": "absence",
+        "interpretation": "epileptic",
+        "scope": "all_epileptic",
+        "burden": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "L1.lev_start__L2.lev_stop__updates",
+      "earlier_assertion": "L1.lev_start",
+      "later_assertion": "L2.lev_stop",
+      "relation": "updates",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 246,
+          "end": 654,
+          "text": "She explained that she discontinued levetiracetam on her own initiative in early 2024. She remained relatively well until 12 February 2025, when she suffered an explosive cluster of three generalized convulsive seizures within twelve hours, prompting emergency department admission and intravenous lorazepam. No other seizure types occurred. She was restarted on levetiracetam 500 mg twice daily in hospital."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "L2.lev_restart__L3.levetiracetam__updates",
+      "earlier_assertion": "L2.lev_restart",
+      "later_assertion": "L3.levetiracetam",
+      "relation": "updates",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 91,
+          "end": 326,
+          "text": "Hannah attended for review. She reports full adherence to levetiracetam 500 mg twice daily. She has remained entirely seizure-free since her discharge following the February cluster, with no events between 13 February and 15 June 2025."
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

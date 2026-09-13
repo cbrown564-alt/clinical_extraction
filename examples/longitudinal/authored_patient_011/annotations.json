@@ -712,7 +712,15 @@
         },
         "kind": "decision",
         "anchor_letter_id": null
-      }
+      },
+      "first_reinterpretation_evidence": [
+        {
+          "letter_id": "L2",
+          "start": 724,
+          "end": 854,
+          "text": "This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier."
+        }
+      ]
     }
   ]
 }

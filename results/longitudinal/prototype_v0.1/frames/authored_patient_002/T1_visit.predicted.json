@@ -1,0 +1,1021 @@
+{
+  "program_version": "longitudinal-prototype-0.1",
+  "status": "ready",
+  "provenance": {
+    "mode": "saved_model_extraction",
+    "new_model_calls": 0,
+    "query_context_visible_during_extraction": true,
+    "semantic_repair": false,
+    "attempt": {
+      "status": "parsed",
+      "input_sha256": "972493db4f0dd524f9928dfe30032801853b608eff4ea04fdbebaee7c145290d",
+      "rendered_prompt_sha256": "c44013a3658f16b4ad0ca71c2eeaacdb6cc93e96571727a5af8bf0290a96b0e7",
+      "model_requested": "gemini-3.8-flash-medium",
+      "effort": "medium",
+      "interface": "agy",
+      "executable_sha256": "2a63488c33221627f1798ff4ccb1d5131b6abe3160286c84b357a7456905f763",
+      "fresh_project": true,
+      "sandbox": true,
+      "tools_requested": false,
+      "started_at": "2026-09-09T21:02:50.736147+00:00",
+      "semantic_repair": false,
+      "provider_cost": null,
+      "human_annotation_minutes": null,
+      "exit_code": 0,
+      "ended_at": "2026-09-09T21:04:00.947258+00:00",
+      "wall_seconds": 70.21323566703359,
+      "telemetry": {
+        "conversation_id": "0439be21-4039-408c-a6c3-067e0febe18b",
+        "status": "SUCCESS",
+        "duration_seconds": 67.15384,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 25194,
+          "output_tokens": 26016,
+          "thinking_tokens": 23291,
+          "cache_read_tokens": 0,
+          "total_tokens": 51210
+        }
+      },
+      "observed_tool_steps": 0,
+      "tool_catalog_present": true,
+      "isolation_limit": "fresh temporary project; no observed tool steps required; tool catalog remains present and plan mode is ignored by CLI with slash expansion disabled"
+    },
+    "input_sha256": "972493db4f0dd524f9928dfe30032801853b608eff4ea04fdbebaee7c145290d",
+    "attempt_sha256": "5289d75486df40837623a2dbfbfd2cf8fac13eb67f1436466d33aa25c86f1669",
+    "raw_parsed_sha256": "c5c77611c751c6bb96b936b3a0463b37eaa1103fe6953a04968e9dd86b267c32",
+    "raw_stdout_sha256": "398c4de48d23247d5e69421a0f77fad8efe093ca0e1633d03cea4e698c4cbf74"
+  },
+  "documents": [
+    {
+      "letter_id": "L1",
+      "version": 1,
+      "visit_date": "2025-02-10",
+      "available_date": "2025-02-10",
+      "path": "letters/L1.txt",
+      "sha256": "0488353ee2525e98a4619fbb49f971b47189b20934a201027b2d808315fcf76c",
+      "text": "Epilepsy clinic letter\nConsultation: 10 February 2025\nPatient: Beatrice Hall, aged 42\n\nDear colleague,\n\nBeatrice attended our clinic for routine annual review. She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021.\n\nHer seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects. Over the past year she has continued to experience roughly one focal seizure per month. Her most recent focal seizure occurred on 28 January 2025. She describes a brief epigastric sensation followed by confusion lasting one to two minutes. She has had no generalized tonic-clonic convulsions and reports no other event types.\n\nWe agreed to make no changes to her carbamazepine dosage. No additional medications or investigations are required at this time. We will arrange routine follow-up in six months.\n"
+    }
+  ],
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "A1_diagnosis",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 160,
+            "end": 281,
+            "text": "She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "since 2021",
+          "start": {
+            "earliest": "2021-01-01",
+            "latest": "2021-12-31"
+          },
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy with impaired awareness",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A2_medication_carbamazepine",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 283,
+            "end": 445,
+            "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "end": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "carbamazepine modified-release",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A3_seizure_focal_pattern",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 446,
+            "end": 533,
+            "text": "Over the past year she has continued to experience roughly one focal seizure per month."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "Over the past year",
+          "start": {
+            "earliest": "2024-02-10",
+            "latest": "2024-02-10"
+          },
+          "end": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal seizure"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "roughly one focal seizure per month",
+            "count": {
+              "lower": 1.0,
+              "upper": 1.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "month"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "A4_seizure_focal_occurrence",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 534,
+            "end": 592,
+            "text": "Her most recent focal seizure occurred on 28 January 2025."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "28 January 2025",
+          "start": {
+            "earliest": "2025-01-28",
+            "latest": "2025-01-28"
+          },
+          "end": {
+            "earliest": "2025-01-28",
+            "latest": "2025-01-28"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal seizure"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A5_seizure_gtcs_absence",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 686,
+            "end": 771,
+            "text": "She has had no generalized tonic-clonic convulsions and reports no other event types."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "generalized tonic-clonic convulsions"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A6_seizure_inventory",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 686,
+            "end": 771,
+            "text": "She has had no generalized tonic-clonic convulsions and reports no other event types."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "other event types"
+          ],
+          "kind": "inventory",
+          "interpretation": "not_stated",
+          "scope": "all_reported",
+          "burden": null
+        }
+      }
+    ],
+    "links": []
+  },
+  "history": [
+    {
+      "assertion_ids": [
+        "A1_diagnosis"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A1_diagnosis",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 160,
+              "end": 281,
+              "text": "She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": "since 2021",
+            "start": {
+              "earliest": "2021-01-01",
+              "latest": "2021-12-31"
+            },
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "diagnosis",
+            "name": "focal epilepsy with impaired awareness",
+            "phase": "current"
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A2_medication_carbamazepine"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A2_medication_carbamazepine",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 283,
+              "end": 445,
+              "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "end": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "medication",
+            "name": "carbamazepine modified-release",
+            "status": "taking",
+            "condition": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A3_seizure_focal_pattern"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A3_seizure_focal_pattern",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 446,
+              "end": 533,
+              "text": "Over the past year she has continued to experience roughly one focal seizure per month."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": "Over the past year",
+            "start": {
+              "earliest": "2024-02-10",
+              "latest": "2024-02-10"
+            },
+            "end": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "focal seizure"
+            ],
+            "kind": "pattern",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": {
+              "kind": "rate",
+              "text": "roughly one focal seizure per month",
+              "count": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "period": {
+                "amount": {
+                  "lower": 1.0,
+                  "upper": 1.0
+                },
+                "unit": "month"
+              },
+              "events_per_cluster": null,
+              "approximate": true
+            }
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A4_seizure_focal_occurrence"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A4_seizure_focal_occurrence",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 534,
+              "end": 592,
+              "text": "Her most recent focal seizure occurred on 28 January 2025."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": "28 January 2025",
+            "start": {
+              "earliest": "2025-01-28",
+              "latest": "2025-01-28"
+            },
+            "end": {
+              "earliest": "2025-01-28",
+              "latest": "2025-01-28"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "focal seizure"
+            ],
+            "kind": "occurrence",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A5_seizure_gtcs_absence"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A5_seizure_gtcs_absence",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 686,
+              "end": 771,
+              "text": "She has had no generalized tonic-clonic convulsions and reports no other event types."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "negated",
+          "coverage": "complete",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "generalized tonic-clonic convulsions"
+            ],
+            "kind": "absence",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A6_seizure_inventory"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A6_seizure_inventory",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 686,
+              "end": 771,
+              "text": "She has had no generalized tonic-clonic convulsions and reports no other event types."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "negated",
+          "coverage": "complete",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "other event types"
+            ],
+            "kind": "inventory",
+            "interpretation": "not_stated",
+            "scope": "all_reported",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    }
+  ],
+  "requests": [
+    {
+      "request_id": "T1_visit_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2025-02-10",
+      "view": "visit",
+      "information_cutoff": "2025-02-10",
+      "retrospective_cutoff": "2025-08-09",
+      "lookback_90_start": "2024-11-13",
+      "lookback_180_start": "2024-08-15",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2025-02-10",
+      "view": "visit",
+      "information_cutoff": "2025-02-10",
+      "retrospective_cutoff": "2025-08-09",
+      "lookback_90_start": "2024-11-13",
+      "lookback_180_start": "2024-08-15",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2025-02-10",
+      "view": "visit",
+      "information_cutoff": "2025-02-10",
+      "retrospective_cutoff": "2025-08-09",
+      "lookback_90_start": "2024-11-13",
+      "lookback_180_start": "2024-08-15",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2025-02-10",
+      "view": "visit",
+      "information_cutoff": "2025-02-10",
+      "retrospective_cutoff": "2025-08-09",
+      "lookback_90_start": "2024-11-13",
+      "lookback_180_start": "2024-08-15",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2025-02-10",
+      "view": "visit",
+      "information_cutoff": "2025-02-10",
+      "retrospective_cutoff": "2025-08-09",
+      "lookback_90_start": "2024-11-13",
+      "lookback_180_start": "2024-08-15",
+      "input_path": "inputs/T1_visit.json"
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "query_id": "Q1",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "query_id": "Q2",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "query_id": "Q3",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "query_id": "Q4",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "query_id": "Q5",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    }
+  ],
+  "offset_repairs": [
+    {
+      "path": "/assertions/1/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 283,
+        "end": 443,
+        "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 283,
+        "end": 445,
+        "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects."
+      }
+    },
+    {
+      "path": "/assertions/2/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 444,
+        "end": 531,
+        "text": "Over the past year she has continued to experience roughly one focal seizure per month."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 446,
+        "end": 533,
+        "text": "Over the past year she has continued to experience roughly one focal seizure per month."
+      }
+    },
+    {
+      "path": "/assertions/3/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 532,
+        "end": 590,
+        "text": "Her most recent focal seizure occurred on 28 January 2025."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 534,
+        "end": 592,
+        "text": "Her most recent focal seizure occurred on 28 January 2025."
+      }
+    },
+    {
+      "path": "/assertions/4/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 684,
+        "end": 769,
+        "text": "She has had no generalized tonic-clonic convulsions and reports no other event types."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 686,
+        "end": 771,
+        "text": "She has had no generalized tonic-clonic convulsions and reports no other event types."
+      }
+    },
+    {
+      "path": "/assertions/5/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 684,
+        "end": 769,
+        "text": "She has had no generalized tonic-clonic convulsions and reports no other event types."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 686,
+        "end": 771,
+        "text": "She has had no generalized tonic-clonic convulsions and reports no other event types."
+      }
+    }
+  ],
+  "raw_extraction": {
+    "assertions": [
+      {
+        "assertion_id": "A1_diagnosis",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 160,
+            "end": 281,
+            "text": "She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "since 2021",
+          "start": {
+            "earliest": "2021-01-01",
+            "latest": "2021-12-31"
+          },
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy with impaired awareness",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A2_medication_carbamazepine",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 283,
+            "end": 443,
+            "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "end": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "carbamazepine modified-release",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A3_seizure_focal_pattern",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 444,
+            "end": 531,
+            "text": "Over the past year she has continued to experience roughly one focal seizure per month."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "Over the past year",
+          "start": {
+            "earliest": "2024-02-10",
+            "latest": "2024-02-10"
+          },
+          "end": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal seizure"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "roughly one focal seizure per month",
+            "count": {
+              "lower": 1.0,
+              "upper": 1.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "month"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "A4_seizure_focal_occurrence",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 532,
+            "end": 590,
+            "text": "Her most recent focal seizure occurred on 28 January 2025."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "28 January 2025",
+          "start": {
+            "earliest": "2025-01-28",
+            "latest": "2025-01-28"
+          },
+          "end": {
+            "earliest": "2025-01-28",
+            "latest": "2025-01-28"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal seizure"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A5_seizure_gtcs_absence",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 684,
+            "end": 769,
+            "text": "She has had no generalized tonic-clonic convulsions and reports no other event types."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "generalized tonic-clonic convulsions"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A6_seizure_inventory",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 684,
+            "end": 769,
+            "text": "She has had no generalized tonic-clonic convulsions and reports no other event types."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-02-10",
+            "latest": "2025-02-10"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "other event types"
+          ],
+          "kind": "inventory",
+          "interpretation": "not_stated",
+          "scope": "all_reported",
+          "burden": null
+        }
+      }
+    ],
+    "links": []
+  }
+}

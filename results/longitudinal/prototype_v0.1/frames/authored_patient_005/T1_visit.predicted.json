@@ -1,0 +1,154 @@
+{
+  "status": "failed",
+  "error": "Original model capture failed; no facts are available for this view",
+  "provenance": {
+    "mode": "saved_model_extraction",
+    "new_model_calls": 0,
+    "query_context_visible_during_extraction": true,
+    "semantic_repair": false,
+    "attempt": {
+      "status": "failed",
+      "input_sha256": "7241bca1fb5133929366f13eaccd752ece631d4c7dda48fd9f1d5a7246ffced1",
+      "rendered_prompt_sha256": "6bdb75271c6c5e743094316b92f3fb25082f5aceac0d84e73be6b718d15c3de7",
+      "model_requested": "gemini-3.8-flash-medium",
+      "effort": "medium",
+      "interface": "agy",
+      "executable_sha256": "2a63488c33221627f1798ff4ccb1d5131b6abe3160286c84b357a7456905f763",
+      "fresh_project": true,
+      "sandbox": true,
+      "tools_requested": false,
+      "started_at": "2026-09-09T21:06:27.477474+00:00",
+      "semantic_repair": false,
+      "provider_cost": null,
+      "human_annotation_minutes": null,
+      "exit_code": 0,
+      "ended_at": "2026-09-09T21:11:09.231478+00:00",
+      "wall_seconds": 72.26424966700142,
+      "error": "No successful result: {\"conversation_id\": \"469a04b0-7c70-429a-9f3a-877f7c0beed1\", \"status\": \"ERROR\", \"error\": \"The stream was interrupted. Please continue the task you were working on.\", \"duration_seconds\": 278.779271, \"num_turns\": 1, \"usage\": {\"input_tokens\": 30065, \"output_tokens\": 28906, \"thinking_tokens\": 25103, \"cache_read_tokens\": 20396, \"total_tokens\": 58971}}",
+      "tool_catalog_present": true,
+      "isolation_limit": "fresh temporary project; no observed tool steps required; tool catalog remains present and plan mode is ignored by CLI with slash expansion disabled"
+    },
+    "input_sha256": "7241bca1fb5133929366f13eaccd752ece631d4c7dda48fd9f1d5a7246ffced1",
+    "attempt_sha256": "b8cc54958f2953397a9e568b7e1674c0022f3abb4ed39f57be9d53f2f8c7ca88"
+  },
+  "program_version": "longitudinal-prototype-0.1",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "version": 2,
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "path": "letters/L1.txt",
+      "sha256": "8352845a339e7b05feb1f5cc0cdcb169ffbf1da709b3d9fd65f265891cd5e4a1",
+      "text": "Epilepsy clinic letter\nConsultation: 01 February 2025\nPatient: Edward Davies, aged 67\n\nDear colleague,\n\nEdward attended clinic accompanied by his daughter. He has an established diagnosis of focal epilepsy following an ischemic stroke three years ago.\n\nHe describes recurring focal motor seizures involving clonic jerking of the right hand. His most recent event occurred sometime around Christmas, though the exact calendar date was not noted by the family. He had a prior focal attack a few months ago in autumn 2024. He reports no other seizure patterns or convulsions. He continues levetiracetam 500 mg twice daily.\n\nI requested a routine outpatient EEG today to reassess his baseline epileptiform activity. It has not yet been performed. Follow-up in five months.\n\nIn August 2024 we proposed adding lamotrigine, but that proposal was not enacted. Edward confirms he has never taken lamotrigine, including at any time before this consultation on 1 February 2025. We will reconsider treatment after further review.\n"
+    }
+  ],
+  "requests": [
+    {
+      "request_id": "T1_visit_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2025-02-01",
+      "view": "visit",
+      "information_cutoff": "2025-02-01",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2025-02-01",
+      "view": "visit",
+      "information_cutoff": "2025-02-01",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2025-02-01",
+      "view": "visit",
+      "information_cutoff": "2025-02-01",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2025-02-01",
+      "view": "visit",
+      "information_cutoff": "2025-02-01",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2025-02-01",
+      "view": "visit",
+      "information_cutoff": "2025-02-01",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_visit.json"
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "query_id": "Q1",
+      "status": "failed",
+      "error": "Original model capture failed; no facts are available for this view",
+      "evidence": [],
+      "rule_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "query_id": "Q2",
+      "status": "failed",
+      "error": "Original model capture failed; no facts are available for this view",
+      "evidence": [],
+      "rule_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "query_id": "Q3",
+      "status": "failed",
+      "error": "Original model capture failed; no facts are available for this view",
+      "evidence": [],
+      "rule_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "query_id": "Q4",
+      "status": "failed",
+      "error": "Original model capture failed; no facts are available for this view",
+      "evidence": [],
+      "rule_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "query_id": "Q5",
+      "status": "failed",
+      "error": "Original model capture failed; no facts are available for this view",
+      "evidence": [],
+      "rule_ids": []
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "scope": "all full-variant mismatches; no reference tuning",
+  "count": 15,
+  "rows": [
+    {
+      "case": "authored_patient_001",
+      "request_id": "T1_visit_Q4",
+      "query": "Q4",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Complete request inventory and pending/result timing must be joined to refute every qualifying request; positive-only witness implementation abstains."
+    },
+    {
+      "case": "authored_patient_001",
+      "request_id": "T1_retrospective_Q2",
+      "query": "Q2",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Exhaustive historical inventory and retrospective scope are not fully represented/traversed; current-point inventory does not establish whole-window coverage."
+    },
+    {
+      "case": "authored_patient_001",
+      "request_id": "T1_retrospective_Q3",
+      "query": "Q3",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Lifelong non-use and confirmed same-course continuity need explicit temporal scope; null start or current taking alone must not establish a negative."
+    },
+    {
+      "case": "authored_patient_001",
+      "request_id": "T1_retrospective_Q4",
+      "query": "Q4",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Complete request inventory and pending/result timing must be joined to refute every qualifying request; positive-only witness implementation abstains."
+    },
+    {
+      "case": "authored_patient_001",
+      "request_id": "T2_retrospective_Q3",
+      "query": "Q3",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Lifelong non-use and confirmed same-course continuity need explicit temporal scope; null start or current taking alone must not establish a negative."
+    },
+    {
+      "case": "authored_patient_002",
+      "request_id": "T1_visit_Q2",
+      "query": "Q2",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Exhaustive historical inventory and retrospective scope are not fully represented/traversed; current-point inventory does not establish whole-window coverage."
+    },
+    {
+      "case": "authored_patient_002",
+      "request_id": "T1_retrospective_Q2",
+      "query": "Q2",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Exhaustive historical inventory and retrospective scope are not fully represented/traversed; current-point inventory does not establish whole-window coverage."
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T1_visit_Q1",
+      "query": "Q1",
+      "reference_status": "eligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Qualitative holiday inclusion is supported by reviewed text but is not encoded as date bounds; retain indeterminate in the numeric-only evaluator."
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T1_visit_Q2",
+      "query": "Q2",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Exhaustive historical inventory and retrospective scope are not fully represented/traversed; current-point inventory does not establish whole-window coverage."
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T1_visit_Q3",
+      "query": "Q3",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Lifelong non-use and confirmed same-course continuity need explicit temporal scope; null start or current taking alone must not establish a negative."
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T1_retrospective_Q1",
+      "query": "Q1",
+      "reference_status": "eligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Qualitative holiday inclusion is supported by reviewed text but is not encoded as date bounds; retain indeterminate in the numeric-only evaluator."
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T1_retrospective_Q2",
+      "query": "Q2",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Exhaustive historical inventory and retrospective scope are not fully represented/traversed; current-point inventory does not establish whole-window coverage."
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T1_retrospective_Q3",
+      "query": "Q3",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Lifelong non-use and confirmed same-course continuity need explicit temporal scope; null start or current taking alone must not establish a negative."
+    },
+    {
+      "case": "authored_patient_010",
+      "request_id": "T2_retrospective_Q3",
+      "query": "Q3",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Lifelong non-use and confirmed same-course continuity need explicit temporal scope; null start or current taking alone must not establish a negative."
+    },
+    {
+      "case": "authored_patient_011",
+      "request_id": "T1_retrospective_Q2",
+      "query": "Q2",
+      "reference_status": "ineligible",
+      "status": "indeterminate",
+      "disposition": "evaluator_or_representation_gap; reference retained",
+      "reason": "Exhaustive historical inventory and retrospective scope are not fully represented/traversed; current-point inventory does not establish whole-window coverage."
+    }
+  ]
+}

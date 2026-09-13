@@ -1,0 +1,43 @@
+{
+  "date": "2026-09-10",
+  "git_base": "fa8917f21b5fdebde516369fe97292e4db673ebb",
+  "working_tree": "uncommitted longitudinal review changes",
+  "focused_pytest": {
+    "passed": 22,
+    "failed": 0
+  },
+  "full_pytest": {
+    "passed": 802,
+    "failed": 2,
+    "failure_tests": [
+      "tests/test_architecture_stage_manifests.py::test_published_documents_match_the_pipeline",
+      "tests/test_paper_experiments.py::test_inventory_covers_present_and_missing_cells"
+    ],
+    "scope": "both failures involve unchanged benchmark files; not repaired in this longitudinal work",
+    "local_log": "scratch/longitudinal-review/pytest.txt"
+  },
+  "ruff_src_tests_longitudinal": "passed",
+  "mypy_src": "passed; 399 files",
+  "doc_hygiene": "passed",
+  "git_diff_check": "passed",
+  "changed_document_relative_links": "all resolve",
+  "artifact_replay": "query_field_ablation, link_alignment and review_summary reproduce exactly",
+  "letter_preservation": "all 36 letters byte-identical to HEAD",
+  "reference_preservation": "all 12 reference.json files byte-identical to HEAD",
+  "not_run": [
+    "frontend suite: no frontend changed",
+    "deep pytest tier: not needed for this bounded change",
+    "new model calls: no paid budget and saved data sufficient"
+  ],
+  "results_sha256": {
+    "link_alignment.json": "759c4833c5312a758735f1428e1cb800eb4a7c4f2ca79bb610a47ab35ac17fe7",
+    "annotation_amendments.json": "0112e71021371fce8be5c5fa174e76bb8237ac478494b0a45c09fd47d10be7e2",
+    "effort_session_template.json": "0c8a0cb8f636357545a923f90a318ba0ae5ef0d88bf71cd42e4c87e9e2537e38",
+    "temporal_adjudication.json": "f6546f65992ba400288554e90c49d244ddde282c008a2680a45b8208187f4843",
+    "language_audit.json": "8e43803fbf51064a9601da685881e899709cb643184dd4c10c2b2bfd420ffeeb",
+    "review_summary.json": "009f1d9879c462e02c8a8f26aa9c824b8e81936780776eef7d7db95a0b3ef078",
+    "query_field_ablation.json": "125c4bada183fb993719b228ca40d3827916500a7ed09444dc78bc81ec24225b",
+    "query_mechanism_review.json": "6d3fba2465453872d3290db3f7e419bf1368b7f65b161f41953b46a698357c11",
+    "source_use_audit.json": "f719a4ca80579f618274d17fb84ba5e525c1501c22908cf8978fedc2ffaa9f6d"
+  }
+}

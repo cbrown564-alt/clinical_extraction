@@ -138,6 +138,15 @@ def check_annotations(
         ids.add(identifier)
         document(assertion["letter_id"])
         spans(assertion["evidence"], assertion["letter_id"])
+        prior = assertion.get("all_prior_history_evidence", [])
+        spans(prior, assertion["letter_id"])
+        if prior and (
+            assertion["coverage"] != "complete"
+            or not assertion["time"]
+            or assertion["time"]["kind"] != "active_interval"
+            or not (assertion["time"].get("end") or {}).get("earliest")
+        ):
+            raise ValueError("Complete prior history requires complete coverage and an end date")
         time(assertion["time"])
         quantities(assertion["content"])
     link_ids = set()

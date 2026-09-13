@@ -1,0 +1,165 @@
+{
+  "source": "analysis.json",
+  "source_sha256": "8cf75fafb2cd6a94c05e264992cb76361d8e862a6df2ead2f7b8f68a19df30e9",
+  "reviewer": "Codex development review",
+  "clinical_adjudication": false,
+  "issue_counts": {
+    "offset_failure": 8,
+    "unresolved_source_attribution": 8,
+    "reference_structure_failure": 1,
+    "schema_failure": 1
+  },
+  "issues": [
+    {
+      "job": "002_seizure",
+      "kind": "offset_failure",
+      "details": {
+        "total": 8,
+        "grounded": 8,
+        "exact_offsets": 7
+      },
+      "decision": "Grounded quote text does not make offsets valid. Keep exact-offset failure separate and require a recorded correction before accepting the annotation."
+    },
+    {
+      "job": "002_medication",
+      "kind": "unresolved_source_attribution",
+      "reference_id": "L1.carbamazepine",
+      "observed_id": "assertion-1",
+      "decision": "Retain the two encodings as an explicit attribution disagreement. Unqualified medication narrative does not establish who originally reported use; we agreed leaves participant scope implicit. These are not adjudicated model errors or clinically validated reference roles. Resolve attribution convention before freezing a scored annotation reference."
+    },
+    {
+      "job": "002_medication",
+      "kind": "unresolved_source_attribution",
+      "reference_id": "L2.carbamazepine",
+      "observed_id": "assertion-2",
+      "decision": "Retain the two encodings as an explicit attribution disagreement. Unqualified medication narrative does not establish who originally reported use; we agreed leaves participant scope implicit. These are not adjudicated model errors or clinically validated reference roles. Resolve attribution convention before freezing a scored annotation reference."
+    },
+    {
+      "job": "002_relationships",
+      "kind": "offset_failure",
+      "details": {
+        "total": 14,
+        "grounded": 14,
+        "exact_offsets": 8
+      },
+      "decision": "Grounded quote text does not make offsets valid. Keep exact-offset failure separate and require a recorded correction before accepting the annotation."
+    },
+    {
+      "job": "006_seizure",
+      "kind": "reference_structure_failure",
+      "details": "Invalid link endpoint",
+      "decision": "Retain raw dangling endpoint; reject the annotation at structural QC. Do not guess a replacement ID in the measured pass."
+    },
+    {
+      "job": "006_seizure",
+      "kind": "offset_failure",
+      "details": {
+        "total": 14,
+        "grounded": 14,
+        "exact_offsets": 9
+      },
+      "decision": "Grounded quote text does not make offsets valid. Keep exact-offset failure separate and require a recorded correction before accepting the annotation."
+    },
+    {
+      "job": "006_medication",
+      "kind": "unresolved_source_attribution",
+      "reference_id": "L1.lamotrigine",
+      "observed_id": "authored-006-a1",
+      "decision": "Retain the two encodings as an explicit attribution disagreement. Unqualified medication narrative does not establish who originally reported use; we agreed leaves participant scope implicit. These are not adjudicated model errors or clinically validated reference roles. Resolve attribution convention before freezing a scored annotation reference."
+    },
+    {
+      "job": "006_medication",
+      "kind": "unresolved_source_attribution",
+      "reference_id": "L2.increase",
+      "observed_id": "authored-006-a2",
+      "decision": "Retain the two encodings as an explicit attribution disagreement. Unqualified medication narrative does not establish who originally reported use; we agreed leaves participant scope implicit. These are not adjudicated model errors or clinically validated reference roles. Resolve attribution convention before freezing a scored annotation reference."
+    },
+    {
+      "job": "006_medication",
+      "kind": "unresolved_source_attribution",
+      "reference_id": "L3.lamotrigine",
+      "observed_id": "authored-006-a3",
+      "decision": "Retain the two encodings as an explicit attribution disagreement. Unqualified medication narrative does not establish who originally reported use; we agreed leaves participant scope implicit. These are not adjudicated model errors or clinically validated reference roles. Resolve attribution convention before freezing a scored annotation reference."
+    },
+    {
+      "job": "006_investigation",
+      "kind": "offset_failure",
+      "details": {
+        "total": 2,
+        "grounded": 2,
+        "exact_offsets": 1
+      },
+      "decision": "Grounded quote text does not make offsets valid. Keep exact-offset failure separate and require a recorded correction before accepting the annotation."
+    },
+    {
+      "job": "006_temporal",
+      "kind": "offset_failure",
+      "details": {
+        "total": 23,
+        "grounded": 23,
+        "exact_offsets": 0
+      },
+      "decision": "Grounded quote text does not make offsets valid. Keep exact-offset failure separate and require a recorded correction before accepting the annotation."
+    },
+    {
+      "job": "006_relationships",
+      "kind": "schema_failure",
+      "details": [
+        "$.assertions[5].content: {'family': 'investigation', 'modality': 'home video', 'status': 'proposed', 'result': None, 'request_count': None} is not valid under any of the given schemas"
+      ],
+      "decision": "Retain original output and timing; do not accept this annotation as structurally valid. No schema expansion or automatic semantic repair."
+    },
+    {
+      "job": "011_medication",
+      "kind": "offset_failure",
+      "details": {
+        "total": 5,
+        "grounded": 5,
+        "exact_offsets": 4
+      },
+      "decision": "Grounded quote text does not make offsets valid. Keep exact-offset failure separate and require a recorded correction before accepting the annotation."
+    },
+    {
+      "job": "011_medication",
+      "kind": "unresolved_source_attribution",
+      "reference_id": "L1.carbamazepine",
+      "observed_id": "A1",
+      "decision": "Retain the two encodings as an explicit attribution disagreement. Unqualified medication narrative does not establish who originally reported use; we agreed leaves participant scope implicit. These are not adjudicated model errors or clinically validated reference roles. Resolve attribution convention before freezing a scored annotation reference."
+    },
+    {
+      "job": "011_medication",
+      "kind": "unresolved_source_attribution",
+      "reference_id": "L2.carbamazepine",
+      "observed_id": "A2",
+      "decision": "Retain the two encodings as an explicit attribution disagreement. Unqualified medication narrative does not establish who originally reported use; we agreed leaves participant scope implicit. These are not adjudicated model errors or clinically validated reference roles. Resolve attribution convention before freezing a scored annotation reference."
+    },
+    {
+      "job": "011_medication",
+      "kind": "unresolved_source_attribution",
+      "reference_id": "L3.carbamazepine",
+      "observed_id": "A3",
+      "decision": "Retain the two encodings as an explicit attribution disagreement. Unqualified medication narrative does not establish who originally reported use; we agreed leaves participant scope implicit. These are not adjudicated model errors or clinically validated reference roles. Resolve attribution convention before freezing a scored annotation reference."
+    },
+    {
+      "job": "011_temporal",
+      "kind": "offset_failure",
+      "details": {
+        "total": 28,
+        "grounded": 28,
+        "exact_offsets": 0
+      },
+      "decision": "Grounded quote text does not make offsets valid. Keep exact-offset failure separate and require a recorded correction before accepting the annotation."
+    },
+    {
+      "job": "011_relationships",
+      "kind": "offset_failure",
+      "details": {
+        "total": 29,
+        "grounded": 29,
+        "exact_offsets": 0
+      },
+      "decision": "Grounded quote text does not make offsets valid. Keep exact-offset failure separate and require a recorded correction before accepting the annotation."
+    }
+  ],
+  "temporal_and_relation_disposition": "All automatic pairs and candidate mappings are retained in analysis.json as representation diagnostics. Kind/anchor/bounds differences and unaligned links in this new timed probe are explicit unresolved comparisons, not clinical error rates. The prior 144-pair/89-link review remains a separate frozen study."
+}

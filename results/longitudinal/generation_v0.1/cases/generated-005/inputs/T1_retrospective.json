@@ -1,0 +1,17 @@
+{
+  "patient_id": "generated-005",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-005 | age 45\nConsultation: 2025-02-01\n\nAt this routine outpatient review, the established diagnosis remains focal epilepsy.\n\nThe patient describes the same brief focal impaired-awareness seizures, with 1 to 2 per month between 1 October 2024 and today, 1 February 2025. The most recent occurred on 20 January 2025. Asked about the entire period, the patient reports no other event types.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-07-31",
+      "available_date": "2025-07-31",
+      "text": "Fictional outpatient letter | generated-005 | age 45\nConsultation: 2025-07-31\n\nThe following diagnosis is copied as background from the February letter: the diagnosis remains focal epilepsy.\n\nFor the period from 2 February to 31 July 2025, the patient reports continued activity of the same focal impaired-awareness pattern at 1 to 2 seizures per month. The last was on 20 July 2025. There have been no other event types anywhere in this interval.\n"
+    }
+  ]
+}

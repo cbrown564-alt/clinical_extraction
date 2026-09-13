@@ -1,0 +1,125 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "A1",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 511,
+          "end": 557,
+          "text": "He continues carbamazepine 400 mg twice daily."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": null,
+        "kind": "active_interval",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "medication",
+        "name": "carbamazepine",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "A2",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 126,
+          "end": 205,
+          "text": "His diagnosis remains focal motor epilepsy on carbamazepine 400 mg twice daily."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": null,
+        "kind": "active_interval",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "medication",
+        "name": "carbamazepine",
+        "status": "taking",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "A3",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 237,
+          "end": 261,
+          "text": "Carbamazepine continued."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": null,
+        "kind": "active_interval",
+        "anchor_letter_id": "L3"
+      },
+      "content": {
+        "family": "medication",
+        "name": "carbamazepine",
+        "status": "taking",
+        "condition": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "link-1",
+      "earlier_assertion": "A1",
+      "later_assertion": "A2",
+      "relation": "overlaps_active",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 403,
+          "end": 425,
+          "text": "Management maintained."
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "link-2",
+      "earlier_assertion": "A2",
+      "later_assertion": "A3",
+      "relation": "overlaps_active",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "start": 237,
+          "end": 261,
+          "text": "Carbamazepine continued."
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

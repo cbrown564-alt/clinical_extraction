@@ -1,0 +1,1204 @@
+{
+  "program_version": "longitudinal-prototype-0.1",
+  "status": "ready",
+  "provenance": {
+    "mode": "saved_model_extraction",
+    "new_model_calls": 0,
+    "query_context_visible_during_extraction": true,
+    "semantic_repair": false,
+    "attempt": {
+      "status": "parsed",
+      "input_sha256": "cd28d1f3770715372f1914eccdbb1a31bca9de9919960d4d735999a6945da18d",
+      "rendered_prompt_sha256": "4bcd8528f700e0e8e0a8448fcab1bae4e18da41663884669c932445f1b0ac908",
+      "model_requested": "gemini-3.8-flash-medium",
+      "effort": "medium",
+      "interface": "agy",
+      "executable_sha256": "2a63488c33221627f1798ff4ccb1d5131b6abe3160286c84b357a7456905f763",
+      "fresh_project": true,
+      "sandbox": true,
+      "tools_requested": false,
+      "started_at": "2026-09-09T21:04:19.266857+00:00",
+      "semantic_repair": false,
+      "provider_cost": null,
+      "human_annotation_minutes": null,
+      "exit_code": 0,
+      "ended_at": "2026-09-09T21:05:20.886703+00:00",
+      "wall_seconds": 61.621736166998744,
+      "telemetry": {
+        "conversation_id": "b56ea49b-0446-4468-a895-b47e9ee5b1b7",
+        "status": "SUCCESS",
+        "duration_seconds": 56.448763,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 25136,
+          "output_tokens": 20908,
+          "thinking_tokens": 18171,
+          "cache_read_tokens": 0,
+          "total_tokens": 46044
+        }
+      },
+      "observed_tool_steps": 0,
+      "tool_catalog_present": true,
+      "isolation_limit": "fresh temporary project; no observed tool steps required; tool catalog remains present and plan mode is ignored by CLI with slash expansion disabled"
+    },
+    "input_sha256": "cd28d1f3770715372f1914eccdbb1a31bca9de9919960d4d735999a6945da18d",
+    "attempt_sha256": "9346e5b64dc8f4921da2ed0c34ca49069b61a3ca9f1c7e8705b4b6d67723c92f",
+    "raw_parsed_sha256": "0f86aa40e21811dbdba52f0a9c23d6d4acf8efe43933030c1164fc1e1fc1b4cb",
+    "raw_stdout_sha256": "b19c038aa60b0d467ed659f871d0f7fa9c0a21cfc34fd28c21ecaa946e8a9ba4"
+  },
+  "documents": [
+    {
+      "letter_id": "L1",
+      "version": 1,
+      "visit_date": "2025-03-01",
+      "available_date": "2025-03-01",
+      "path": "letters/L1.txt",
+      "sha256": "2e4cc34bf7dd56b09c63439db1de3249b8f0718f7cc4e0584a1324e4e7c294a3",
+      "text": "Epilepsy clinic letter\nConsultation: 01 March 2025\nPatient: Christopher Vance, aged 29\n\nDear colleague,\n\nChristopher is a 29-year-old gentleman with an established diagnosis of generalized epilepsy. He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence. He has been entirely seizure-free for over fourteen months, with his last generalized tonic-clonic convulsion occurring on 10 January 2024. He reports no myoclonic jerks or daytime absences.\n\nWe agreed to maintain his levetiracetam dosage. No changes or investigations are indicated. Next review in three months.\n"
+    }
+  ],
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "A1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 152,
+            "end": 197,
+            "text": "established diagnosis of generalized epilepsy"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "generalized epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A2",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 199,
+            "end": 286,
+            "text": "He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A3",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 287,
+            "end": 345,
+            "text": "He has been entirely seizure-free for over fourteen months"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": "over fourteen months",
+          "start": {
+            "earliest": null,
+            "latest": "2024-01-01"
+          },
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "seizures"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "all_epileptic",
+          "burden": {
+            "kind": "freedom",
+            "text": "over fourteen months",
+            "count": null,
+            "period": {
+              "amount": {
+                "lower": 14,
+                "upper": null,
+                "lower_inclusive": false
+              },
+              "unit": "month"
+            },
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A4",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 347,
+            "end": 425,
+            "text": "with his last generalized tonic-clonic convulsion occurring on 10 January 2024"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "10 January 2024",
+          "start": {
+            "earliest": "2024-01-10",
+            "latest": "2024-01-10"
+          },
+          "end": {
+            "earliest": "2024-01-10",
+            "latest": "2024-01-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "generalized tonic-clonic convulsion"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A5",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 427,
+            "end": 456,
+            "text": "He reports no myoclonic jerks"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "myoclonic jerks"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A6",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 427,
+            "end": 476,
+            "text": "He reports no myoclonic jerks or daytime absences"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "daytime absences"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A7",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 479,
+            "end": 525,
+            "text": "We agreed to maintain his levetiracetam dosage"
+          }
+        ],
+        "reporter": "mixed",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A8",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 527,
+            "end": 570,
+            "text": "No changes or investigations are indicated."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "investigations",
+          "status": "request_inventory",
+          "result": null,
+          "request_count": 0
+        }
+      }
+    ],
+    "links": []
+  },
+  "history": [
+    {
+      "assertion_ids": [
+        "A1"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A1",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 152,
+              "end": 197,
+              "text": "established diagnosis of generalized epilepsy"
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-03-01",
+              "latest": "2025-03-01"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "diagnosis",
+            "name": "generalized epilepsy",
+            "phase": "current"
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A2"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A2",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 199,
+              "end": 286,
+              "text": "He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-03-01",
+              "latest": "2025-03-01"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "medication",
+            "name": "levetiracetam",
+            "status": "taking",
+            "condition": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A3"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A3",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 287,
+              "end": 345,
+              "text": "He has been entirely seizure-free for over fourteen months"
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "complete",
+          "time": {
+            "text": "over fourteen months",
+            "start": {
+              "earliest": null,
+              "latest": "2024-01-01"
+            },
+            "end": {
+              "earliest": "2025-03-01",
+              "latest": "2025-03-01"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "seizures"
+            ],
+            "kind": "absence",
+            "interpretation": "epileptic",
+            "scope": "all_epileptic",
+            "burden": {
+              "kind": "freedom",
+              "text": "over fourteen months",
+              "count": null,
+              "period": {
+                "amount": {
+                  "lower": 14,
+                  "upper": null,
+                  "lower_inclusive": false
+                },
+                "unit": "month"
+              },
+              "events_per_cluster": null,
+              "approximate": false
+            }
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A4"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A4",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 347,
+              "end": 425,
+              "text": "with his last generalized tonic-clonic convulsion occurring on 10 January 2024"
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": "10 January 2024",
+            "start": {
+              "earliest": "2024-01-10",
+              "latest": "2024-01-10"
+            },
+            "end": {
+              "earliest": "2024-01-10",
+              "latest": "2024-01-10"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "generalized tonic-clonic convulsion"
+            ],
+            "kind": "occurrence",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A5"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A5",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 427,
+              "end": 456,
+              "text": "He reports no myoclonic jerks"
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "complete",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-03-01",
+              "latest": "2025-03-01"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "myoclonic jerks"
+            ],
+            "kind": "absence",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A6"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A6",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 427,
+              "end": 476,
+              "text": "He reports no myoclonic jerks or daytime absences"
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "complete",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-03-01",
+              "latest": "2025-03-01"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "daytime absences"
+            ],
+            "kind": "absence",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A7"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A7",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 479,
+              "end": 525,
+              "text": "We agreed to maintain his levetiracetam dosage"
+            }
+          ],
+          "reporter": "mixed",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-03-01",
+              "latest": "2025-03-01"
+            },
+            "end": {
+              "earliest": "2025-03-01",
+              "latest": "2025-03-01"
+            },
+            "kind": "decision",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "medication",
+            "name": "levetiracetam",
+            "status": "taking",
+            "condition": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A8"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A8",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 527,
+              "end": 570,
+              "text": "No changes or investigations are indicated."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "complete",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-03-01",
+              "latest": "2025-03-01"
+            },
+            "end": {
+              "earliest": "2025-03-01",
+              "latest": "2025-03-01"
+            },
+            "kind": "decision",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "investigations",
+            "status": "request_inventory",
+            "result": null,
+            "request_count": 0
+          }
+        }
+      ],
+      "links": []
+    }
+  ],
+  "requests": [
+    {
+      "request_id": "T1_visit_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2025-03-01",
+      "view": "visit",
+      "information_cutoff": "2025-03-01",
+      "retrospective_cutoff": "2025-08-28",
+      "lookback_90_start": "2024-12-02",
+      "lookback_180_start": "2024-09-03",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2025-03-01",
+      "view": "visit",
+      "information_cutoff": "2025-03-01",
+      "retrospective_cutoff": "2025-08-28",
+      "lookback_90_start": "2024-12-02",
+      "lookback_180_start": "2024-09-03",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2025-03-01",
+      "view": "visit",
+      "information_cutoff": "2025-03-01",
+      "retrospective_cutoff": "2025-08-28",
+      "lookback_90_start": "2024-12-02",
+      "lookback_180_start": "2024-09-03",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2025-03-01",
+      "view": "visit",
+      "information_cutoff": "2025-03-01",
+      "retrospective_cutoff": "2025-08-28",
+      "lookback_90_start": "2024-12-02",
+      "lookback_180_start": "2024-09-03",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2025-03-01",
+      "view": "visit",
+      "information_cutoff": "2025-03-01",
+      "retrospective_cutoff": "2025-08-28",
+      "lookback_90_start": "2024-12-02",
+      "lookback_180_start": "2024-09-03",
+      "input_path": "inputs/T1_visit.json"
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "query_id": "Q1",
+      "status": "ineligible",
+      "reason": "Explicit evidence refutes a required condition.",
+      "witnesses": [],
+      "negative_witnesses": [
+        {
+          "rule_id": "Q1-complete-event-absence",
+          "assertion_ids": [
+            "A3"
+          ],
+          "link_ids": [],
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 287,
+              "end": 345,
+              "text": "He has been entirely seizure-free for over fourteen months"
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 287,
+          "end": 345,
+          "text": "He has been entirely seizure-free for over fourteen months"
+        }
+      ],
+      "rule_ids": [
+        "Q1-complete-event-absence"
+      ],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "query_id": "Q2",
+      "status": "ineligible",
+      "reason": "Explicit evidence refutes a required condition.",
+      "witnesses": [],
+      "negative_witnesses": [
+        {
+          "rule_id": "Q2-complete-event-absence",
+          "assertion_ids": [
+            "A3"
+          ],
+          "link_ids": [],
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 287,
+              "end": 345,
+              "text": "He has been entirely seizure-free for over fourteen months"
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 287,
+          "end": 345,
+          "text": "He has been entirely seizure-free for over fourteen months"
+        }
+      ],
+      "rule_ids": [
+        "Q2-complete-event-absence"
+      ],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "query_id": "Q3",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "query_id": "Q4",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "query_id": "Q5",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    }
+  ],
+  "offset_repairs": [],
+  "raw_extraction": {
+    "assertions": [
+      {
+        "assertion_id": "A1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 152,
+            "end": 197,
+            "text": "established diagnosis of generalized epilepsy"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "generalized epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A2",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 199,
+            "end": 286,
+            "text": "He has been taking levetiracetam 1000 mg twice daily with excellent reported adherence."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A3",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 287,
+            "end": 345,
+            "text": "He has been entirely seizure-free for over fourteen months"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": "over fourteen months",
+          "start": {
+            "earliest": null,
+            "latest": "2024-01-01"
+          },
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "seizures"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "all_epileptic",
+          "burden": {
+            "kind": "freedom",
+            "text": "over fourteen months",
+            "count": null,
+            "period": {
+              "amount": {
+                "lower": 14,
+                "upper": null,
+                "lower_inclusive": false
+              },
+              "unit": "month"
+            },
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A4",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 347,
+            "end": 425,
+            "text": "with his last generalized tonic-clonic convulsion occurring on 10 January 2024"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "10 January 2024",
+          "start": {
+            "earliest": "2024-01-10",
+            "latest": "2024-01-10"
+          },
+          "end": {
+            "earliest": "2024-01-10",
+            "latest": "2024-01-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "generalized tonic-clonic convulsion"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A5",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 427,
+            "end": 456,
+            "text": "He reports no myoclonic jerks"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "myoclonic jerks"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A6",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 427,
+            "end": 476,
+            "text": "He reports no myoclonic jerks or daytime absences"
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "daytime absences"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "A7",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 479,
+            "end": 525,
+            "text": "We agreed to maintain his levetiracetam dosage"
+          }
+        ],
+        "reporter": "mixed",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A8",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 527,
+            "end": 570,
+            "text": "No changes or investigations are indicated."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "end": {
+            "earliest": "2025-03-01",
+            "latest": "2025-03-01"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "investigations",
+          "status": "request_inventory",
+          "result": null,
+          "request_count": 0
+        }
+      }
+    ],
+    "links": []
+  }
+}

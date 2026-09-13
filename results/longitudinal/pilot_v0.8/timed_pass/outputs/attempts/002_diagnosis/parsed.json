@@ -1,0 +1,81 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "a1",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 160,
+          "end": 281,
+          "text": "She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "since 2021",
+        "start": {
+          "earliest": "2021-01-01",
+          "latest": "2021-12-31"
+        },
+        "end": null,
+        "kind": "active_interval",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy with impaired awareness",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "a2",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 130,
+          "end": 191,
+          "text": "Her diagnosis remains focal epilepsy with impaired awareness."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": null,
+        "kind": "active_interval",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy with impaired awareness",
+        "phase": "current"
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "link-1",
+      "earlier_assertion": "a1",
+      "later_assertion": "a2",
+      "relation": "repeats",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 130,
+          "end": 191,
+          "text": "Her diagnosis remains focal epilepsy with impaired awareness."
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

@@ -1,0 +1,853 @@
+{
+  "program_version": "longitudinal-prototype-0.1",
+  "status": "ready",
+  "provenance": {
+    "mode": "provisional_reference_facts",
+    "expert_review": false
+  },
+  "documents": [
+    {
+      "letter_id": "L1",
+      "version": 2,
+      "visit_date": "2025-02-12",
+      "available_date": "2025-02-12",
+      "path": "letters/L1.txt",
+      "sha256": "313fc2cbb438b813c36415dd7abcd8d7283a4d156a916367ed7754ecfe4bb8fc",
+      "text": "Epilepsy clinic letter\nConsultation: 12 February 2025\nPatient: Kevin O'Connor, aged 45\n\nDear colleague,\n\nKevin attended clinic today. He has an established diagnosis of focal motor epilepsy.\n\nHis seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily.\n\nNo changes were made to his regimen. No EEG requested. Review in four months.\n\nA second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events.\n"
+    }
+  ],
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "L1.diagnosis",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 105,
+            "end": 190,
+            "text": "Kevin attended clinic today. He has an established diagnosis of focal motor epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal motor epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L1.cluster",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 192,
+            "end": 558,
+            "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-05",
+            "latest": "2025-02-05"
+          },
+          "end": {
+            "earliest": "2025-02-06",
+            "latest": "2025-02-06"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal motor seizure"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "clusters",
+            "text": "cluster of 5 focal motor seizures",
+            "count": {
+              "lower": 1,
+              "upper": 1
+            },
+            "period": null,
+            "events_per_cluster": {
+              "lower": 5,
+              "upper": 5
+            },
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "L1.carbamazepine",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 192,
+            "end": 558,
+            "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "carbamazepine",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L1.absence",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 192,
+            "end": 558,
+            "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-07",
+            "latest": "2025-02-07"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "all epileptic seizures"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "all_epileptic",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1.shaking",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 639,
+            "end": 985,
+            "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2024-11-01",
+            "latest": "2024-11-30"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "bilateral arm shaking"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1.concurrent_inventory",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 639,
+            "end": 985,
+            "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2024-11-01",
+            "latest": "2024-11-30"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal motor clusters",
+            "bilateral arm shaking"
+          ],
+          "kind": "inventory",
+          "interpretation": "epileptic",
+          "scope": "all_epileptic",
+          "burden": null
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "L1.cluster__L1.shaking__overlaps_active",
+        "earlier_assertion": "L1.cluster",
+        "later_assertion": "L1.shaking",
+        "relation": "overlaps_active",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 192,
+            "end": 558,
+            "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+          },
+          {
+            "letter_id": "L1",
+            "start": 639,
+            "end": 985,
+            "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-overlaps-active"
+      }
+    ]
+  },
+  "history": [
+    {
+      "assertion_ids": [
+        "L1.diagnosis"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.diagnosis",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 105,
+              "end": 190,
+              "text": "Kevin attended clinic today. He has an established diagnosis of focal motor epilepsy."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "diagnosis",
+            "name": "focal motor epilepsy",
+            "phase": "current"
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1.cluster"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.cluster",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 192,
+              "end": 558,
+              "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-05",
+              "latest": "2025-02-05"
+            },
+            "end": {
+              "earliest": "2025-02-06",
+              "latest": "2025-02-06"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "focal motor seizure"
+            ],
+            "kind": "occurrence",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": {
+              "kind": "clusters",
+              "text": "cluster of 5 focal motor seizures",
+              "count": {
+                "lower": 1,
+                "upper": 1
+              },
+              "period": null,
+              "events_per_cluster": {
+                "lower": 5,
+                "upper": 5
+              },
+              "approximate": false
+            }
+          }
+        }
+      ],
+      "links": [
+        {
+          "link_id": "L1.cluster__L1.shaking__overlaps_active",
+          "earlier_assertion": "L1.cluster",
+          "later_assertion": "L1.shaking",
+          "relation": "overlaps_active",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 192,
+              "end": 558,
+              "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+            },
+            {
+              "letter_id": "L1",
+              "start": 639,
+              "end": 985,
+              "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-overlaps-active"
+        }
+      ]
+    },
+    {
+      "assertion_ids": [
+        "L1.carbamazepine"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.carbamazepine",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 192,
+              "end": 558,
+              "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "medication",
+            "name": "carbamazepine",
+            "status": "taking",
+            "condition": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1.absence"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.absence",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 192,
+              "end": 558,
+              "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "complete",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-07",
+              "latest": "2025-02-07"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "all epileptic seizures"
+            ],
+            "kind": "absence",
+            "interpretation": "epileptic",
+            "scope": "all_epileptic",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1.shaking"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.shaking",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 639,
+              "end": 985,
+              "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "bilateral arm shaking"
+            ],
+            "kind": "pattern",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": [
+        {
+          "link_id": "L1.cluster__L1.shaking__overlaps_active",
+          "earlier_assertion": "L1.cluster",
+          "later_assertion": "L1.shaking",
+          "relation": "overlaps_active",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 192,
+              "end": 558,
+              "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+            },
+            {
+              "letter_id": "L1",
+              "start": 639,
+              "end": 985,
+              "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-overlaps-active"
+        }
+      ]
+    },
+    {
+      "assertion_ids": [
+        "L1.concurrent_inventory"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.concurrent_inventory",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 639,
+              "end": 985,
+              "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "complete",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "focal motor clusters",
+              "bilateral arm shaking"
+            ],
+            "kind": "inventory",
+            "interpretation": "epileptic",
+            "scope": "all_epileptic",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    }
+  ],
+  "requests": [
+    {
+      "request_id": "T1_visit_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2025-02-12",
+      "view": "visit",
+      "information_cutoff": "2025-02-12",
+      "retrospective_cutoff": "2025-08-11",
+      "lookback_90_start": "2024-11-15",
+      "lookback_180_start": "2024-08-17",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2025-02-12",
+      "view": "visit",
+      "information_cutoff": "2025-02-12",
+      "retrospective_cutoff": "2025-08-11",
+      "lookback_90_start": "2024-11-15",
+      "lookback_180_start": "2024-08-17",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2025-02-12",
+      "view": "visit",
+      "information_cutoff": "2025-02-12",
+      "retrospective_cutoff": "2025-08-11",
+      "lookback_90_start": "2024-11-15",
+      "lookback_180_start": "2024-08-17",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2025-02-12",
+      "view": "visit",
+      "information_cutoff": "2025-02-12",
+      "retrospective_cutoff": "2025-08-11",
+      "lookback_90_start": "2024-11-15",
+      "lookback_180_start": "2024-08-17",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2025-02-12",
+      "view": "visit",
+      "information_cutoff": "2025-02-12",
+      "retrospective_cutoff": "2025-08-11",
+      "lookback_90_start": "2024-11-15",
+      "lookback_180_start": "2024-08-17",
+      "input_path": "inputs/T1_visit.json"
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "query_id": "Q1",
+      "status": "eligible",
+      "reason": "Evidence supports every required condition.",
+      "witnesses": [
+        {
+          "rule_id": "Q1-diagnosis-and-bounded-event",
+          "assertion_ids": [
+            "L1.diagnosis",
+            "L1.cluster"
+          ],
+          "link_ids": [],
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 105,
+              "end": 190,
+              "text": "Kevin attended clinic today. He has an established diagnosis of focal motor epilepsy."
+            },
+            {
+              "letter_id": "L1",
+              "start": 192,
+              "end": 558,
+              "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+            }
+          ]
+        },
+        {
+          "rule_id": "Q1-diagnosis-and-bounded-event",
+          "assertion_ids": [
+            "L1.diagnosis",
+            "L1.shaking"
+          ],
+          "link_ids": [],
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 105,
+              "end": 190,
+              "text": "Kevin attended clinic today. He has an established diagnosis of focal motor epilepsy."
+            },
+            {
+              "letter_id": "L1",
+              "start": 639,
+              "end": 985,
+              "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+            }
+          ]
+        }
+      ],
+      "negative_witnesses": [],
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 105,
+          "end": 190,
+          "text": "Kevin attended clinic today. He has an established diagnosis of focal motor epilepsy."
+        },
+        {
+          "letter_id": "L1",
+          "start": 192,
+          "end": 558,
+          "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+        },
+        {
+          "letter_id": "L1",
+          "start": 639,
+          "end": 985,
+          "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+        }
+      ],
+      "rule_ids": [
+        "Q1-diagnosis-and-bounded-event"
+      ],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "query_id": "Q2",
+      "status": "eligible",
+      "reason": "Evidence supports every required condition.",
+      "witnesses": [
+        {
+          "rule_id": "Q2-distinct-overlapping-patterns",
+          "assertion_ids": [
+            "L1.cluster",
+            "L1.shaking"
+          ],
+          "link_ids": [
+            "L1.cluster__L1.shaking__overlaps_active"
+          ],
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 192,
+              "end": 558,
+              "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+            },
+            {
+              "letter_id": "L1",
+              "start": 639,
+              "end": 985,
+              "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+            }
+          ]
+        }
+      ],
+      "negative_witnesses": [],
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 192,
+          "end": 558,
+          "text": "His seizures typically occur in severe explosive clusters rather than isolated events. On 5 and 6 February 2025, over a 48-hour period, he suffered an acute cluster of 5 focal motor seizures with left facial and arm clonic activity. He had no seizures between that cluster and today's review. He reports no convulsions. He continues carbamazepine 400 mg twice daily."
+        },
+        {
+          "letter_id": "L1",
+          "start": 639,
+          "end": 985,
+          "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+        }
+      ],
+      "rule_ids": [
+        "Q2-distinct-overlapping-patterns"
+      ],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "query_id": "Q3",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "query_id": "Q4",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "query_id": "Q5",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    }
+  ]
+}

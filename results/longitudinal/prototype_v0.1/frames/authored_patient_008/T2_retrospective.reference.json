@@ -1,0 +1,469 @@
+{
+  "program_version": "longitudinal-prototype-0.1",
+  "status": "ready",
+  "provenance": {
+    "mode": "provisional_reference_facts",
+    "expert_review": false
+  },
+  "documents": [
+    {
+      "letter_id": "L1",
+      "version": 1,
+      "visit_date": "2023-08-10",
+      "available_date": "2023-08-10",
+      "path": "letters/L1.txt",
+      "sha256": "a4508119b9dd2677c6f11cd941634ada968101382a9c4dc5413d09d5344cc07a",
+      "text": "Epilepsy clinic letter\nConsultation: 10 August 2023\nPatient: Hannah Clarke, aged 19\n\nDear colleague,\n\nHannah was seen in clinic today following a first referral. She has a diagnosis of focal epilepsy.\n\nHer last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication.\n\nWe will review her in six to nine months.\n"
+    }
+  ],
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "L1.diagnosis",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 102,
+            "end": 200,
+            "text": "Hannah was seen in clinic today following a first referral. She has a diagnosis of focal epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2023-08-10",
+            "latest": "2023-08-10"
+          },
+          "end": {
+            "earliest": "2023-08-10",
+            "latest": "2023-08-10"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L1.last_focal",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 202,
+            "end": 364,
+            "text": "Her last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2023-07-15",
+            "latest": "2023-07-15"
+          },
+          "end": {
+            "earliest": "2023-07-15",
+            "latest": "2023-07-15"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "focal seizure"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1.lev_start",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 202,
+            "end": 364,
+            "text": "Her last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "We initiated",
+          "start": {
+            "earliest": null,
+            "latest": "2023-08-10"
+          },
+          "end": {
+            "earliest": null,
+            "latest": "2023-08-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "levetiracetam",
+          "status": "started",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L1.absence",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 202,
+            "end": 364,
+            "text": "Her last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": "since starting medication",
+          "start": null,
+          "end": {
+            "earliest": "2023-08-10",
+            "latest": "2023-08-10"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "all epileptic seizures"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "all_epileptic",
+          "burden": null
+        }
+      }
+    ],
+    "links": []
+  },
+  "history": [
+    {
+      "assertion_ids": [
+        "L1.diagnosis"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.diagnosis",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 102,
+              "end": 200,
+              "text": "Hannah was seen in clinic today following a first referral. She has a diagnosis of focal epilepsy."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2023-08-10",
+              "latest": "2023-08-10"
+            },
+            "end": {
+              "earliest": "2023-08-10",
+              "latest": "2023-08-10"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "diagnosis",
+            "name": "focal epilepsy",
+            "phase": "current"
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1.last_focal"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.last_focal",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 202,
+              "end": 364,
+              "text": "Her last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2023-07-15",
+              "latest": "2023-07-15"
+            },
+            "end": {
+              "earliest": "2023-07-15",
+              "latest": "2023-07-15"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "focal seizure"
+            ],
+            "kind": "occurrence",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1.lev_start"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.lev_start",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 202,
+              "end": 364,
+              "text": "Her last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": "We initiated",
+            "start": {
+              "earliest": null,
+              "latest": "2023-08-10"
+            },
+            "end": {
+              "earliest": null,
+              "latest": "2023-08-10"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "medication",
+            "name": "levetiracetam",
+            "status": "started",
+            "condition": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1.absence"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.absence",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 202,
+              "end": 364,
+              "text": "Her last focal seizure occurred on 15 July 2023. We initiated levetiracetam 500 mg twice daily. She has experienced no further seizures since starting medication."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "complete",
+          "time": {
+            "text": "since starting medication",
+            "start": null,
+            "end": {
+              "earliest": "2023-08-10",
+              "latest": "2023-08-10"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "all epileptic seizures"
+            ],
+            "kind": "absence",
+            "interpretation": "epileptic",
+            "scope": "all_epileptic",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    }
+  ],
+  "requests": [
+    {
+      "request_id": "T2_retrospective_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2024-02-06",
+      "view": "retrospective",
+      "information_cutoff": "2024-08-04",
+      "retrospective_cutoff": "2024-08-04",
+      "lookback_90_start": "2023-11-09",
+      "lookback_180_start": "2023-08-11",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2024-02-06",
+      "view": "retrospective",
+      "information_cutoff": "2024-08-04",
+      "retrospective_cutoff": "2024-08-04",
+      "lookback_90_start": "2023-11-09",
+      "lookback_180_start": "2023-08-11",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2024-02-06",
+      "view": "retrospective",
+      "information_cutoff": "2024-08-04",
+      "retrospective_cutoff": "2024-08-04",
+      "lookback_90_start": "2023-11-09",
+      "lookback_180_start": "2023-08-11",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2024-02-06",
+      "view": "retrospective",
+      "information_cutoff": "2024-08-04",
+      "retrospective_cutoff": "2024-08-04",
+      "lookback_90_start": "2023-11-09",
+      "lookback_180_start": "2023-08-11",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2024-02-06",
+      "view": "retrospective",
+      "information_cutoff": "2024-08-04",
+      "retrospective_cutoff": "2024-08-04",
+      "lookback_90_start": "2023-11-09",
+      "lookback_180_start": "2023-08-11",
+      "input_path": "inputs/T2_retrospective.json"
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T2_retrospective_Q1",
+      "query_id": "Q1",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "query_id": "Q2",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "query_id": "Q3",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "query_id": "Q4",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "query_id": "Q5",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    }
+  ]
+}

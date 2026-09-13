@@ -1,0 +1,178 @@
+{
+  "date": "2026-09-11",
+  "scope": "Working-tree Phase 4 prototype; pre-existing dirty changes preserved",
+  "checks": [
+    {
+      "command": "python -m pytest tests/test_longitudinal*.py -q",
+      "result": "30 passed"
+    },
+    {
+      "command": "python -m pytest",
+      "result": "809 passed, 3 failed",
+      "log": "runs/phase4-pytest-final.log",
+      "failures": [
+        {
+          "test": "tests/test_architecture_stage_manifests.py::test_published_documents_match_the_pipeline",
+          "classification": "pre-existing benchmark documentation drift"
+        },
+        {
+          "test": "tests/test_paper_experiments.py::test_inventory_covers_present_and_missing_cells",
+          "classification": "pre-existing benchmark inventory expectation"
+        },
+        {
+          "test": "tests/test_trace_explorer_frontend_api.py::test_holdout_letters_are_not_fetchable",
+          "classification": "unrelated intermittent assertion: a short record ID coincides with random request_id characters; response remained aggregate_only HTTP 403",
+          "observed_request_id": "85318061538e45e6bb9888c269c1f7c0"
+        }
+      ]
+    },
+    {
+      "command": "ruff check src tests",
+      "result": "passed"
+    },
+    {
+      "command": "mypy src",
+      "result": "passed, 406 source files"
+    },
+    {
+      "command": "npx tsc --noEmit (frontend)",
+      "result": "passed"
+    },
+    {
+      "command": "npx --no-install eslint app/longitudinal components/longitudinal lib/longitudinal.ts lib/__tests__/longitudinal.test.ts components/Navbar.tsx",
+      "result": "passed"
+    },
+    {
+      "command": "npm run build (frontend)",
+      "result": "passed",
+      "warning": "Existing filesystem tracing warning from next.config.ts imported by app/api/paper/five-cell-grid/route.ts"
+    },
+    {
+      "command": "npm test -- --runInBand (frontend)",
+      "result": "26 suites / 167 tests passed"
+    },
+    {
+      "command": "python scripts/check_doc_hygiene.py",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "python scripts/longitudinal/verify_prototype.py",
+      "result": "96 view/source frames, 1680 comparison rows, four capture failures verified"
+    },
+    {
+      "command": "python scripts/longitudinal/run_prototype.py twice; compare every machine artifact hash",
+      "result": "byte-identical"
+    },
+    {
+      "command": "Local HTTP route checks",
+      "result": "All five query requests returned twelve-patient cohorts and L1-only visit content; path traversal rejected with 400"
+    },
+    {
+      "command": "Direct browser desktop/mobile/keyboard/failure/retry checks",
+      "result": "Passed, including all 96 source/schedule/view/patient combinations after the nullable-date fix; see browser_qa.json"
+    }
+  ],
+  "not_run": [
+    "pytest -m deep (no new deep-tier obligation)",
+    "new model or paid calls",
+    "expert clinical validation",
+    "deployment"
+  ],
+  "source_sha256": {
+    "examples/longitudinal/authored_patient_001/manifest.json": "78502741b29de973573d2a6320e3e7746e760f9f7ff68f037cac69a933ae2252",
+    "examples/longitudinal/authored_patient_001/annotations.json": "f42fdc36ac97e2de5cf1cea3243907a4f18f1e6fbe2e29fb4272a31a848b4eaa",
+    "examples/longitudinal/authored_patient_001/reference.json": "b63deac0b49d16ade9115ccc57d4e87c9036f5610890daa0da721ed6a64cb16b",
+    "examples/longitudinal/authored_patient_002/manifest.json": "06a1a53b695ed205ccf42d0c8638efdde644ad8e1d47acc66ca9bf33144d38ca",
+    "examples/longitudinal/authored_patient_002/annotations.json": "5bd9dee59434a6fef739d828e07f8c5f4005f9abb79865c3a15d985c89140c2b",
+    "examples/longitudinal/authored_patient_002/reference.json": "97bf094421e33f827d01db32113f983724b28c48dd06f518d8d099ea88b8d80e",
+    "examples/longitudinal/authored_patient_003/manifest.json": "740c5bc6c56ec3752195f934f737b60386d7b4ecdb5a7e877beeeb14f054b1d2",
+    "examples/longitudinal/authored_patient_003/annotations.json": "9931081656626bf433c8494a766e49e9fcbeefec1af42013e8f9900df08e1ea8",
+    "examples/longitudinal/authored_patient_003/reference.json": "63dbe963cb776f62dc583f55830fb254a50accfa9472b16cb7a72b56b570f3c8",
+    "examples/longitudinal/authored_patient_004/manifest.json": "418fc516bca39b0e6c270cbcce56bf0678a3dbb915a66a5fd83ce9bf438a7dee",
+    "examples/longitudinal/authored_patient_004/annotations.json": "d87e94c60e5c7195085508f49980dd388a5f40117fe4f3c0b006b3e664120fcd",
+    "examples/longitudinal/authored_patient_004/reference.json": "0f48d6ee631f5428f8a3d0a9b9bb37997ddf60879b0c3b2c77fcc2e1121b907d",
+    "examples/longitudinal/authored_patient_005/manifest.json": "beab75ff9979bd576408b828088d2317f306b40782b6677a2be1e0da4f48bd38",
+    "examples/longitudinal/authored_patient_005/annotations.json": "287245528ef004f1b1306923704565d03d1676f299a3f8132c5299f232db1a13",
+    "examples/longitudinal/authored_patient_005/reference.json": "033b3b40c41a94edc31a8c990f764ae6e6229ff48efe9c1148d1a73906a1eae1",
+    "examples/longitudinal/authored_patient_006/manifest.json": "c61a4f802d4e7023b07dd420dea982a527bf3410d1316eff1913ddae5bfd0b85",
+    "examples/longitudinal/authored_patient_006/annotations.json": "eebaa150c8b13ec82d31c78b677a989ccdc0a2c884e6596799ee227dcfaf15e7",
+    "examples/longitudinal/authored_patient_006/reference.json": "7061153b30973d2a9c80f9b6008abf998268c2baec2a0a6124d5188c35c65805",
+    "examples/longitudinal/authored_patient_007/manifest.json": "dfa1b077fb3164323ec572a45b659358843a29674812b0e9df7ace217b332446",
+    "examples/longitudinal/authored_patient_007/annotations.json": "4d7f7dc0f2a2dbd3794d7f4ec7afbe5d70a76c041db57e2a4f0eaa7d7ad5efc5",
+    "examples/longitudinal/authored_patient_007/reference.json": "4063627653a65f8ecb9af825c9da73668b5d492e56293df75c3bfef6daa837a2",
+    "examples/longitudinal/authored_patient_008/manifest.json": "424136f287c884dbc59e5ba4a2c3daea836bec3e1549c9196d99f3e3021954f4",
+    "examples/longitudinal/authored_patient_008/annotations.json": "34aa51124da21ef30dbf0f5c21f57bdac5cbbc8ee7d44c44555dccd6938ab178",
+    "examples/longitudinal/authored_patient_008/reference.json": "e96fee3495b7c05acad58d72900a0f5ba01effc5b6a937259d2ae4d2d5024a68",
+    "examples/longitudinal/authored_patient_009/manifest.json": "11f77698fc7557abcf6acf3a730fbab70bd5cfa68fa8ff773b45b2da51e22700",
+    "examples/longitudinal/authored_patient_009/annotations.json": "b88bc3a2367b4593c03a86f7f2c097bc6e4e8f890927fc1e937242c1bcae0196",
+    "examples/longitudinal/authored_patient_009/reference.json": "c98d0b6cfff104eae1a9d01daafffa14ca46495d2b0b72c27471e62bb086b130",
+    "examples/longitudinal/authored_patient_010/manifest.json": "301786e8f59d41c34957182db13477f91112ad5defa452660535ac91397262b3",
+    "examples/longitudinal/authored_patient_010/annotations.json": "40cdeffc6f00bef897b4bf88c8a80a0b099f6447ae57c9d996029e35a2761ad8",
+    "examples/longitudinal/authored_patient_010/reference.json": "341f0d5a807da5c98b5bedda3a0165c9cb0b11e2a412b223286d08dd5e1282b0",
+    "examples/longitudinal/authored_patient_011/manifest.json": "1236bad8177153e41104eb91515ebc20b4d139a5afdbf6ecc58fa0c9044bfaad",
+    "examples/longitudinal/authored_patient_011/annotations.json": "b9553dcd5ac583dbb10c9ffba216415eb62c7be077363cee4c6d42d53929f142",
+    "examples/longitudinal/authored_patient_011/reference.json": "999220b03d43274125301faa27d31335068a599c867a1d4a136f165a77af31c7",
+    "examples/longitudinal/authored_patient_012/manifest.json": "4433a0bde0ca68d512e656996188c1f0191f2791be4ecd23e1c754c3b5b00005",
+    "examples/longitudinal/authored_patient_012/annotations.json": "f15fd8c991aa9d5df4c9d4432e0603f7e22958731702be63e15a0cc83475cb92",
+    "examples/longitudinal/authored_patient_012/reference.json": "69668fafd2385bf6a26e70174237d416e40dc3c60fa1967b5084abec126bcddc",
+    "results/longitudinal/generation_v0.1/cases/generated-001/manifest.json": "c1a0d246efa9b0d9923fcb7d0c74483a47d4682344c2d7603909ccb14330df2a",
+    "results/longitudinal/generation_v0.1/cases/generated-001/annotations.json": "f7b1ae7421d3d7228376fc02dc600b6679b8b0cc32290ca5f70432f8f2f3f6fa",
+    "results/longitudinal/generation_v0.1/cases/generated-001/reference.json": "d3a7e1a4474c86d3aebb140311701f1ba4d5e01a45fa75a87757dc5024690418",
+    "results/longitudinal/generation_v0.1/cases/generated-002/manifest.json": "78659ed77c07e189ec22c8259f8d7d08d5bb274c967bca3101f02b6f13f4c3aa",
+    "results/longitudinal/generation_v0.1/cases/generated-002/annotations.json": "facd0c336301d1dc9e35c02e1046bec099bc4698e0d87a8ebbc29c4f903b572b",
+    "results/longitudinal/generation_v0.1/cases/generated-002/reference.json": "9922aab9b606d960ac7c2c6c05ded220341b422eb5f42d555b36c91a896f1707",
+    "results/longitudinal/generation_v0.1/cases/generated-003/manifest.json": "38e65275cf5e66ea98e1e737eede6009e25452bc8c37e68cb27766586d3b84bd",
+    "results/longitudinal/generation_v0.1/cases/generated-003/annotations.json": "d3bef1d76c2cab4f02ff248a1c923537b81d9ed66f0f9c59b540763a9f71af05",
+    "results/longitudinal/generation_v0.1/cases/generated-003/reference.json": "16cfaf62f8808dea13b4a91d2da3469ad9e4786e4008dd14287368331427a91f",
+    "results/longitudinal/generation_v0.1/cases/generated-004/manifest.json": "703e0befd187925e7db29f9fa6657e00a2e3a9bdc1388e7fb037dbbd0e8ec335",
+    "results/longitudinal/generation_v0.1/cases/generated-004/annotations.json": "fc8d1262b98ce55f9cbfb108853a400eb27a10b0a54eec3d10d6bf3bfad955e2",
+    "results/longitudinal/generation_v0.1/cases/generated-004/reference.json": "fe483fe3884675504dec0a935a86673d89a07c653b6eeeaff46a8693fdc704dd",
+    "results/longitudinal/generation_v0.1/cases/generated-005/manifest.json": "fc7a9a1e38e5589f0d2afb1f51acf55097a0e32a4ae5bd233cae12bf794574b1",
+    "results/longitudinal/generation_v0.1/cases/generated-005/annotations.json": "38364c1a69a79419a6619617d4f041c0ad92aff18071c99de32035bc14ab6ec7",
+    "results/longitudinal/generation_v0.1/cases/generated-005/reference.json": "20855f4a81c8bf92d7c626f14e2a897f8b524de64fbc56a1cb6fa35003ebb125",
+    "results/longitudinal/generation_v0.1/cases/generated-006/manifest.json": "45793b038511827036361fb8aa6da9f310c6f13158de6a3c72f0854cc6a7d931",
+    "results/longitudinal/generation_v0.1/cases/generated-006/annotations.json": "c9d2b50a35faeba3a1201b6fb0f1e7be73cd45a36fbb7e57b59547f7661a49ca",
+    "results/longitudinal/generation_v0.1/cases/generated-006/reference.json": "01812c3190e29845334ec4e4410b52ab9b31246bb09ff9dd9a0f1db0e2fcb3c0",
+    "results/longitudinal/generation_v0.1/cases/generated-007/manifest.json": "9244dc145e0ff77d9d36f23a99e32685adf4f1012de6eaaef9de4cbca027ec4d",
+    "results/longitudinal/generation_v0.1/cases/generated-007/annotations.json": "934c7f56276c7d1604434d3c1687c68bfe2a4e82d03033d584890c76751c8bd6",
+    "results/longitudinal/generation_v0.1/cases/generated-007/reference.json": "2cb5b4eabd48560ce33cd520070be4cbe1da0a108555b5d3779f514873057dd8",
+    "results/longitudinal/generation_v0.1/cases/generated-008/manifest.json": "4308373c83b995861b5733f6940826de7a3a4fc48bb52d074186d0450a8b6d1e",
+    "results/longitudinal/generation_v0.1/cases/generated-008/annotations.json": "3484ca525d9352e1cc72c4a071c050409084811b57d24335af9dc7e9e947521c",
+    "results/longitudinal/generation_v0.1/cases/generated-008/reference.json": "0f3ccab92487a0287d656605f635ec89ad8c6eca6cfc0725206bac1c41865b6a",
+    "results/longitudinal/generation_v0.1/cases/generated-009/manifest.json": "e7fe70e7a62b90b6d043f8c3dae989eecc412f6579b155391d1a8689742f0f55",
+    "results/longitudinal/generation_v0.1/cases/generated-009/annotations.json": "b3720e3e7c8613e9ceb8e16641a394d169cf92c6c7371f92b9d8d2c2a6ec2148",
+    "results/longitudinal/generation_v0.1/cases/generated-009/reference.json": "520ebc48c2114d241fb1f170f60b6eb84df34e7526cd46014446b2557dfde234",
+    "results/longitudinal/generation_v0.1/cases/generated-010/manifest.json": "06610c8776cfe516a820c4195520498c3353416e5dd7fda9ead8c5f788f271e8",
+    "results/longitudinal/generation_v0.1/cases/generated-010/annotations.json": "8d451b7091651a79c09ec227d8386b46e802b82683f6980c902f694225b16e03",
+    "results/longitudinal/generation_v0.1/cases/generated-010/reference.json": "7786e3882d388d677c6e7250cefe92ddd9662799ff3df57b664b5ee2db93d08f",
+    "results/longitudinal/generation_v0.1/cases/generated-011/manifest.json": "ce3fb29dd6d37d761cf197c6f9cf1bb2f6e5fb2799e7bd4db989a536f8ca3257",
+    "results/longitudinal/generation_v0.1/cases/generated-011/annotations.json": "7386acb7c8ab7d19f6da0385b03d2db1ea13d303f231e712d0717c0444a0c745",
+    "results/longitudinal/generation_v0.1/cases/generated-011/reference.json": "60f0fb1069b34788cc262b0848225590a5e6867e491c98a3761e667285be2394",
+    "results/longitudinal/generation_v0.1/cases/generated-012/manifest.json": "aa659c68e207460a35957dca2fad7886ccbaa289ca6493c759654e2b4e362ac1",
+    "results/longitudinal/generation_v0.1/cases/generated-012/annotations.json": "1418f0159ae2feba9a94cccc3d7051a9de9c13ba393ecd462ebe1d212688ba00",
+    "results/longitudinal/generation_v0.1/cases/generated-012/reference.json": "45640f3e3123a18d7017eaa05b8a8a9df36e2d74f9e56bbe26ab930da262ad14",
+    "src/clinical_extraction/longitudinal/__init__.py": "3a1a058916d38b8b460d00dcfe11e2038d2aba5e939d32fd359b285fc4d24b59",
+    "src/clinical_extraction/longitudinal/evaluation.py": "7554f11d1ae4ceb7c61ab854e7123be4771051ef52b0022734a07d6c12a925bf",
+    "src/clinical_extraction/longitudinal/evidence.py": "b37b3a2a5c9e8ef9d8c02e2185afe09defb40fc224155889fcb268775b204941",
+    "src/clinical_extraction/longitudinal/history.py": "4220db075f3deccf2ccc7996354976c17b7695283c67dd6f86c4aacf7853ec51",
+    "src/clinical_extraction/longitudinal/pipeline.py": "46c401ef94658b04b5d1b16b21d262162294ae12d8075b650e221e0c34987f86",
+    "src/clinical_extraction/longitudinal/queries.py": "d2105997b132181221e066e38c1ff6306bc877ea06b6883656f8636539d6b5a8",
+    "src/clinical_extraction/longitudinal/temporal.py": "963858b3321eb291305d3da251ddceadd8e6c84d9cd2ebcbc5583afb89471dd5",
+    "scripts/longitudinal/run_prototype.py": "f6a7217393053eca1070a56da1850f03e83001d65fd9ad29e6a0d64213304661",
+    "docs/longitudinal/evaluation_protocol.md": "0a22fca999131d80bd958964cf356eb714939bd6a2110b33d374569d8db62156",
+    "docs/longitudinal/annotation.schema.json": "47167c0cd15cd588acde1bdce846273d7af500210f1898debccf344d1677b8b7"
+  },
+  "frontend_sha256": {
+    "frontend/app/longitudinal/page.tsx": "8661b8a18f3f6729a7da368c0faae7308377e788435af9186741fb9365211f39",
+    "frontend/app/longitudinal/data/route.ts": "a0c481816829ece3a2745cf54819abe89da52bf117226aff347587815a03c399",
+    "frontend/components/longitudinal/LongitudinalExplorer.tsx": "502fd93ef2f8cebbbd8296c1e7b9c0e462768f31d015a9520e5832c6dce2fb93",
+    "frontend/components/longitudinal/longitudinal.module.css": "ad71ffdcbbec32a05ed14ae6fc962241cb9ac88c6c5ff6bb052b34460d407748",
+    "frontend/lib/longitudinal.ts": "08d083858231dcf8895ec826063dfa586261eb24f2eed4f59802790c0efa2e72",
+    "frontend/lib/__tests__/longitudinal.test.ts": "f0e86d86756b409c580c0d644603d1b1643f5a4978ac1d97f507ce1cb1702570",
+    "frontend/components/Navbar.tsx": "6e837fe7d4e64e55d671c71d401a74d4f56c7aafee0e6bef539c693f26c888ac"
+  }
+}

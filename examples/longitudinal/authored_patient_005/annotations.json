@@ -561,8 +561,8 @@
           "earliest": "2025-02-01",
           "latest": "2025-02-01"
         },
-        "kind": "occurrence",
-        "anchor_letter_id": null
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
       },
       "content": {
         "family": "investigation",
@@ -621,8 +621,8 @@
         "text": "early April",
         "start": null,
         "end": null,
-        "kind": "unknown",
-        "anchor_letter_id": null
+        "kind": "result_available",
+        "anchor_letter_id": "L2"
       },
       "content": {
         "family": "investigation",
@@ -697,7 +697,15 @@
         "name": "lamotrigine",
         "status": "not_started",
         "condition": null
-      }
+      },
+      "all_prior_history_evidence": [
+        {
+          "letter_id": "L1",
+          "start": 770,
+          "end": 1017,
+          "text": "In August 2024 we proposed adding lamotrigine, but that proposal was not enacted. Edward confirms he has never taken lamotrigine, including at any time before this consultation on 1 February 2025. We will reconsider treatment after further review."
+        }
+      ]
     },
     {
       "assertion_id": "L2.actual_start",
@@ -799,7 +807,15 @@
         "name": "lamotrigine",
         "status": "not_started",
         "condition": null
-      }
+      },
+      "all_prior_history_evidence": [
+        {
+          "letter_id": "L2",
+          "start": 612,
+          "end": 993,
+          "text": "Edward confirms that he first took lamotrigine on 20 May 2025 after a new treatment decision, and is still taking it. He had never taken it before that date; the August proposal was not enacted. A separate repeat EEG was requested on 6 May, performed on 15 May, and its normal report became available to our team on 16 May 2025. This was a different test from the February request."
+        }
+      ]
     },
     {
       "assertion_id": "L2.repeat_request",

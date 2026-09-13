@@ -1,0 +1,4297 @@
+{
+  "dataset": "authored development patients 002, 006, 011; full three-letter histories",
+  "split": "development_only",
+  "model": "gemini-3.8-flash-medium",
+  "schema_version": "0.3",
+  "mode": "saved-output replay; no new calls",
+  "repair_policy": "none; raw, parsed, schema, grounding and offset results remain separate",
+  "claim": "Measured AI wall time and representation disagreement by focused activity; no human effort, clinical accuracy, pure field cost or population timing estimate",
+  "charge_gbp": 0,
+  "charge_basis": "User confirmation, not provider billing telemetry",
+  "human_minutes": null,
+  "input_sha256": {
+    "results/longitudinal/pilot_v0.8/timed_pass/manifest.json": "0ccad1733440549d5707ded785a27832f00c2c98ec346d5404b0be49dd83a688",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/capture_summary.json": "b9e26bc95d1a2d91eeddfd832775833d0ab4bcc1de998c8784bb8040655a62a8",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/002_diagnosis.json": "c64b4bdf9303b8ffc8c70bdfbdc571b75f3c32c3131c82d4e863840e3e78daad",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/002_diagnosis/attempt.json": "947a1bbf15bcb3f3fb27601e82103ce0da574c4d50d805bc1d045ffaec3a7740",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/002_diagnosis/parsed.json": "b3ad822a316d4dabf12eec0beaac35e66f8bb030955b9bf008d47f286826d3df",
+    "examples/longitudinal/authored_patient_002/annotations.json": "5bd9dee59434a6fef739d828e07f8c5f4005f9abb79865c3a15d985c89140c2b",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/002_seizure.json": "ba2fbd060fc319be54a235002e950c55118d84fefd10139ae82f01515451b756",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/002_seizure/attempt.json": "b3a3ad51d3e5e716ed546531fd93604a9fdec70ab3bcc9069426cf2b19f18bf5",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/002_seizure/parsed.json": "4d04e93d9209269d43cd2516e7157152190a62da643ac273e8afc4044e31cceb",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/002_medication.json": "d775bd52d470680094ae6ac3f7bdcae6e81c221040ec102331335bba19a9c3af",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/002_medication/attempt.json": "cbc9355cb3bd43a1f9d128720f41931523966c81d5acb46a4e8d91833e929e1e",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/002_medication/parsed.json": "316e21766c3f866eacf0450d83e02dd41916303cf3ea70052ad1a8c86ebacb03",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/002_investigation.json": "74adb8fc2316c33e86d6a50040f9f8d8ad0db9e2653d1993011450eca92b7ac6",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/002_investigation/attempt.json": "5cda1ab90f0af8b14c0ee4f10675430d88de4b8be40896369b0b8c68d3588c77",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/002_investigation/parsed.json": "a6fe67ade3ddb211d493c8adbc50ab7da4209402948b9ea91abb9204e4d600a2",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/002_temporal.json": "f8e67a902a26f0eed4c3978de40b90c436058f03dddfca3ad28d09588af9c2b3",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/002_temporal/attempt.json": "151c126b6be13368b1cc3d745b2ee3042bf06a804276990d00400ce1c06d5b99",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/002_temporal/parsed.json": "4c3f227dc911d102ecfd74c433a9e73f745c6c35833ec1188ec918c4e22a7d3b",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/002_relationships.json": "1a153210f2ec37ee481c100ee35ec30f40d7d4e143443f49664fca9e02a21268",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/002_relationships/attempt.json": "cd790688d86096fa56a931bbd7355a4db9e8629715a64bddf27a8d83793d9df5",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/002_relationships/parsed.json": "d525fbd0d597acaa173a8e370c940b20fe43a978ab7f4579f4406db352cb72a5",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/006_diagnosis.json": "4d29a6144ca40ee05dfbd80005361088014beec97f0fb7f80aa279f41fec710c",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/006_diagnosis/attempt.json": "ae881b03035ab577e2e89f40b7d36b3d50ac5da45533a963f9b125cfea94d0c5",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/006_diagnosis/parsed.json": "eb7cc9c836a782882e9f87a96d5acc5cc260a2758a070576c9f70445f7fa069d",
+    "examples/longitudinal/authored_patient_006/annotations.json": "eebaa150c8b13ec82d31c78b677a989ccdc0a2c884e6596799ee227dcfaf15e7",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/006_seizure.json": "5fb6a83c9069ce590515116d119700d2d5f523aa02b618c228bc770d8d66548b",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/006_seizure/attempt.json": "fb8c1391e6236cf3762ba6687dc303769af64c7b3e963236649b251bfab24337",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/006_seizure/parsed.json": "cec58161efcdcfe658910c062b1823069820b7a58140492c38f86cc23d064e55",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/006_medication.json": "ff88fdb629fc7b66c58261791584381d68e73abd8b20e5a3c5d5da743f472473",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/006_medication/attempt.json": "743782804542f3d998289f8a1eaca277fe2e4f109829fb5ba7ecec700e6bc598",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/006_medication/parsed.json": "ce5f5dc911e0d1910bbeaa83488e1d1a573e23df7e2d74e34eaebf1873f56625",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/006_investigation.json": "9801b08c5dbec1a6670b20ea79aaa87da6bf18c737057a810615aa35bb17ce8c",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/006_investigation/attempt.json": "10e43e035c746e414f8435fc64fb35ed535e00cacc3ba8ad5995654bfd807023",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/006_investigation/parsed.json": "a460cbb3bff9d4d2ef13b1839045fae10a1403d2447833b0a2d689b236aad04e",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/006_temporal.json": "639b72d8666d1089e91e1f7d47ed362ee992cd594602ff0a12aebde441e22770",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/006_temporal/attempt.json": "1c0c446412d1b8d8f412cf2679fd30dbfad54fad9fd6434774445f937eb5f8fe",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/006_temporal/parsed.json": "7088a6f5a9a8c094bb6045c7b00cf4566944a0ea8ca63a52277a18930e064ffe",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/006_relationships.json": "019435fbfada5dece2ee73ddabce512f576d016a7bb6d54b686d8ce3d420de3f",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/006_relationships/attempt.json": "0f7462fd577573b2c1fb915314e0222414d81bfd383802a53206fb5a2b4c8c6d",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/006_relationships/parsed.json": "899e0ead994c3a52972642f3d584a85d7262c085b8e219a43ec9587d5bb7d8f7",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/011_diagnosis.json": "b76219b31965cc7e4c868e773b2592c7e0698a3c7181f0c0a08c17d33de88c01",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/011_diagnosis/attempt.json": "c87d23513c34e7f6ae73faeba42fdbe3c8e14d6654f3c6735b319d725ea145cf",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/011_diagnosis/parsed.json": "f69ea05a6ea6b13ed614fffc1a2a740c8bb9eeb4f1cfe343c06dd5d3be4b5d61",
+    "examples/longitudinal/authored_patient_011/annotations.json": "b9553dcd5ac583dbb10c9ffba216415eb62c7be077363cee4c6d42d53929f142",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/011_seizure.json": "52feb3eab6b784843240ef507f2455e85732f2f628b22b0ac9f0a9a09d620338",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/011_seizure/attempt.json": "a340e4716cc2bf9f3cc1e64f331d67af49a6a30689f9ba18b549b2d5e274dc06",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/011_seizure/parsed.json": "7c88cbec464d029ca8cab02b6c9de2c2211efec0738f56d79e2aaa6248cd2790",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/011_medication.json": "856bb27da25042bf0ee63028a97b4745db09394fa51a47f7ec9817f6762d39c3",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/011_medication/attempt.json": "e7fe726d6c12a18c78408315120081e69b9dadd827c04099648d1e9f34d10037",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/011_medication/parsed.json": "fab41d924924ac5a0e8a08f054f506955f67f536083d731f3b0124c28408c296",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/011_investigation.json": "53b0d148ab8997b73441ae1cb4525d1ca2900ed1248a4c282cbf9f736c30f424",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/011_investigation/attempt.json": "4c9608f495925dca8f9e44c82a2ef1e69928ec9a45e76962b72d78406bbe67b5",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/011_investigation/parsed.json": "6a226764ba193f29648de0f7d27280cbc320f3a9b731ed19bba678709186864f",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/011_temporal.json": "45570d2a9d20aabe32de8b8c3d8e1a726953172923d4957f260d5a111d820806",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/011_temporal/attempt.json": "aa90627a39bbf7f48c8251a993f22000ef376d3d0a990b5ab35a3bb0b549a88d",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/011_temporal/parsed.json": "342487b20cdf8f9f3d126e073781b1b42cfc3ff94cee853b2b4cb7149a7b122b",
+    "results/longitudinal/pilot_v0.8/timed_pass/inputs/011_relationships.json": "233b63e9893fc710051c822c95365479d955b0e360d3602cd9f44e98b89fb180",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/011_relationships/attempt.json": "697f9ef0285ea546c9cd43105f7449a860df0faff9d889ff4c92dc59c58bb4b3",
+    "results/longitudinal/pilot_v0.8/timed_pass/outputs/attempts/011_relationships/parsed.json": "3349bc81aeb1ea2f6fbe089d1d760ec6d663737e889cdd956843463cdd4c9224"
+  },
+  "program_sha256": {
+    "scripts/longitudinal/summarize_timed_annotation_probe.py": "73b9d217ab6754cd0ba3fe88309a3a8527fbf470755a8464a08f13d6aeac24b6",
+    "scripts/longitudinal/analyze_agy_annotation_pass.py": "30b5eb6025ee951ce89fe7eb05a46efc67f2dc4e4111e9594dab1ce51a49d6cf",
+    "scripts/longitudinal/audit_temporal_relationships.py": "685332a919904d2832f9ef855367390d39db01c5bd16055010fe75839ecd8f7e",
+    "scripts/longitudinal/check_annotations.py": "771c6852cb196f8d41e27746c57041499c5ca36f103675d5f26a4f344e3155dc",
+    "scripts/longitudinal/review_pilot_alignment.py": "511b608c67bbffde43cdebb669ee6c98839663b12bc973dcb22c5cc4ff80f56e"
+  },
+  "by_activity": {
+    "diagnosis": {
+      "planned": 3,
+      "parsed": 3,
+      "wall_seconds": {
+        "total": 114.38973974902183,
+        "min": 20.808123041002546,
+        "median": 46.036307500035036,
+        "max": 47.545309207984246
+      },
+      "schema_valid": 3,
+      "grounded_structure_valid": 3,
+      "literal_pairs": 6,
+      "temporal_comparison_counts": {
+        "kind_or_anchor_difference": 2,
+        "bounds_difference": 4
+      },
+      "links_on_aligned_endpoints": {
+        "observed_total": 3,
+        "observed_grounded_aligned": 3
+      }
+    },
+    "seizure": {
+      "planned": 3,
+      "parsed": 3,
+      "wall_seconds": {
+        "total": 389.81903283298016,
+        "min": 100.52341145800892,
+        "median": 123.19877158297459,
+        "max": 166.09684979199665
+      },
+      "schema_valid": 3,
+      "grounded_structure_valid": 2,
+      "literal_pairs": 4,
+      "temporal_comparison_counts": {
+        "kind_or_anchor_difference": 6,
+        "representation_only": 4,
+        "bounds_difference": 2
+      },
+      "links_on_aligned_endpoints": {
+        "reference_total": 8,
+        "observed_total": 10,
+        "reference_aligned": 3,
+        "observed_grounded_aligned": 4,
+        "relation_and_certainty_matches": 2
+      }
+    },
+    "medication": {
+      "planned": 3,
+      "parsed": 3,
+      "wall_seconds": {
+        "total": 323.073880706972,
+        "min": 55.56537358299829,
+        "median": 126.72450533299707,
+        "max": 140.78400179097662
+      },
+      "schema_valid": 3,
+      "grounded_structure_valid": 3,
+      "literal_pairs": 8,
+      "temporal_comparison_counts": {},
+      "links_on_aligned_endpoints": {
+        "observed_total": 5,
+        "reference_total": 1
+      }
+    },
+    "investigation": {
+      "planned": 3,
+      "parsed": 3,
+      "wall_seconds": {
+        "total": 247.5929193329648,
+        "min": 49.583455790998414,
+        "median": 74.35102179198293,
+        "max": 123.65844174998347
+      },
+      "schema_valid": 3,
+      "grounded_structure_valid": 3,
+      "literal_pairs": 0,
+      "temporal_comparison_counts": {},
+      "links_on_aligned_endpoints": {}
+    },
+    "temporal": {
+      "planned": 3,
+      "parsed": 3,
+      "wall_seconds": {
+        "total": 110.47940566705074,
+        "min": 18.311571500031278,
+        "median": 27.918045333004557,
+        "max": 64.24978883401491
+      },
+      "schema_valid": 3,
+      "grounded_structure_valid": 3,
+      "literal_pairs": 16,
+      "temporal_comparison_counts": {
+        "kind_or_anchor_difference": 6,
+        "representation_only": 5,
+        "bounds_difference": 4
+      },
+      "links_on_aligned_endpoints": {
+        "reference_total": 9,
+        "observed_total": 15,
+        "observed_grounded_aligned": 5,
+        "reference_aligned": 2,
+        "relation_and_certainty_matches": 1
+      }
+    },
+    "relationships": {
+      "planned": 3,
+      "parsed": 3,
+      "wall_seconds": {
+        "total": 229.83428899996215,
+        "min": 28.39201791700907,
+        "median": 98.4540909579955,
+        "max": 102.98818012495758
+      },
+      "schema_valid": 2,
+      "grounded_structure_valid": 2,
+      "literal_pairs": 10,
+      "temporal_comparison_counts": {
+        "kind_or_anchor_difference": 4,
+        "representation_only": 4
+      },
+      "links_on_aligned_endpoints": {
+        "reference_total": 5,
+        "observed_total": 11,
+        "observed_grounded_aligned": 4,
+        "reference_aligned": 1,
+        "relation_and_certainty_matches": 1
+      }
+    }
+  },
+  "jobs": [
+    {
+      "id": "002_diagnosis",
+      "activity": "diagnosis",
+      "case": "authored_patient_002",
+      "input": "inputs/002_diagnosis.json",
+      "sha256": "c64b4bdf9303b8ffc8c70bdfbdc571b75f3c32c3131c82d4e863840e3e78daad",
+      "capture_status": "parsed",
+      "wall_seconds": 46.036307500035036,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "2882f906-7376-452d-9d89-02ef002b60dc",
+        "status": "SUCCESS",
+        "duration_seconds": 40.024678,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24006,
+          "output_tokens": 13183,
+          "thinking_tokens": 12712,
+          "cache_read_tokens": 0,
+          "total_tokens": 37189
+        }
+      },
+      "source_characters": 1946,
+      "grounded_structure_check_error": null,
+      "offset_check_error": null,
+      "spans": {
+        "total": 3,
+        "grounded": 3,
+        "exact_offsets": 3
+      },
+      "observed_by_family": {
+        "diagnosis": 2
+      },
+      "off_task_assertions": 0,
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 2,
+        "observed_assertions": 2,
+        "matched_assertions": 2,
+        "matched_details": [
+          {
+            "reference_id": "L1.diagnosis",
+            "observed_id": "a1",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.diagnosis",
+            "observed_id": "a2",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "diagnosis": {
+            "reference": 2,
+            "observed": 2,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 2,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 1,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {
+          "a1": "L1.diagnosis",
+          "a2": "L2.diagnosis"
+        },
+        "candidates": {
+          "a1": [
+            "L1.diagnosis"
+          ],
+          "a2": [
+            "L2.diagnosis"
+          ]
+        },
+        "reference_count": 2,
+        "observed_count": 2
+      },
+      "temporal_pairs": [
+        {
+          "reference_id": "L1.diagnosis",
+          "observed_id": "a1",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "end": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": "since 2021",
+            "start": {
+              "earliest": "2021-01-01",
+              "latest": "2021-12-31"
+            },
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 104,
+              "end": 281,
+              "text": "Beatrice attended our clinic for routine annual review. She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 160,
+              "end": 281,
+              "text": "She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.diagnosis",
+          "observed_id": "a2",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-08-15",
+              "latest": "2025-08-15"
+            },
+            "end": {
+              "earliest": "2025-08-15",
+              "latest": "2025-08-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "observed_time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 93,
+              "end": 191,
+              "text": "I reviewed Beatrice in clinic today. Her diagnosis remains focal epilepsy with impaired awareness."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 130,
+              "end": 191,
+              "text": "Her diagnosis remains focal epilepsy with impaired awareness."
+            }
+          ]
+        }
+      ],
+      "links_on_aligned_endpoints": {
+        "reference_total": 0,
+        "observed_total": 1,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 1,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "002_seizure",
+      "activity": "seizure",
+      "case": "authored_patient_002",
+      "input": "inputs/002_seizure.json",
+      "sha256": "ba2fbd060fc319be54a235002e950c55118d84fefd10139ae82f01515451b756",
+      "capture_status": "parsed",
+      "wall_seconds": 166.09684979199665,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "42f89ae5-0133-4e33-ac61-d7423671be81",
+        "status": "SUCCESS",
+        "duration_seconds": 160.439769,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24006,
+          "output_tokens": 52337,
+          "thinking_tokens": 50374,
+          "cache_read_tokens": 0,
+          "total_tokens": 76343
+        }
+      },
+      "source_characters": 1946,
+      "grounded_structure_check_error": null,
+      "offset_check_error": "Evidence span does not match source",
+      "spans": {
+        "total": 8,
+        "grounded": 8,
+        "exact_offsets": 7
+      },
+      "observed_by_family": {
+        "seizure": 7
+      },
+      "off_task_assertions": 0,
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 8,
+        "observed_assertions": 7,
+        "matched_assertions": 2,
+        "matched_details": [
+          {
+            "reference_id": "L1.latest",
+            "observed_id": "a2",
+            "family": "seizure",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.latest",
+            "observed_id": "a5",
+            "family": "seizure",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "seizure": {
+            "reference": 8,
+            "observed": 7,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 2,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 0,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {
+          "a1": "L1.pattern",
+          "a2": "L1.latest",
+          "a4": "L2.pattern",
+          "a5": "L2.latest"
+        },
+        "candidates": {
+          "a1": [
+            "L1.pattern"
+          ],
+          "a2": [
+            "L1.latest"
+          ],
+          "a3": [],
+          "a4": [
+            "L2.pattern"
+          ],
+          "a5": [
+            "L2.latest"
+          ],
+          "a6": [],
+          "a7": []
+        },
+        "reference_count": 8,
+        "observed_count": 7
+      },
+      "temporal_pairs": [
+        {
+          "reference_id": "L1.pattern",
+          "observed_id": "a1",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "end": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": "Over the past year",
+            "start": null,
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 283,
+              "end": 771,
+              "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects. Over the past year she has continued to experience roughly one focal seizure per month. Her most recent focal seizure occurred on 28 January 2025. She describes a brief epigastric sensation followed by confusion lasting one to two minutes. She has had no generalized tonic-clonic convulsions and reports no other event types."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 446,
+              "end": 533,
+              "text": "Over the past year she has continued to experience roughly one focal seizure per month."
+            }
+          ]
+        },
+        {
+          "reference_id": "L1.latest",
+          "observed_id": "a2",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-01-28",
+              "latest": "2025-01-28"
+            },
+            "end": {
+              "earliest": "2025-01-28",
+              "latest": "2025-01-28"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "28 January 2025",
+            "start": {
+              "earliest": "2025-01-28",
+              "latest": "2025-01-28"
+            },
+            "end": {
+              "earliest": "2025-01-28",
+              "latest": "2025-01-28"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 283,
+              "end": 771,
+              "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects. Over the past year she has continued to experience roughly one focal seizure per month. Her most recent focal seizure occurred on 28 January 2025. She describes a brief epigastric sensation followed by confusion lasting one to two minutes. She has had no generalized tonic-clonic convulsions and reports no other event types."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 534,
+              "end": 592,
+              "text": "Her most recent focal seizure occurred on 28 January 2025."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.pattern",
+          "observed_id": "a4",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-08-15",
+              "latest": "2025-08-15"
+            },
+            "end": {
+              "earliest": "2025-08-15",
+              "latest": "2025-08-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "observed_time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 193,
+              "end": 527,
+              "text": "Her clinical pattern is unchanged. She continues carbamazepine 400 mg twice daily with good compliance. She continues to experience approximately one focal seizure per month, with the latest episode on 2 August 2025. There have been no tonic-clonic convulsions, nocturnal attacks, or new semiologies since our last review in February."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 297,
+              "end": 366,
+              "text": "She continues to experience approximately one focal seizure per month"
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.latest",
+          "observed_id": "a5",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-08-02",
+              "latest": "2025-08-02"
+            },
+            "end": {
+              "earliest": "2025-08-02",
+              "latest": "2025-08-02"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "2 August 2025",
+            "start": {
+              "earliest": "2025-08-02",
+              "latest": "2025-08-02"
+            },
+            "end": {
+              "earliest": "2025-08-02",
+              "latest": "2025-08-02"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 193,
+              "end": 527,
+              "text": "Her clinical pattern is unchanged. She continues carbamazepine 400 mg twice daily with good compliance. She continues to experience approximately one focal seizure per month, with the latest episode on 2 August 2025. There have been no tonic-clonic convulsions, nocturnal attacks, or new semiologies since our last review in February."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 297,
+              "end": 409,
+              "text": "She continues to experience approximately one focal seizure per month, with the latest episode on 2 August 2025."
+            }
+          ]
+        }
+      ],
+      "links_on_aligned_endpoints": {
+        "reference_total": 1,
+        "observed_total": 1,
+        "reference_aligned": 1,
+        "observed_grounded_aligned": 1,
+        "relation_and_certainty_matches": 1
+      }
+    },
+    {
+      "id": "002_medication",
+      "activity": "medication",
+      "case": "authored_patient_002",
+      "input": "inputs/002_medication.json",
+      "sha256": "d775bd52d470680094ae6ac3f7bdcae6e81c221040ec102331335bba19a9c3af",
+      "capture_status": "parsed",
+      "wall_seconds": 55.56537358299829,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "8c73e754-9d40-420c-9bf9-c4639892ca48",
+        "status": "SUCCESS",
+        "duration_seconds": 52.208644,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24002,
+          "output_tokens": 17728,
+          "thinking_tokens": 17262,
+          "cache_read_tokens": 0,
+          "total_tokens": 41730
+        }
+      },
+      "source_characters": 1946,
+      "grounded_structure_check_error": null,
+      "offset_check_error": null,
+      "spans": {
+        "total": 3,
+        "grounded": 3,
+        "exact_offsets": 3
+      },
+      "observed_by_family": {
+        "medication": 2
+      },
+      "off_task_assertions": 0,
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 2,
+        "observed_assertions": 2,
+        "matched_assertions": 2,
+        "matched_details": [
+          {
+            "reference_id": "L1.carbamazepine",
+            "observed_id": "assertion-1",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.carbamazepine",
+            "observed_id": "assertion-2",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "medication": {
+            "reference": 2,
+            "observed": 2,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 0,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 1,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {},
+        "candidates": {
+          "assertion-1": [],
+          "assertion-2": []
+        },
+        "reference_count": 2,
+        "observed_count": 2
+      },
+      "temporal_pairs": [],
+      "links_on_aligned_endpoints": {
+        "reference_total": 0,
+        "observed_total": 1,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 0,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "002_investigation",
+      "activity": "investigation",
+      "case": "authored_patient_002",
+      "input": "inputs/002_investigation.json",
+      "sha256": "74adb8fc2316c33e86d6a50040f9f8d8ad0db9e2653d1993011450eca92b7ac6",
+      "capture_status": "parsed",
+      "wall_seconds": 49.583455790998414,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "baa6e982-1618-4dd7-bee4-5e7bc8888f5a",
+        "status": "SUCCESS",
+        "duration_seconds": 46.054636,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 23996,
+          "output_tokens": 14219,
+          "thinking_tokens": 14199,
+          "cache_read_tokens": 0,
+          "total_tokens": 38215
+        }
+      },
+      "source_characters": 1946,
+      "grounded_structure_check_error": null,
+      "offset_check_error": null,
+      "spans": {
+        "total": 0,
+        "grounded": 0,
+        "exact_offsets": 0
+      },
+      "observed_by_family": {},
+      "off_task_assertions": 0,
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 0,
+        "observed_assertions": 0,
+        "matched_assertions": 0,
+        "matched_details": [],
+        "by_family": {},
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 0,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {},
+        "candidates": {},
+        "reference_count": 0,
+        "observed_count": 0
+      },
+      "temporal_pairs": [],
+      "links_on_aligned_endpoints": {
+        "reference_total": 0,
+        "observed_total": 0,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 0,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "002_temporal",
+      "activity": "temporal",
+      "case": "authored_patient_002",
+      "input": "inputs/002_temporal.json",
+      "sha256": "f8e67a902a26f0eed4c3978de40b90c436058f03dddfca3ad28d09588af9c2b3",
+      "capture_status": "parsed",
+      "wall_seconds": 64.24978883401491,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "8d597498-df26-465e-858b-62dcc45ccda7",
+        "status": "SUCCESS",
+        "duration_seconds": 60.738066,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24010,
+          "output_tokens": 23282,
+          "thinking_tokens": 19324,
+          "cache_read_tokens": 0,
+          "total_tokens": 47292
+        }
+      },
+      "source_characters": 1946,
+      "grounded_structure_check_error": null,
+      "offset_check_error": null,
+      "spans": {
+        "total": 16,
+        "grounded": 16,
+        "exact_offsets": 16
+      },
+      "observed_by_family": {
+        "diagnosis": 2,
+        "medication": 2,
+        "seizure": 9
+      },
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 12,
+        "observed_assertions": 13,
+        "matched_assertions": 6,
+        "matched_details": [
+          {
+            "reference_id": "L1.diagnosis",
+            "observed_id": "A1",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L1.latest",
+            "observed_id": "A4",
+            "family": "seizure",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L1.carbamazepine",
+            "observed_id": "A2",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.diagnosis",
+            "observed_id": "A7",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.latest",
+            "observed_id": "A10",
+            "family": "seizure",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.carbamazepine",
+            "observed_id": "A8",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "diagnosis": {
+            "reference": 2,
+            "observed": 2,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 2,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          },
+          "medication": {
+            "reference": 2,
+            "observed": 2,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 0,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          },
+          "seizure": {
+            "reference": 8,
+            "observed": 9,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 0,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 2,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {
+          "A1": "L1.diagnosis",
+          "A7": "L2.diagnosis"
+        },
+        "candidates": {
+          "A1": [
+            "L1.diagnosis"
+          ],
+          "A2": [],
+          "A3": [],
+          "A4": [],
+          "A5": [],
+          "A6": [],
+          "A7": [
+            "L2.diagnosis"
+          ],
+          "A8": [],
+          "A9": [],
+          "A10": [],
+          "A11": [],
+          "A12": [],
+          "A13": []
+        },
+        "reference_count": 12,
+        "observed_count": 13
+      },
+      "temporal_pairs": [
+        {
+          "reference_id": "L1.diagnosis",
+          "observed_id": "A1",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "end": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": "since 2021",
+            "start": {
+              "earliest": "2021-01-01",
+              "latest": "2021-12-31"
+            },
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 104,
+              "end": 281,
+              "text": "Beatrice attended our clinic for routine annual review. She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 171,
+              "end": 280,
+              "text": "established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021"
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.diagnosis",
+          "observed_id": "A7",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-08-15",
+              "latest": "2025-08-15"
+            },
+            "end": {
+              "earliest": "2025-08-15",
+              "latest": "2025-08-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "observed_time": {
+            "text": "today",
+            "start": {
+              "earliest": "2025-08-15",
+              "latest": "2025-08-15"
+            },
+            "end": {
+              "earliest": "2025-08-15",
+              "latest": "2025-08-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 93,
+              "end": 191,
+              "text": "I reviewed Beatrice in clinic today. Her diagnosis remains focal epilepsy with impaired awareness."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 130,
+              "end": 191,
+              "text": "Her diagnosis remains focal epilepsy with impaired awareness."
+            }
+          ]
+        }
+      ],
+      "links_on_aligned_endpoints": {
+        "reference_total": 1,
+        "observed_total": 3,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 1,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "002_relationships",
+      "activity": "relationships",
+      "case": "authored_patient_002",
+      "input": "inputs/002_relationships.json",
+      "sha256": "1a153210f2ec37ee481c100ee35ec30f40d7d4e143443f49664fca9e02a21268",
+      "capture_status": "parsed",
+      "wall_seconds": 102.98818012495758,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "f1d60848-95d7-429a-a927-6dd5e1017fed",
+        "status": "SUCCESS",
+        "duration_seconds": 99.776861,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24007,
+          "output_tokens": 36186,
+          "thinking_tokens": 32687,
+          "cache_read_tokens": 0,
+          "total_tokens": 60193
+        }
+      },
+      "source_characters": 1946,
+      "grounded_structure_check_error": null,
+      "offset_check_error": "Evidence span does not match source",
+      "spans": {
+        "total": 14,
+        "grounded": 14,
+        "exact_offsets": 8
+      },
+      "observed_by_family": {
+        "diagnosis": 2,
+        "medication": 2,
+        "seizure": 6,
+        "investigation": 1
+      },
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 12,
+        "observed_assertions": 11,
+        "matched_assertions": 5,
+        "matched_details": [
+          {
+            "reference_id": "L1.diagnosis",
+            "observed_id": "L1-diagnosis-1",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L1.latest",
+            "observed_id": "L1-seizure-occurrence-1",
+            "family": "seizure",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.diagnosis",
+            "observed_id": "L2-diagnosis-1",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.latest",
+            "observed_id": "L2-seizure-occurrence-1",
+            "family": "seizure",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.carbamazepine",
+            "observed_id": "L2-medication-1",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "diagnosis": {
+            "reference": 2,
+            "observed": 2,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 2,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          },
+          "medication": {
+            "reference": 2,
+            "observed": 2,
+            "matched": 1,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 0,
+              "certainty": 1,
+              "polarity": 1,
+              "coverage": 1
+            }
+          },
+          "seizure": {
+            "reference": 8,
+            "observed": 6,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 0,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 1,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {
+          "L1-diagnosis-1": "L1.diagnosis",
+          "L2-diagnosis-1": "L2.diagnosis"
+        },
+        "candidates": {
+          "L1-diagnosis-1": [
+            "L1.diagnosis"
+          ],
+          "L1-medication-1": [],
+          "L1-seizure-pattern-1": [],
+          "L1-seizure-occurrence-1": [],
+          "L1-seizure-absence-1": [],
+          "L2-diagnosis-1": [
+            "L2.diagnosis"
+          ],
+          "L2-medication-1": [],
+          "L2-seizure-pattern-1": [],
+          "L2-seizure-occurrence-1": [],
+          "L2-seizure-absence-1": [],
+          "L2-investigation-1": []
+        },
+        "reference_count": 12,
+        "observed_count": 11
+      },
+      "temporal_pairs": [
+        {
+          "reference_id": "L1.diagnosis",
+          "observed_id": "L1-diagnosis-1",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "end": {
+              "earliest": "2025-02-10",
+              "latest": "2025-02-10"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": "since 2021",
+            "start": {
+              "earliest": "2021-01-01",
+              "latest": "2021-12-31"
+            },
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 104,
+              "end": 281,
+              "text": "Beatrice attended our clinic for routine annual review. She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 160,
+              "end": 281,
+              "text": "She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.diagnosis",
+          "observed_id": "L2-diagnosis-1",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-08-15",
+              "latest": "2025-08-15"
+            },
+            "end": {
+              "earliest": "2025-08-15",
+              "latest": "2025-08-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "observed_time": {
+            "text": "today",
+            "start": {
+              "earliest": "2025-08-15",
+              "latest": "2025-08-15"
+            },
+            "end": {
+              "earliest": "2025-08-15",
+              "latest": "2025-08-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 93,
+              "end": 191,
+              "text": "I reviewed Beatrice in clinic today. Her diagnosis remains focal epilepsy with impaired awareness."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 130,
+              "end": 191,
+              "text": "Her diagnosis remains focal epilepsy with impaired awareness."
+            }
+          ]
+        }
+      ],
+      "links_on_aligned_endpoints": {
+        "reference_total": 1,
+        "observed_total": 3,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 1,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "006_diagnosis",
+      "activity": "diagnosis",
+      "case": "authored_patient_006",
+      "input": "inputs/006_diagnosis.json",
+      "sha256": "4d29a6144ca40ee05dfbd80005361088014beec97f0fb7f80aa279f41fec710c",
+      "capture_status": "parsed",
+      "wall_seconds": 20.808123041002546,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "3653032d-f80b-4d16-ae17-ecc3ae83c504",
+        "status": "SUCCESS",
+        "duration_seconds": 18.182613,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24036,
+          "output_tokens": 5667,
+          "thinking_tokens": 5134,
+          "cache_read_tokens": 0,
+          "total_tokens": 29703
+        }
+      },
+      "source_characters": 2024,
+      "grounded_structure_check_error": null,
+      "offset_check_error": null,
+      "spans": {
+        "total": 3,
+        "grounded": 3,
+        "exact_offsets": 3
+      },
+      "observed_by_family": {
+        "diagnosis": 2
+      },
+      "off_task_assertions": 0,
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 2,
+        "observed_assertions": 2,
+        "matched_assertions": 2,
+        "matched_details": [
+          {
+            "reference_id": "L1.diagnosis",
+            "observed_id": "authored-006-dx-1",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.diagnosis",
+            "observed_id": "authored-006-dx-2",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "diagnosis": {
+            "reference": 2,
+            "observed": 2,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 2,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 1,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {
+          "authored-006-dx-1": "L1.diagnosis",
+          "authored-006-dx-2": "L2.diagnosis"
+        },
+        "candidates": {
+          "authored-006-dx-1": [
+            "L1.diagnosis"
+          ],
+          "authored-006-dx-2": [
+            "L2.diagnosis"
+          ]
+        },
+        "reference_count": 2,
+        "observed_count": 2
+      },
+      "temporal_pairs": [
+        {
+          "reference_id": "L1.diagnosis",
+          "observed_id": "authored-006-dx-1",
+          "classification": "bounds_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "end": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 103,
+              "end": 188,
+              "text": "Fatima attended clinic with her partner. She has a known diagnosis of focal epilepsy."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 144,
+              "end": 188,
+              "text": "She has a known diagnosis of focal epilepsy."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.diagnosis",
+          "observed_id": "authored-006-dx-2",
+          "classification": "bounds_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-06-25",
+              "latest": "2025-06-25"
+            },
+            "end": {
+              "earliest": "2025-06-25",
+              "latest": "2025-06-25"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "observed_time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-06-25",
+              "latest": "2025-06-25"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 90,
+              "end": 168,
+              "text": "I reviewed Fatima and her partner today. Her diagnosis remains focal epilepsy."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 131,
+              "end": 168,
+              "text": "Her diagnosis remains focal epilepsy."
+            }
+          ]
+        }
+      ],
+      "links_on_aligned_endpoints": {
+        "reference_total": 0,
+        "observed_total": 1,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 1,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "006_seizure",
+      "activity": "seizure",
+      "case": "authored_patient_006",
+      "input": "inputs/006_seizure.json",
+      "sha256": "5fb6a83c9069ce590515116d119700d2d5f523aa02b618c228bc770d8d66548b",
+      "capture_status": "parsed",
+      "wall_seconds": 123.19877158297459,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "bb155188-d0d9-40fa-9a63-31a32e60be9a",
+        "status": "SUCCESS",
+        "duration_seconds": 120.141757,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24041,
+          "output_tokens": 43504,
+          "thinking_tokens": 40205,
+          "cache_read_tokens": 0,
+          "total_tokens": 67545
+        }
+      },
+      "source_characters": 2024,
+      "grounded_structure_check_error": "Invalid link endpoint",
+      "offset_check_error": "Evidence span does not match source",
+      "spans": {
+        "total": 14,
+        "grounded": 14,
+        "exact_offsets": 9
+      },
+      "observed_by_family": {
+        "seizure": 8
+      },
+      "off_task_assertions": 0,
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 6,
+        "observed_assertions": 8,
+        "matched_assertions": 1,
+        "matched_details": [
+          {
+            "reference_id": "L1.partner_event",
+            "observed_id": "a_l1_caregiver_recent_occurrence",
+            "family": "seizure",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "seizure": {
+            "reference": 6,
+            "observed": 8,
+            "matched": 1,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 1,
+              "certainty": 1,
+              "polarity": 1,
+              "coverage": 1
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 0,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {
+          "a_l1_caregiver_nocturnal_pattern": "L1.partner_pattern",
+          "a_l1_caregiver_recent_occurrence": "L1.partner_event",
+          "a_l1_patient_seizure_free": "L1.patient_denial",
+          "a_l2_caregiver_continued_pattern": "L2.pattern",
+          "a_l3_mixed_cessation": "L3.absence"
+        },
+        "candidates": {
+          "a_l1_caregiver_nocturnal_pattern": [
+            "L1.partner_pattern"
+          ],
+          "a_l1_caregiver_recent_occurrence": [
+            "L1.partner_event"
+          ],
+          "a_l1_patient_denies_nocturnal_events": [],
+          "a_l1_patient_seizure_free": [
+            "L1.patient_denial"
+          ],
+          "a_l2_caregiver_video_occurrence": [],
+          "a_l2_patient_acknowledges_seizures": [],
+          "a_l2_caregiver_continued_pattern": [
+            "L2.pattern"
+          ],
+          "a_l3_mixed_cessation": [
+            "L3.absence"
+          ]
+        },
+        "reference_count": 6,
+        "observed_count": 8
+      },
+      "temporal_pairs": [
+        {
+          "reference_id": "L1.partner_pattern",
+          "observed_id": "a_l1_caregiver_nocturnal_pattern",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "end": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 190,
+              "end": 816,
+              "text": "There is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 253,
+              "end": 437,
+              "text": "Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing."
+            }
+          ]
+        },
+        {
+          "reference_id": "L1.partner_event",
+          "observed_id": "a_l1_caregiver_recent_occurrence",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "12 February 2025",
+            "start": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 190,
+              "end": 816,
+              "text": "There is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 438,
+              "end": 515,
+              "text": "The partner states the most recent nocturnal seizure was on 12 February 2025."
+            }
+          ]
+        },
+        {
+          "reference_id": "L1.patient_denial",
+          "observed_id": "a_l1_patient_seizure_free",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "end": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 190,
+              "end": 816,
+              "text": "There is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 620,
+              "end": 656,
+              "text": "insists she is entirely seizure-free"
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.pattern",
+          "observed_id": "a_l2_caregiver_continued_pattern",
+          "classification": "bounds_difference",
+          "reference_time": {
+            "text": "continued weekly until mid-June",
+            "start": null,
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "observed_time": {
+            "text": "until mid-June",
+            "start": null,
+            "end": {
+              "earliest": "2025-06-11",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 170,
+              "end": 508,
+              "text": "Her partner captured a clear home video on 10 June 2025 showing nocturnal hypermotor tonic activity lasting 45 seconds. Having viewed the video, Fatima now acknowledges that nocturnal seizures are indeed taking place despite her lack of subjective awareness. The partner reports similar nocturnal seizures continued weekly until mid-June."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 428,
+              "end": 507,
+              "text": "The partner reports similar nocturnal seizures continued weekly until mid-June."
+            }
+          ]
+        },
+        {
+          "reference_id": "L3.absence",
+          "observed_id": "a_l3_mixed_cessation",
+          "classification": "bounds_difference",
+          "reference_time": {
+            "text": "since early August 2025",
+            "start": null,
+            "end": {
+              "earliest": "2025-09-30",
+              "latest": "2025-09-30"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L3"
+          },
+          "observed_time": {
+            "text": "since early August 2025",
+            "start": {
+              "earliest": "2025-08-01",
+              "latest": "2025-08-10"
+            },
+            "end": {
+              "earliest": "2025-09-30",
+              "latest": "2025-09-30"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L3"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L3",
+              "start": 95,
+              "end": 342,
+              "text": "Fatima and her partner attended for follow-up. Fatima tolerated the increase of lamotrigine to 150 mg twice daily well. Both Fatima and her partner confirm complete cessation of nocturnal seizures since early August 2025, with no further episodes."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L3",
+              "start": 215,
+              "end": 342,
+              "text": "Both Fatima and her partner confirm complete cessation of nocturnal seizures since early August 2025, with no further episodes."
+            }
+          ]
+        }
+      ],
+      "links_on_aligned_endpoints": {
+        "reference_total": 3,
+        "observed_total": 6,
+        "reference_aligned": 2,
+        "observed_grounded_aligned": 3,
+        "relation_and_certainty_matches": 1
+      }
+    },
+    {
+      "id": "006_medication",
+      "activity": "medication",
+      "case": "authored_patient_006",
+      "input": "inputs/006_medication.json",
+      "sha256": "ff88fdb629fc7b66c58261791584381d68e73abd8b20e5a3c5d5da743f472473",
+      "capture_status": "parsed",
+      "wall_seconds": 140.78400179097662,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "2ae19c19-5d28-4904-96ce-1b9709b6bc2b",
+        "status": "SUCCESS",
+        "duration_seconds": 137.58972,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24038,
+          "output_tokens": 45609,
+          "thinking_tokens": 44791,
+          "cache_read_tokens": 0,
+          "total_tokens": 69647
+        }
+      },
+      "source_characters": 2024,
+      "grounded_structure_check_error": null,
+      "offset_check_error": null,
+      "spans": {
+        "total": 5,
+        "grounded": 5,
+        "exact_offsets": 5
+      },
+      "observed_by_family": {
+        "medication": 3
+      },
+      "off_task_assertions": 0,
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 3,
+        "observed_assertions": 3,
+        "matched_assertions": 3,
+        "matched_details": [
+          {
+            "reference_id": "L1.lamotrigine",
+            "observed_id": "authored-006-a1",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.increase",
+            "observed_id": "authored-006-a2",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L3.lamotrigine",
+            "observed_id": "authored-006-a3",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "medication": {
+            "reference": 3,
+            "observed": 3,
+            "matched": 3,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 0,
+              "certainty": 3,
+              "polarity": 3,
+              "coverage": 3
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 1,
+          "observed": 2,
+          "exact_relation_matches": 1
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {},
+        "candidates": {
+          "authored-006-a1": [],
+          "authored-006-a2": [],
+          "authored-006-a3": []
+        },
+        "reference_count": 3,
+        "observed_count": 3
+      },
+      "temporal_pairs": [],
+      "links_on_aligned_endpoints": {
+        "reference_total": 1,
+        "observed_total": 2,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 0,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "006_investigation",
+      "activity": "investigation",
+      "case": "authored_patient_006",
+      "input": "inputs/006_investigation.json",
+      "sha256": "9801b08c5dbec1a6670b20ea79aaa87da6bf18c737057a810615aa35bb17ce8c",
+      "capture_status": "parsed",
+      "wall_seconds": 123.65844174998347,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "83828e31-5468-48f3-b7b7-e3163ac93f59",
+        "status": "SUCCESS",
+        "duration_seconds": 120.315235,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24048,
+          "output_tokens": 39468,
+          "thinking_tokens": 38932,
+          "cache_read_tokens": 0,
+          "total_tokens": 63516
+        }
+      },
+      "source_characters": 2024,
+      "grounded_structure_check_error": null,
+      "offset_check_error": "Evidence span does not match source",
+      "spans": {
+        "total": 2,
+        "grounded": 2,
+        "exact_offsets": 1
+      },
+      "observed_by_family": {
+        "investigation": 2
+      },
+      "off_task_assertions": 0,
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 0,
+        "observed_assertions": 2,
+        "matched_assertions": 0,
+        "matched_details": [],
+        "by_family": {},
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 0,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {},
+        "candidates": {
+          "a1": [],
+          "a2": []
+        },
+        "reference_count": 0,
+        "observed_count": 2
+      },
+      "temporal_pairs": [],
+      "links_on_aligned_endpoints": {
+        "reference_total": 0,
+        "observed_total": 0,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 0,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "006_temporal",
+      "activity": "temporal",
+      "case": "authored_patient_006",
+      "input": "inputs/006_temporal.json",
+      "sha256": "639b72d8666d1089e91e1f7d47ed362ee992cd594602ff0a12aebde441e22770",
+      "capture_status": "parsed",
+      "wall_seconds": 18.311571500031278,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "e26e846f-8d2e-428e-bc30-6d85268eefaf",
+        "status": "SUCCESS",
+        "duration_seconds": 15.298314,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24051,
+          "output_tokens": 5815,
+          "thinking_tokens": 577,
+          "cache_read_tokens": 0,
+          "total_tokens": 29866
+        }
+      },
+      "source_characters": 2024,
+      "grounded_structure_check_error": null,
+      "offset_check_error": "Evidence span does not match source",
+      "spans": {
+        "total": 23,
+        "grounded": 23,
+        "exact_offsets": 0
+      },
+      "observed_by_family": {
+        "diagnosis": 2,
+        "seizure": 8,
+        "medication": 4,
+        "investigation": 2
+      },
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 11,
+        "observed_assertions": 16,
+        "matched_assertions": 6,
+        "matched_details": [
+          {
+            "reference_id": "L1.diagnosis",
+            "observed_id": "L1-A1",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.diagnosis",
+            "observed_id": "L2-A1",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L1.partner_event",
+            "observed_id": "L1-A3",
+            "family": "seizure",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L1.lamotrigine",
+            "observed_id": "L1-A6",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.increase",
+            "observed_id": "L2-A5",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L3.lamotrigine",
+            "observed_id": "L3-A1",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "diagnosis": {
+            "reference": 2,
+            "observed": 2,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 2,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          },
+          "medication": {
+            "reference": 3,
+            "observed": 4,
+            "matched": 3,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 1,
+              "certainty": 3,
+              "polarity": 3,
+              "coverage": 3
+            }
+          },
+          "seizure": {
+            "reference": 6,
+            "observed": 8,
+            "matched": 1,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 1,
+              "certainty": 1,
+              "polarity": 1,
+              "coverage": 1
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 1,
+          "observed": 2,
+          "exact_relation_matches": 1
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {
+          "L1-A1": "L1.diagnosis",
+          "L1-A2": "L1.partner_pattern",
+          "L1-A3": "L1.partner_event",
+          "L1-A5": "L1.patient_denial",
+          "L2-A1": "L2.diagnosis",
+          "L2-A4": "L2.pattern",
+          "L2-A5": "L2.increase",
+          "L3-A2": "L3.absence"
+        },
+        "candidates": {
+          "L1-A1": [
+            "L1.diagnosis"
+          ],
+          "L1-A2": [
+            "L1.partner_pattern"
+          ],
+          "L1-A3": [
+            "L1.partner_event"
+          ],
+          "L1-A4": [],
+          "L1-A5": [
+            "L1.patient_denial"
+          ],
+          "L1-A6": [],
+          "L1-A7": [],
+          "L2-A1": [
+            "L2.diagnosis"
+          ],
+          "L2-A2": [],
+          "L2-A3": [],
+          "L2-A4": [
+            "L2.pattern"
+          ],
+          "L2-A5": [
+            "L2.increase"
+          ],
+          "L2-A6": [],
+          "L3-A1": [],
+          "L3-A2": [
+            "L3.absence"
+          ],
+          "L3-A3": []
+        },
+        "reference_count": 11,
+        "observed_count": 16
+      },
+      "temporal_pairs": [
+        {
+          "reference_id": "L1.diagnosis",
+          "observed_id": "L1-A1",
+          "classification": "bounds_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "end": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 103,
+              "end": 188,
+              "text": "Fatima attended clinic with her partner. She has a known diagnosis of focal epilepsy."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 128,
+              "end": 178,
+              "text": "She has a known diagnosis of focal epilepsy."
+            }
+          ]
+        },
+        {
+          "reference_id": "L1.partner_pattern",
+          "observed_id": "L1-A2",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "end": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 190,
+              "end": 816,
+              "text": "There is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 254,
+              "end": 401,
+              "text": "Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening"
+            }
+          ]
+        },
+        {
+          "reference_id": "L1.partner_event",
+          "observed_id": "L1-A3",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "12 February 2025",
+            "start": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 190,
+              "end": 816,
+              "text": "There is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 447,
+              "end": 526,
+              "text": "The partner states the most recent nocturnal seizure was on 12 February 2025."
+            }
+          ]
+        },
+        {
+          "reference_id": "L1.patient_denial",
+          "observed_id": "L1-A5",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "end": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-02-15",
+              "latest": "2025-02-15"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 190,
+              "end": 816,
+              "text": "There is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 628,
+              "end": 673,
+              "text": "insists she is entirely seizure-free"
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.diagnosis",
+          "observed_id": "L2-A1",
+          "classification": "bounds_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-06-25",
+              "latest": "2025-06-25"
+            },
+            "end": {
+              "earliest": "2025-06-25",
+              "latest": "2025-06-25"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "observed_time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-06-25",
+              "latest": "2025-06-25"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 90,
+              "end": 168,
+              "text": "I reviewed Fatima and her partner today. Her diagnosis remains focal epilepsy."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 134,
+              "end": 172,
+              "text": "Her diagnosis remains focal epilepsy."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.pattern",
+          "observed_id": "L2-A4",
+          "classification": "bounds_difference",
+          "reference_time": {
+            "text": "continued weekly until mid-June",
+            "start": null,
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "observed_time": {
+            "text": "until mid-June",
+            "start": null,
+            "end": {
+              "earliest": "2025-06-10",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 170,
+              "end": 508,
+              "text": "Her partner captured a clear home video on 10 June 2025 showing nocturnal hypermotor tonic activity lasting 45 seconds. Having viewed the video, Fatima now acknowledges that nocturnal seizures are indeed taking place despite her lack of subjective awareness. The partner reports similar nocturnal seizures continued weekly until mid-June."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 451,
+              "end": 530,
+              "text": "The partner reports similar nocturnal seizures continued weekly until mid-June."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.increase",
+          "observed_id": "L2-A5",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-06-25",
+              "latest": "2025-06-25"
+            },
+            "end": {
+              "earliest": "2025-06-25",
+              "latest": "2025-06-25"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "observed_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-06-25",
+              "latest": "2025-06-25"
+            },
+            "end": {
+              "earliest": "2025-06-25",
+              "latest": "2025-06-25"
+            },
+            "kind": "decision",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 510,
+              "end": 661,
+              "text": "In light of this verified active seizure frequency, we agreed to increase lamotrigine to 150 mg twice daily. No EEG requested. Review in three months.\n"
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 589,
+              "end": 647,
+              "text": "we agreed to increase lamotrigine to 150 mg twice daily."
+            }
+          ]
+        },
+        {
+          "reference_id": "L3.absence",
+          "observed_id": "L3-A2",
+          "classification": "bounds_difference",
+          "reference_time": {
+            "text": "since early August 2025",
+            "start": null,
+            "end": {
+              "earliest": "2025-09-30",
+              "latest": "2025-09-30"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L3"
+          },
+          "observed_time": {
+            "text": "since early August 2025",
+            "start": {
+              "earliest": "2025-08-01",
+              "latest": "2025-08-10"
+            },
+            "end": {
+              "earliest": "2025-09-30",
+              "latest": "2025-09-30"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L3"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L3",
+              "start": 95,
+              "end": 342,
+              "text": "Fatima and her partner attended for follow-up. Fatima tolerated the increase of lamotrigine to 150 mg twice daily well. Both Fatima and her partner confirm complete cessation of nocturnal seizures since early August 2025, with no further episodes."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L3",
+              "start": 224,
+              "end": 344,
+              "text": "Both Fatima and her partner confirm complete cessation of nocturnal seizures since early August 2025, with no further episodes."
+            }
+          ]
+        }
+      ],
+      "links_on_aligned_endpoints": {
+        "reference_total": 4,
+        "observed_total": 6,
+        "reference_aligned": 2,
+        "observed_grounded_aligned": 3,
+        "relation_and_certainty_matches": 1
+      }
+    },
+    {
+      "id": "006_relationships",
+      "activity": "relationships",
+      "case": "authored_patient_006",
+      "input": "inputs/006_relationships.json",
+      "sha256": "019435fbfada5dece2ee73ddabce512f576d016a7bb6d54b686d8ce3d420de3f",
+      "capture_status": "parsed",
+      "wall_seconds": 98.4540909579955,
+      "schema_errors": [
+        "$.assertions[5].content: {'family': 'investigation', 'modality': 'home video', 'status': 'proposed', 'result': None, 'request_count': None} is not valid under any of the given schemas"
+      ],
+      "telemetry": {
+        "conversation_id": "d49a1ebd-c3f6-4d1a-b95c-27306b0e5a2e",
+        "status": "SUCCESS",
+        "duration_seconds": 95.178264,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24053,
+          "output_tokens": 37483,
+          "thinking_tokens": 32560,
+          "cache_read_tokens": 0,
+          "total_tokens": 61536
+        }
+      },
+      "source_characters": 2024
+    },
+    {
+      "id": "011_diagnosis",
+      "activity": "diagnosis",
+      "case": "authored_patient_011",
+      "input": "inputs/011_diagnosis.json",
+      "sha256": "b76219b31965cc7e4c868e773b2592c7e0698a3c7181f0c0a08c17d33de88c01",
+      "capture_status": "parsed",
+      "wall_seconds": 47.545309207984246,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "e359f491-94d5-4146-82a3-b240ff1037b7",
+        "status": "SUCCESS",
+        "duration_seconds": 43.795449,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24129,
+          "output_tokens": 16268,
+          "thinking_tokens": 15767,
+          "cache_read_tokens": 0,
+          "total_tokens": 40397
+        }
+      },
+      "source_characters": 2238,
+      "grounded_structure_check_error": null,
+      "offset_check_error": null,
+      "spans": {
+        "total": 3,
+        "grounded": 3,
+        "exact_offsets": 3
+      },
+      "observed_by_family": {
+        "diagnosis": 2
+      },
+      "off_task_assertions": 0,
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 2,
+        "observed_assertions": 2,
+        "matched_assertions": 2,
+        "matched_details": [
+          {
+            "reference_id": "L1.diagnosis",
+            "observed_id": "a1",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.diagnosis",
+            "observed_id": "a2",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "diagnosis": {
+            "reference": 2,
+            "observed": 2,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 2,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 1,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {
+          "a1": "L1.diagnosis",
+          "a2": "L2.diagnosis"
+        },
+        "candidates": {
+          "a1": [
+            "L1.diagnosis"
+          ],
+          "a2": [
+            "L2.diagnosis"
+          ]
+        },
+        "reference_count": 2,
+        "observed_count": 2
+      },
+      "temporal_pairs": [
+        {
+          "reference_id": "L1.diagnosis",
+          "observed_id": "a1",
+          "classification": "bounds_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 105,
+              "end": 190,
+              "text": "Kevin attended clinic today. He has an established diagnosis of focal motor epilepsy."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 134,
+              "end": 190,
+              "text": "He has an established diagnosis of focal motor epilepsy."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.diagnosis",
+          "observed_id": "a2",
+          "classification": "bounds_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "observed_time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 92,
+              "end": 205,
+              "text": "I reviewed Kevin in clinic today. His diagnosis remains focal motor epilepsy on carbamazepine 400 mg twice daily."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 126,
+              "end": 168,
+              "text": "His diagnosis remains focal motor epilepsy"
+            }
+          ]
+        }
+      ],
+      "links_on_aligned_endpoints": {
+        "reference_total": 0,
+        "observed_total": 1,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 1,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "011_seizure",
+      "activity": "seizure",
+      "case": "authored_patient_011",
+      "input": "inputs/011_seizure.json",
+      "sha256": "52feb3eab6b784843240ef507f2455e85732f2f628b22b0ac9f0a9a09d620338",
+      "capture_status": "parsed",
+      "wall_seconds": 100.52341145800892,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "a932d07c-4046-4ef9-88f0-69b63a14a578",
+        "status": "SUCCESS",
+        "duration_seconds": 97.164466,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24125,
+          "output_tokens": 39010,
+          "thinking_tokens": 33838,
+          "cache_read_tokens": 0,
+          "total_tokens": 63135
+        }
+      },
+      "source_characters": 2238,
+      "grounded_structure_check_error": null,
+      "offset_check_error": null,
+      "spans": {
+        "total": 20,
+        "grounded": 20,
+        "exact_offsets": 20
+      },
+      "observed_by_family": {
+        "seizure": 13
+      },
+      "off_task_assertions": 0,
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 11,
+        "observed_assertions": 13,
+        "matched_assertions": 1,
+        "matched_details": [
+          {
+            "reference_id": "L2.only_epileptic",
+            "observed_id": "a-L2-5",
+            "family": "seizure",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "seizure": {
+            "reference": 11,
+            "observed": 13,
+            "matched": 1,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 1,
+              "certainty": 1,
+              "polarity": 1,
+              "coverage": 1
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 0,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {
+          "a-L2-3": "L2.shaking_may",
+          "a-L2-4": "L2.shaking_revised",
+          "a-L2-5": "L2.only_epileptic"
+        },
+        "candidates": {
+          "a-L1-1": [],
+          "a-L1-2": [],
+          "a-L1-3": [],
+          "a-L1-4": [
+            "L1.shaking"
+          ],
+          "a-L1-5": [
+            "L1.shaking"
+          ],
+          "a-L1-6": [],
+          "a-L2-1": [],
+          "a-L2-2": [],
+          "a-L2-3": [
+            "L2.shaking_may"
+          ],
+          "a-L2-4": [
+            "L2.shaking_revised"
+          ],
+          "a-L2-5": [
+            "L2.only_epileptic"
+          ],
+          "a-L3-1": [],
+          "a-L3-2": []
+        },
+        "reference_count": 11,
+        "observed_count": 13
+      },
+      "temporal_pairs": [
+        {
+          "reference_id": "L2.shaking_may",
+          "observed_id": "a-L2-3",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-05-21",
+              "latest": "2025-05-21"
+            },
+            "end": {
+              "earliest": "2025-05-21",
+              "latest": "2025-05-21"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "21 May 2025",
+            "start": {
+              "earliest": "2025-05-21",
+              "latest": "2025-05-21"
+            },
+            "end": {
+              "earliest": "2025-05-21",
+              "latest": "2025-05-21"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 453,
+              "end": 959,
+              "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 453,
+              "end": 575,
+              "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.shaking_revised",
+          "observed_id": "a-L2-4",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "including the February episodes",
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 453,
+              "end": 959,
+              "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 576,
+              "end": 723,
+              "text": "On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.only_epileptic",
+          "observed_id": "a-L2-5",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "since November 2024",
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 453,
+              "end": 959,
+              "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 855,
+              "end": 959,
+              "text": "The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+            }
+          ]
+        }
+      ],
+      "links_on_aligned_endpoints": {
+        "reference_total": 4,
+        "observed_total": 3,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 0,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "011_medication",
+      "activity": "medication",
+      "case": "authored_patient_011",
+      "input": "inputs/011_medication.json",
+      "sha256": "856bb27da25042bf0ee63028a97b4745db09394fa51a47f7ec9817f6762d39c3",
+      "capture_status": "parsed",
+      "wall_seconds": 126.72450533299707,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "17a9a828-ff5c-4fd6-9a4c-18d8329315af",
+        "status": "SUCCESS",
+        "duration_seconds": 123.292709,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24124,
+          "output_tokens": 41271,
+          "thinking_tokens": 40515,
+          "cache_read_tokens": 0,
+          "total_tokens": 65395
+        }
+      },
+      "source_characters": 2238,
+      "grounded_structure_check_error": null,
+      "offset_check_error": "Evidence span does not match source",
+      "spans": {
+        "total": 5,
+        "grounded": 5,
+        "exact_offsets": 4
+      },
+      "observed_by_family": {
+        "medication": 3
+      },
+      "off_task_assertions": 0,
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 3,
+        "observed_assertions": 3,
+        "matched_assertions": 3,
+        "matched_details": [
+          {
+            "reference_id": "L1.carbamazepine",
+            "observed_id": "A1",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.carbamazepine",
+            "observed_id": "A2",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L3.carbamazepine",
+            "observed_id": "A3",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "medication": {
+            "reference": 3,
+            "observed": 3,
+            "matched": 3,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 0,
+              "certainty": 3,
+              "polarity": 3,
+              "coverage": 3
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 2,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {},
+        "candidates": {
+          "A1": [],
+          "A2": [],
+          "A3": []
+        },
+        "reference_count": 3,
+        "observed_count": 3
+      },
+      "temporal_pairs": [],
+      "links_on_aligned_endpoints": {
+        "reference_total": 0,
+        "observed_total": 2,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 0,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "011_investigation",
+      "activity": "investigation",
+      "case": "authored_patient_011",
+      "input": "inputs/011_investigation.json",
+      "sha256": "53b0d148ab8997b73441ae1cb4525d1ca2900ed1248a4c282cbf9f736c30f424",
+      "capture_status": "parsed",
+      "wall_seconds": 74.35102179198293,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "f47fa1d5-1402-4ff4-ad30-5dd9789d7696",
+        "status": "SUCCESS",
+        "duration_seconds": 71.088336,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24123,
+          "output_tokens": 23914,
+          "thinking_tokens": 23625,
+          "cache_read_tokens": 0,
+          "total_tokens": 48037
+        }
+      },
+      "source_characters": 2238,
+      "grounded_structure_check_error": null,
+      "offset_check_error": null,
+      "spans": {
+        "total": 1,
+        "grounded": 1,
+        "exact_offsets": 1
+      },
+      "observed_by_family": {
+        "investigation": 1
+      },
+      "off_task_assertions": 0,
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 0,
+        "observed_assertions": 1,
+        "matched_assertions": 0,
+        "matched_details": [],
+        "by_family": {},
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 0,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {},
+        "candidates": {
+          "a1": []
+        },
+        "reference_count": 0,
+        "observed_count": 1
+      },
+      "temporal_pairs": [],
+      "links_on_aligned_endpoints": {
+        "reference_total": 0,
+        "observed_total": 0,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 0,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "011_temporal",
+      "activity": "temporal",
+      "case": "authored_patient_011",
+      "input": "inputs/011_temporal.json",
+      "sha256": "45570d2a9d20aabe32de8b8c3d8e1a726953172923d4957f260d5a111d820806",
+      "capture_status": "parsed",
+      "wall_seconds": 27.918045333004557,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "8bec4d8e-73fd-46c0-a84f-e984d344165a",
+        "status": "SUCCESS",
+        "duration_seconds": 24.769259,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24138,
+          "output_tokens": 8137,
+          "thinking_tokens": 721,
+          "cache_read_tokens": 0,
+          "total_tokens": 32275
+        }
+      },
+      "source_characters": 2238,
+      "grounded_structure_check_error": null,
+      "offset_check_error": "Evidence span does not match source",
+      "spans": {
+        "total": 28,
+        "grounded": 28,
+        "exact_offsets": 0
+      },
+      "observed_by_family": {
+        "diagnosis": 2,
+        "seizure": 13,
+        "medication": 3,
+        "investigation": 1
+      },
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 16,
+        "observed_assertions": 19,
+        "matched_assertions": 4,
+        "matched_details": [
+          {
+            "reference_id": "L1.diagnosis",
+            "observed_id": "L1-A1",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.diagnosis",
+            "observed_id": "L2-A1",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L1.carbamazepine",
+            "observed_id": "L1-A5",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.carbamazepine",
+            "observed_id": "L2-A2",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "diagnosis": {
+            "reference": 2,
+            "observed": 2,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 2,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          },
+          "medication": {
+            "reference": 3,
+            "observed": 3,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 0,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          },
+          "seizure": {
+            "reference": 11,
+            "observed": 13,
+            "matched": 0,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 0,
+              "certainty": 0,
+              "polarity": 0,
+              "coverage": 0
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 2,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {
+          "L1-A1": "L1.diagnosis",
+          "L2-A1": "L2.diagnosis",
+          "L2-A5": "L2.shaking_may",
+          "L2-A6": "L2.shaking_revised",
+          "L2-A7": "L2.only_epileptic"
+        },
+        "candidates": {
+          "L1-A1": [
+            "L1.diagnosis"
+          ],
+          "L1-A2": [],
+          "L1-A3": [],
+          "L1-A4": [],
+          "L1-A5": [],
+          "L1-A6": [],
+          "L1-A7": [
+            "L1.shaking"
+          ],
+          "L1-A8": [
+            "L1.shaking"
+          ],
+          "L1-A9": [],
+          "L2-A1": [
+            "L2.diagnosis"
+          ],
+          "L2-A2": [],
+          "L2-A3": [],
+          "L2-A4": [],
+          "L2-A5": [
+            "L2.shaking_may"
+          ],
+          "L2-A6": [
+            "L2.shaking_revised"
+          ],
+          "L2-A7": [
+            "L2.only_epileptic"
+          ],
+          "L3-A1": [],
+          "L3-A2": [],
+          "L3-A3": []
+        },
+        "reference_count": 16,
+        "observed_count": 19
+      },
+      "temporal_pairs": [
+        {
+          "reference_id": "L1.diagnosis",
+          "observed_id": "L1-A1",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": "today",
+            "start": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 105,
+              "end": 190,
+              "text": "Kevin attended clinic today. He has an established diagnosis of focal motor epilepsy."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 113,
+              "end": 158,
+              "text": "established diagnosis of focal motor epilepsy"
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.diagnosis",
+          "observed_id": "L2-A1",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "observed_time": {
+            "text": "today",
+            "start": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 92,
+              "end": 205,
+              "text": "I reviewed Kevin in clinic today. His diagnosis remains focal motor epilepsy on carbamazepine 400 mg twice daily."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 105,
+              "end": 145,
+              "text": "His diagnosis remains focal motor epilepsy"
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.shaking_may",
+          "observed_id": "L2-A5",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-05-21",
+              "latest": "2025-05-21"
+            },
+            "end": {
+              "earliest": "2025-05-21",
+              "latest": "2025-05-21"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "on 21 May 2025",
+            "start": {
+              "earliest": "2025-05-21",
+              "latest": "2025-05-21"
+            },
+            "end": {
+              "earliest": "2025-05-21",
+              "latest": "2025-05-21"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 453,
+              "end": 959,
+              "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 444,
+              "end": 574,
+              "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.shaking_revised",
+          "observed_id": "L2-A6",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "all of those shaking events, including the February episodes",
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 453,
+              "end": 959,
+              "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 575,
+              "end": 724,
+              "text": "On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.only_epileptic",
+          "observed_id": "L2-A7",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "since November 2024",
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 453,
+              "end": 959,
+              "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 849,
+              "end": 968,
+              "text": "The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+            }
+          ]
+        }
+      ],
+      "links_on_aligned_endpoints": {
+        "reference_total": 4,
+        "observed_total": 6,
+        "reference_aligned": 0,
+        "observed_grounded_aligned": 1,
+        "relation_and_certainty_matches": 0
+      }
+    },
+    {
+      "id": "011_relationships",
+      "activity": "relationships",
+      "case": "authored_patient_011",
+      "input": "inputs/011_relationships.json",
+      "sha256": "233b63e9893fc710051c822c95365479d955b0e360d3602cd9f44e98b89fb180",
+      "capture_status": "parsed",
+      "wall_seconds": 28.39201791700907,
+      "schema_errors": [],
+      "telemetry": {
+        "conversation_id": "4acd6d3e-310c-4c08-9ce3-9114dc34cb12",
+        "status": "SUCCESS",
+        "duration_seconds": 24.914865,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 24132,
+          "output_tokens": 7682,
+          "thinking_tokens": 737,
+          "cache_read_tokens": 0,
+          "total_tokens": 31814
+        }
+      },
+      "source_characters": 2238,
+      "grounded_structure_check_error": null,
+      "offset_check_error": "Evidence span does not match source",
+      "spans": {
+        "total": 29,
+        "grounded": 29,
+        "exact_offsets": 0
+      },
+      "observed_by_family": {
+        "diagnosis": 2,
+        "seizure": 12,
+        "medication": 3,
+        "investigation": 1
+      },
+      "literal_comparison": {
+        "matching_rule": "unique identical letter_id and entire content object; no synonym mapping",
+        "reference_assertions": 16,
+        "observed_assertions": 18,
+        "matched_assertions": 5,
+        "matched_details": [
+          {
+            "reference_id": "L1.diagnosis",
+            "observed_id": "L1-A1",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.diagnosis",
+            "observed_id": "L2-A1",
+            "family": "diagnosis",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L1.carbamazepine",
+            "observed_id": "L1-A5",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.carbamazepine",
+            "observed_id": "L2-A2",
+            "family": "medication",
+            "field_agreement": {
+              "time": false,
+              "reporter": false,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          },
+          {
+            "reference_id": "L2.only_epileptic",
+            "observed_id": "L2-A7",
+            "family": "seizure",
+            "field_agreement": {
+              "time": false,
+              "reporter": true,
+              "certainty": true,
+              "polarity": true,
+              "coverage": true
+            }
+          }
+        ],
+        "by_family": {
+          "diagnosis": {
+            "reference": 2,
+            "observed": 2,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 2,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          },
+          "medication": {
+            "reference": 3,
+            "observed": 3,
+            "matched": 2,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 0,
+              "certainty": 2,
+              "polarity": 2,
+              "coverage": 2
+            }
+          },
+          "seizure": {
+            "reference": 11,
+            "observed": 12,
+            "matched": 1,
+            "field_agreement_counts": {
+              "time": 0,
+              "reporter": 1,
+              "certainty": 1,
+              "polarity": 1,
+              "coverage": 1
+            }
+          }
+        },
+        "link_comparison_on_matched_endpoints": {
+          "reference": 0,
+          "observed": 2,
+          "exact_relation_matches": 0
+        },
+        "interpretation": "limited literal representation comparison; not clinical agreement or kappa"
+      },
+      "alignment": {
+        "mapping": {
+          "L1-A1": "L1.diagnosis",
+          "L1-A7": "L1.shaking",
+          "L2-A1": "L2.diagnosis",
+          "L2-A5": "L2.shaking_may",
+          "L2-A6": "L2.shaking_revised",
+          "L2-A7": "L2.only_epileptic"
+        },
+        "candidates": {
+          "L1-A1": [
+            "L1.diagnosis"
+          ],
+          "L1-A2": [],
+          "L1-A3": [],
+          "L1-A4": [],
+          "L1-A5": [],
+          "L1-A6": [],
+          "L1-A7": [
+            "L1.shaking"
+          ],
+          "L1-A8": [],
+          "L2-A1": [
+            "L2.diagnosis"
+          ],
+          "L2-A2": [],
+          "L2-A3": [],
+          "L2-A4": [],
+          "L2-A5": [
+            "L2.shaking_may"
+          ],
+          "L2-A6": [
+            "L2.shaking_revised"
+          ],
+          "L2-A7": [
+            "L2.only_epileptic"
+          ],
+          "L3-A1": [],
+          "L3-A2": [],
+          "L3-A3": []
+        },
+        "reference_count": 16,
+        "observed_count": 18
+      },
+      "temporal_pairs": [
+        {
+          "reference_id": "L1.diagnosis",
+          "observed_id": "L1-A1",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "observed_time": {
+            "text": "today",
+            "start": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 105,
+              "end": 190,
+              "text": "Kevin attended clinic today. He has an established diagnosis of focal motor epilepsy."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 105,
+              "end": 172,
+              "text": "He has an established diagnosis of focal motor epilepsy."
+            }
+          ]
+        },
+        {
+          "reference_id": "L1.shaking",
+          "observed_id": "L1-A7",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "since November 2024, including throughout January and early February",
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-02-01",
+              "latest": "2025-02-12"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 639,
+              "end": 985,
+              "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L1",
+              "start": 622,
+              "end": 844,
+              "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February."
+            },
+            {
+              "letter_id": "L1",
+              "start": 845,
+              "end": 884,
+              "text": "I currently regard both as epileptic."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.diagnosis",
+          "observed_id": "L2-A1",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "observed_time": {
+            "text": "today",
+            "start": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 92,
+              "end": 205,
+              "text": "I reviewed Kevin in clinic today. His diagnosis remains focal motor epilepsy on carbamazepine 400 mg twice daily."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 101,
+              "end": 194,
+              "text": "His diagnosis remains focal motor epilepsy on carbamazepine 400 mg twice daily."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.shaking_may",
+          "observed_id": "L2-A5",
+          "classification": "representation_only",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-05-21",
+              "latest": "2025-05-21"
+            },
+            "end": {
+              "earliest": "2025-05-21",
+              "latest": "2025-05-21"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "21 May 2025",
+            "start": {
+              "earliest": "2025-05-21",
+              "latest": "2025-05-21"
+            },
+            "end": {
+              "earliest": "2025-05-21",
+              "latest": "2025-05-21"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 453,
+              "end": 959,
+              "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 444,
+              "end": 571,
+              "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.shaking_revised",
+          "observed_id": "L2-A6",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "today, 20 June",
+            "start": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "decision",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 453,
+              "end": 959,
+              "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 572,
+              "end": 717,
+              "text": "On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events."
+            }
+          ]
+        },
+        {
+          "reference_id": "L2.only_epileptic",
+          "observed_id": "L2-A7",
+          "classification": "kind_or_anchor_difference",
+          "reference_time": {
+            "text": null,
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": null
+          },
+          "observed_time": {
+            "text": "since November 2024",
+            "start": {
+              "earliest": "2024-11-01",
+              "latest": "2024-11-30"
+            },
+            "end": {
+              "earliest": "2025-06-20",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "reference_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 453,
+              "end": 959,
+              "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+            }
+          ],
+          "observed_evidence": [
+            {
+              "letter_id": "L2",
+              "start": 818,
+              "end": 929,
+              "text": "The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+            }
+          ]
+        }
+      ],
+      "links_on_aligned_endpoints": {
+        "reference_total": 4,
+        "observed_total": 8,
+        "reference_aligned": 1,
+        "observed_grounded_aligned": 3,
+        "relation_and_certainty_matches": 1
+      }
+    }
+  ]
+}

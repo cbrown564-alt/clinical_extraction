@@ -1,10 +1,43 @@
 # Pilot review and scoring dry run
 
-Updated: 2026-09-09. P2.6 remains incomplete. The earlier agreement, timing and
+Updated: 2026-09-10. Phase 2 is complete for the authored development pilot;
+the v0.8 completion record is at the end of this report. Earlier dated open-state
+statements describe historical checkpoints. The earlier agreement, timing and
 field-sensitivity claims are withdrawn: the script supplied constants without a
 saved independent annotation pass, timing records or field-ablation experiment.
 They must not inform schema changes, effort estimates or publication claims.
 The old machine-readable report is marked withdrawn.
+
+## Predeclared review extension (2026-09-10)
+
+Mode: Explore. Question: which temporal and relationship differences change
+supported cohort answers, and which are annotation conventions or missing
+instrumentation? Use all 12 authored development cases and the 44 saved successful
+agy outputs; retain the four failed attempts in call-level reporting. No locked
+data, new provider calls, raw-output repair or benchmark scoring changes.
+
+Review all 144 previously flagged temporal pairs against their source quotations,
+grouping identical case/assertion/time pairs while preserving every job ID.
+Record the decision, reason and any unresolved source ambiguity. Broaden link
+endpoint alignment using same-letter, same-family/status evidence overlap;
+ambiguous candidates stay explicit rather than being greedily assigned. This is
+an alignment diagnostic, not clinical link precision/recall.
+
+Extend the existing Q5 evaluator to patient 011 after checking the representative
+patient-001 behavior and boundary tests. Exercise Q1–Q4 with conservative structured
+witness evaluators across the fixed pilot requests. Compare full annotations with
+field deletion on the same inputs; stored reference answers are used only after
+prediction. Retain failures and unsupported mechanisms rather than tune references
+to the evaluator. Report exact status matches and changed decisions by query,
+with evidence IDs, source/program hashes, model_calls=0 and repair_policy=none.
+
+Stop when each review item has an evidence-backed disposition, field comparisons
+expose implemented and missing query mechanisms, and coverage/effort feasibility
+has an honest decision. Human effort cannot be inferred from machine latency;
+report saved latency and missing family-level timing separately and prepare a
+prospective timing record. No human-time estimate or clinical validation is claimed.
+Prepare a generation/QC protocol for a zero-additional-spend, seed-free next batch;
+audit public source terms separately before any source-conditioned batch.
 
 This document owns the correction record and remaining review work. The
 [task definition](task_definition.md) owns query logic; the
@@ -12,7 +45,7 @@ This document owns the correction record and remaining review work. The
 [current computed summary](../../results/longitudinal/pilot_v0.3/pilot_dry_run_report.json)
 records input hashes, program hash, provenance and per-patient baseline scores.
 
-## Current authored coverage revision: v0.3
+## Historical authored coverage revision: v0.3
 
 Cases 002, 005, 007, 011 and 012 now have explicit, versioned fictional content for
 missing coverage. Their v0.2 files remain in the source snapshot; this revision
@@ -554,3 +587,308 @@ The evaluator still does not implement all Q5 negative mechanisms or Q1–Q4.
 Verification: 18 focused tests passed, including missing/invalid evidence and a
 decision interval crossing T. Full suite: 798 passed with the same unrelated
 stale `gan-2166.md` failure. Ruff, mypy and diff whitespace checks passed.
+
+## Review extension outcome: v0.7 (2026-09-10)
+
+The [review summary](../../results/longitudinal/pilot_v0.7/review_summary.json)
+verifies all 12 case packs and all 144 flagged temporal pairs. Each pair has a
+source-backed disposition in [temporal adjudication](../../results/longitudinal/pilot_v0.7/temporal_adjudication.json),
+grouped into 123 distinct comparisons. This is Codex development review, not an
+independent clinical adjudication. Zero unreviewed flagged pairs does not mean
+zero temporal errors or complete semantic agreement.
+
+Most differences concern current-point encoding (53 pairs), current-state versus
+interval scope (30), request/proposal conventions (25) and source anchors (10).
+The review also identifies missing history, an observed decision date substituted
+for an occurrence interval, unsupported stroke-to-epilepsy onset, unapproved
+season/early-month precision and a non-use boundary including the first-use day.
+Keep source ambiguity visible; do not normalize these into agreement.
+
+Four reference time records were amended: patients 005/010 pending investigations
+are `as_of`, patient 005's early-April report has `result_available` kind with
+unknown bounds, and patient 008's past initiation has a supported upper bound at
+the visit with unknown lower bound. Patient 011 now records its explicit
+patient-wide first-reinterpretation quote. [Amendments](../../results/longitudinal/pilot_v0.7/annotation_amendments.json)
+contain before/after records; prior annotations/manifests are preserved in
+`pilot_v0.7/source_snapshot/`. Letter bytes, query dates, reference statuses and
+frozen agy inputs/outputs are unchanged. Characterization history omitted in
+patient 002 is recorded as a representation limit; it is not silently promoted
+to a clinical onset date.
+
+### Relationship alignment
+
+[Evidence-constrained alignment](../../results/longitudinal/pilot_v0.7/link_alignment.json)
+requires same letter/family/status, reporter, certainty, polarity and grounded
+overlapping evidence, then mutual uniqueness. Candidate sets remain inspectable.
+It aligns 292 assertions, with both endpoints aligned for 47/97 reference and
+72/111 observed link instances (previously 20/97 and 37/111). Thirty-six relation
+instances agree on aligned endpoints. The remaining 50 reference/39 observed
+instances are unaligned; split assertions, wording and ambiguous candidates are
+not automatically missing/spurious relationships. Paragraph overlap is an
+alignment aid, not proof of identity or entailment. Comprehensive clinical link
+agreement remains unestablished, with these unresolved cases explicitly retained.
+
+### Measured query-field dependence
+
+[Query field replay](../../results/longitudinal/pilot_v0.7/query_field_ablation.json)
+uses current authored development annotations and all 240 fixed requests. Eight
+variants each recompute answers from structured input. No model, stored answer
+lookup during prediction, text-based repair or benchmark scorer is involved.
+Exact matching is evaluated afterward; this is an incomplete evaluator diagnostic.
+
+| Query | Full reference matches / 48 | Answers changed without links | Answers changed without assertion time |
+| --- | ---: | ---: | ---: |
+| Q1 | 46 | 2 | 32 |
+| Q2 | 42 | 2 | 6 |
+| Q3 | 43 | 0 | 2 |
+| Q4 | 46 | 2 | 2 |
+| Q5 | 48 | 6 | 4 |
+
+Q5 matches 4/4 on both patients 001 and 011, including the earlier negative and
+later positives. Removing decision_time changes six Q5 answers; removing the
+first-reinterpretation field changes two. Boundary checks cover uncertain links,
+missing/invalid evidence, future cutoffs, decision intervals crossing T and an
+occurrence crossing versus lying exactly on the first included day.
+
+Q1's two without-link changes are harmful: removing an explicit conflict lets a
+reported event through. The full evaluator excludes the same-letter/name occurrence
+when its overlapping evidence describes the disputed pattern. June confirmation
+cannot settle the earlier February account. The first replay exposed this defect;
+it was fixed with a regression test, without changing the reference.
+
+The full evaluator matches 225/240 references; all 15 remaining mismatches are
+conservative indeterminate answers. The [mechanism review](../../results/longitudinal/pilot_v0.7/query_mechanism_review.json)
+records each: qualitative holiday inclusion (Q1), exhaustive historical inventory
+and retrospective scope (Q2), lifelong non-use/same-course continuity (Q3), and
+complete request/pending coverage (Q4). This result rejects freezing the current
+representation as a complete executable Q1–Q5 interface. It does not require
+fitting reference answers or claiming a model improvement.
+
+Removing source time wording or seizure-burden fields changes no status in this
+already-normalized evaluator. Retain wording for audit/qualitative time and burden
+for the history task. Zero status changes is not evidence of no history utility
+or a measured annotation saving. Removing evidence removes every decisive witness.
+
+### Coverage acceptance and effort assessment
+
+The [coverage owner](pilot_coverage_matrix.md) accepts the authored development
+minimums: required patient examples, both agreeing/differing views and at least
+two answers per query/status. This is internal coverage acceptance, not clinical
+validation or acceptance of a complete evaluator. The 240 references remain
+41 eligible, 22 ineligible and 177 indeterminate, with 15/120 differing view pairs.
+
+The effort assessment uses the 48 primary attempt records, excluding the diagnostic
+retry. Successful jobs: 44, median 57.6 seconds, nearest-rank p90 81.7 seconds,
+range 22.9–102.2 seconds; total 2,468.8 seconds. Four failed-call wall times remain
+separate. Source hashes, token records and literal-match disagreement by clinical
+family are in the review summary. Wall time includes CLI overhead; it is neither
+active inference time nor human effort. Calls bundled families/time/links, so
+within-call family timing is unidentifiable. Human annotation time and cost remain
+null. The earlier fabricated effort claims remain withdrawn.
+
+Decision: retain the fields with a named query/history purpose, do not infer
+human savings, and do not scale to 300 on these timing records. A prospective
+three-case timing procedure and empty record template are in the
+[generation protocol](generation_protocol.md). It requires an actual reviewer;
+no expert participation or measured labor is invented. P2.6 remains open for
+family-level timing and the unresolved semantic/link and executable-coverage limits.
+
+Phase 3 preparation is complete: seed-free 1 → 5 → 12 authoring/QC protocol,
+lineage policy, retained failures, resume requirements and zero-additional-paid-call
+configuration. This does not claim generation/resume code or a new batch exists.
+Source-conditioned generation awaits local release matching and lineage review;
+Gan terms remain unresolved. A seed-free one-patient authoring probe need not wait
+for those unrelated seed permissions.
+
+### Verification of this extension
+
+Twenty-two focused longitudinal tests pass. Full always-on suite: 802 passed,
+two failures in unchanged benchmark files: generated `gan-2166.md` drift and
+`test_inventory_covers_present_and_missing_cells`' stale expected inventory.
+Ruff passes for src/tests/longitudinal scripts; mypy passes across 399 source files.
+Documentation hygiene and diff formatting pass. No frontend changed; no frontend
+suite, deep-tier tests, new model calls, locked-row inspection or corpus generation.
+
+## Phase 2 completion study declared (v0.8, 2026-09-10)
+
+The user requested completion of Phase 2. Apply its original completion standard:
+an inspectable pilot, revised provisional guide/schema, independent dry run,
+measured time/disagreement and explicit unresolved cases. Perfect link alignment,
+a complete Q1–Q5 production evaluator and human expert validation are not Phase 2
+requirements. Phase 4 owns the complete executable loop; Phase 8 owns expert gold.
+The v0.7 status overstated these as unconditional Phase 2 blockers.
+
+Use the 44 saved outputs for source review of all 89 still-unaligned link instances.
+Record accepted semantics, ambiguous relationships and unsupported assertions;
+never turn an arbitrary alignment into agreement. Revise the provisional schema
+only where a demonstrated information loss has a minimal representation, starting
+with explicitly complete prior non-use history. Preserve originals and query labels.
+Retain qualitative-time and historical-scope gaps as named implementation cases;
+do not invent dates to obtain perfect replay agreement.
+
+An 18-call reference-free timing probe is prepared for patients 002, 006 and 011:
+four family extractions, a temporal-focused extraction and a relationship-focused
+extraction for each. Each call sees letters and schema only. It measures wall time
+by task activity; temporal/relationship calls also include assertion work, so they
+are not isolated compute costs for individual fields. Compare schema/grounding,
+family outputs, time fields and relations with saved reference after capture.
+Three cases are a selected diagnostic sample, not a workload estimate for 300.
+Use existing agy medium access only if it adds no per-call charge; no paid API
+fallback. Stop on the first failure, retain raw outputs and never repair semantics.
+Human time remains unmeasured and is not inferred from these calls.
+
+
+## Schema and link review: v0.8 (2026-09-10)
+
+Schema/guide v0.3 adds optional `all_prior_history_evidence`. Four explicit
+never-used assertions in patients 001 and 005 now preserve complete earlier
+non-use history without inventing a start date. The field is separate from
+`coverage: complete`: completeness over an unstated interval alone cannot refute
+a query. The checker requires grounded evidence, complete coverage, an active
+interval and a supported end date; the evaluator also checks the information
+cutoff. [Amendments](../../results/longitudinal/pilot_v0.8/annotation_amendments.json)
+record the changes, with original files in the adjacent `source_snapshot/`.
+The 36 letters, 12 query-reference files and all raw model captures are preserved.
+
+[Link adjudication](../../results/longitudinal/pilot_v0.8/link_adjudication.json)
+covers all 89 unaligned instances from v0.7, grouped into 65 comparisons with
+source quotes, endpoint assertions and original job/link IDs. The review supports
+48 groups (66 instances) with stated scope limits, retains 14 groups (20 instances)
+as uncertainty or encoding alternatives, and identifies three unsupported observed
+inferences. Those errors concern treating a maintenance decision as confirmed use,
+treating a later acknowledgment as a same-time contradiction, and interpreting
+“no medication changes” as non-initiation. None warrants rewriting the raw output.
+No unaligned instance is left unreviewed. The automatic alignment counts remain
+47/97 reference and 72/111 observed; review dispositions are not extra score matches.
+
+The uncertain patient-012 request-result identities and patient-007 identity
+certainty remain explicit. Later June evidence does not resolve patient-006's
+February reporter conflict. Pattern-to-occurrence and pattern-to-pattern encodings
+can express supported relationships without a one-to-one endpoint match. The
+annotation guide now explains these choices. This is AI development adjudication,
+not expert agreement or unrestricted semantic link accuracy.
+
+[Query field replay](../../results/longitudinal/pilot_v0.8/query_field_ablation.json)
+uses nine variants on the same 240 fixed requests. Full-input matches are Q1 46/48,
+Q2 42/48, Q3 47/48, Q4 46/48 and Q5 48/48: **229/240** overall. Removing complete
+prior-history evidence changes four Q3 answers back to indeterminate. No reference
+lookup occurs during prediction. Patient 001 and 011 Q5 each match all four
+requests; boundary checks retain uncertainty when decision/occurrence bounds
+straddle an index or when the correction evidence is unavailable.
+
+All 11 remaining full-input mismatches are conservative indeterminate answers;
+the [mechanism review](../../results/longitudinal/pilot_v0.8/query_mechanism_review.json)
+records each request and source support. They comprise two qualitative-holiday Q1
+answers, six Q2 inventory/retrospective-identity answers, one Q3 continuous-course
+answer and two Q4 pending/request-inventory negatives. These are named Phase 4
+implementation cases; the authored answers and uncertain dates are retained.
+The diagnostic cannot yet be presented as a complete query evaluator.
+
+Field retention follows demonstrated purpose: links, event time, decision time,
+first-reinterpretation scope and prior non-use scope affect status answers.
+Evidence and original time wording enable audit. Burden ranges, clusters and
+frequency wording support the patient history even where these five membership
+predicates do not change. Dose comparison, unrestricted history, broad ontologies
+and treatment-response inference remain deferred. Shared-output task latency does
+not identify the cost of an individual field and does not justify deleting one.
+
+### v0.8 field-deletion results
+
+| Variant | Exact reference matches / 240 | Answers changed from full |
+| --- | ---: | ---: |
+| `full` | 229 | 0 |
+| `without_links` | 217 | 12 |
+| `without_assertion_time` | 179 | 50 |
+| `without_decision_time` | 223 | 6 |
+| `without_first_reinterpretation_evidence` | 227 | 2 |
+| `without_evidence` | 177 | 52 |
+| `without_time_wording` | 229 | 0 |
+| `without_burden` | 229 | 0 |
+| `without_prior_history_evidence` | 225 | 4 |
+
+These are deterministic replays of authored annotations. They are not timed model
+ablations or a claim about model performance. Removing links causes two harmful
+Q1 changes by discarding explicit conflict evidence, alongside lost positive witnesses.
+
+## Timed independent annotation outcome and Phase 2 completion (v0.8)
+
+All **18/18 calls** returned parseable JSON through `agy`, requesting
+`gemini-3.8-flash-medium` at medium effort in fresh temporary projects. No tool
+steps or call/parse failures were observed; no retries or semantic repairs ran.
+The user confirmed that this access has no per-call charge. The recorded
+**£0 incremental charge is user-reported**, not returned billing telemetry.
+The [timing analysis](../../results/longitudinal/pilot_v0.8/timed_pass/analysis.json)
+and adjacent original captures preserve prompt/input hashes, model request,
+wall time, output and QC separately. All three-letter histories were available
+for these timing tasks; this probe does not score cutoff-specific model answers.
+
+| Activity | Calls | Median seconds | Range seconds | Schema valid | Grounded structure valid |
+| --- | ---: | ---: | --- | ---: | ---: |
+| Diagnosis | 3 | 46.0 | 20.8–47.5 | 3/3 | 3/3 |
+| Seizure | 3 | 123.2 | 100.5–166.1 | 3/3 | 2/3 |
+| Medication | 3 | 126.7 | 55.6–140.8 | 3/3 | 3/3 |
+| Investigation | 3 | 74.4 | 49.6–123.7 | 3/3 | 3/3 |
+| Temporal | 3 | 27.9 | 18.3–64.2 | 3/3 | 3/3 |
+| Relationships | 3 | 98.5 | 28.4–103.0 | 2/3 | 2/3 |
+
+Total call wall time is **1,415.2 seconds (23.6 minutes)**. These observations
+include CLI/provider overhead and output generation, with fixed task order and
+three selected cases. They do not estimate human work, population workload or
+isolated field cost. The two focused activities also extract assertions. Faster
+calls are not necessarily better: all offsets in the patient-006/011 temporal
+outputs and patient-011 relationship output are wrong, despite grounded quotes.
+
+Seventeen outputs satisfy the schema, sixteen also pass grounded structural
+checks, and nine pass exact-offset checks. Across the 17 schema-valid outputs,
+all 177 quoted span instances are grounded, but only 83 offsets are exact.
+The [quality review](../../results/longitudinal/pilot_v0.8/timed_pass/quality_review.json)
+records the dangling ID, invalid investigation values and eight outputs with
+bad offsets. An output's successful capture is distinct from accepting its annotation.
+
+Family-specific literal comparison has 6 diagnosis, 4 seizure, 8 medication and
+0 investigation pairs; differently worded or split assertions remain unpaired.
+The medication pairs all differ in reporter attribution and time. The authoring
+reference often implies a patient source where the output uses the clinician's
+narrative voice; the proposed increase uses clinician versus mixed attribution.
+These eight attribution differences are explicitly unresolved, rather than
+counted as clinical errors or used to change labels toward agreement. The guide's
+requirement to preserve the actual reporter still applies; unknown attribution
+must be resolved or flagged before freezing scored annotations.
+
+Across evidence-constrained matches in all activities, 41 temporal pairs contain
+13 representation-only differences, 18 kind/anchor differences and 10 bound
+differences. The relationship-focused activity has two schema-valid outputs;
+on their limited aligned endpoints, one reference and four observed links are
+comparable, with one relation-and-certainty match. These small denominators and
+raw candidates are reported instead of an unrestricted agreement score. The new
+probe's remaining differences stay explicit; it does not replace the earlier
+source-backed temporal/link adjudication.
+
+**Effort decision:** the observed three-case AI workload is feasible for the
+bounded seed-free Phase 3 probe within the confirmed access arrangement. It does
+not support an estimate for human annotation or generation of 300 patients.
+Seizure and medication tasks consumed more wall time in this sample, but output
+volume, omissions and service variation prevent assigning that cost to individual
+fields. No field with a query or history purpose is removed on this evidence.
+The prospective human timing procedure remains unrun and belongs to later
+capacity/validation decisions; it is not substituted with model latency.
+
+**Phase 2 is complete for the authored synthetic development pilot.** Its original
+completion criterion explicitly permits unresolved cases and a provisional
+schema. The complete cohort user loop remains Phase 4 work; expert annotation
+remains Phase 8. This disposition corrects the earlier overbroad blocker list,
+without claiming either of those later outcomes.
+
+| Requirement | Completion evidence |
+| --- | --- |
+| P2.1 Representative patient and both views | Patient 001: three letters, 20 answers, four filtered input sets and boundary/evidence checks. |
+| P2.2–P2.4 Guide, family meanings, time and links | Paired provisional guide/schema v0.3; source-backed amendments; explicit temporal, reporter and relationship uncertainty. |
+| P2.5 Expanded pilot and coverage | 12 patients, 36 unchanged letters, 240 fixed requests; all required coverage minimums internally accepted. |
+| P2.6 Independent dry run, measured effort/disagreement, revision | Original 48-job pass (44 outputs/four retained failures), 144 temporal-pair dispositions, 89 unaligned-link dispositions, 18 new timed calls, family/time/link diagnostics, nine field variants and the prior-history revision. |
+| Verification | 23 focused tests pass; evidence-package replay and preservation checks pass. Full always-on suite: 803 passed and the same two unrelated benchmark documentation/inventory failures. Ruff, mypy (399 source files), documentation hygiene and diff checks pass. |
+
+The [completion checks](../../results/longitudinal/pilot_v0.8/completion_checks.json)
+verify source preservation, review coverage, replay parity and configuration hashes.
+The next executable action is Phase 3's seed-free one-patient generation/QC/resume
+implementation under [protocol v0.2](generation_protocol.md), then review before
+five/twelve-patient expansion. No new generated corpus or clinical validation is claimed.

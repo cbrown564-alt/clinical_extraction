@@ -1,0 +1,220 @@
+{
+  "evidence": [
+    {
+      "evidence_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "text": "At this routine outpatient review, the established diagnosis remains focal epilepsy.",
+      "start": 79,
+      "end": 163
+    },
+    {
+      "evidence_id": "L1.pattern",
+      "letter_id": "L1",
+      "text": "The patient describes the same brief focal impaired-awareness seizures, with 1 to 2 per month between 1 October 2024 and today, 1 February 2025. The most recent occurred on 20 January 2025. Asked about the entire period, the patient reports no other event types.",
+      "start": 165,
+      "end": 427
+    },
+    {
+      "evidence_id": "L2.copied",
+      "letter_id": "L2",
+      "text": "The following diagnosis is copied as background from the February letter: the diagnosis remains focal epilepsy.",
+      "start": 79,
+      "end": 190
+    },
+    {
+      "evidence_id": "L2.pattern",
+      "letter_id": "L2",
+      "text": "For the period from 2 February to 31 July 2025, the patient reports continued activity of the same focal impaired-awareness pattern at 1 to 2 seizures per month. The last was on 20 July 2025. There have been no other event types anywhere in this interval.",
+      "start": 192,
+      "end": 447
+    },
+    {
+      "evidence_id": "L3.admin",
+      "letter_id": "L3",
+      "text": "This attendance was used only to arrange the next outpatient appointment. No clinical history was taken and no clinical review took place.",
+      "start": 79,
+      "end": 217
+    }
+  ],
+  "links": [
+    {
+      "link_id": "copied-diagnosis",
+      "earlier_evidence": "L1.diagnosis",
+      "later_evidence": "L2.copied",
+      "supporting_evidence": [],
+      "relation": "repeats"
+    },
+    {
+      "link_id": "same-followup",
+      "earlier_evidence": "L1.pattern",
+      "later_evidence": "L2.pattern",
+      "supporting_evidence": [],
+      "relation": "updates"
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L1.pattern"
+      ],
+      "reason": "The established epilepsy diagnosis and a focal seizure on 20 January support the conjunction within this 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.pattern"
+      ],
+      "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L1.pattern"
+      ],
+      "reason": "The established epilepsy diagnosis and a focal seizure on 20 January support the conjunction within this 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L1.pattern"
+      ],
+      "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L2.pattern"
+      ],
+      "reason": "The established epilepsy diagnosis and a focal seizure on 20 July support the conjunction within this 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L2.pattern"
+      ],
+      "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L2.pattern"
+      ],
+      "reason": "The established epilepsy diagnosis and a focal seizure on 20 July support the conjunction within this 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L2.pattern"
+      ],
+      "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval.",
+      "link_ids": []
+    }
+  ],
+  "case_id": "generated-005",
+  "version": "2",
+  "reference_kind": "provisional same-assistant text review; not expert gold"
+}

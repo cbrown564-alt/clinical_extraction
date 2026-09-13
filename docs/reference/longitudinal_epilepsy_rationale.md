@@ -110,3 +110,18 @@ these tracked documents.
 
 These are project inferences. Their executable definitions and revision conditions
 are in the task definition; expert review and empirical benefit are still absent.
+
+
+### Source-use recheck for Phase 3 preparation (2026-09-10)
+
+The official [Zenodo metadata endpoint](https://zenodo.org/api/records/8381080)
+was retrieved after the HTML record timed out. It confirms release version 1,
+CC BY 4.0 and the listed creators; the response hash and attribution metadata are
+saved in the [source-use audit](../../results/longitudinal/pilot_v0.7/source_use_audit.json).
+This verifies release terms, not local-byte equivalence or seed independence.
+The [Gan paper](https://arxiv.org/html/2603.11407v1) still identifies shared base
+letters/descriptions; the local subset's matching release and licence were not
+found in the checked paper or public search. No source record was selected.
+The prepared [generation protocol](../longitudinal/generation_protocol.md) therefore
+uses seed-free authoring; source-conditioned use remains conditional on the stated
+release/lineage audit. No external permission or clinical collaboration is implied.

@@ -1,0 +1,41 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "a1",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 597,
+          "end": 614,
+          "text": "No EEG requested."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "negated",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "end": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "kind": "decision",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "requested",
+        "result": null,
+        "request_count": null
+      }
+    }
+  ],
+  "links": []
+}

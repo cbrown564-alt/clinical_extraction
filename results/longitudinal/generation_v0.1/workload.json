@@ -1,0 +1,19 @@
+{
+  "started_at": "2026-09-10T21:39:46+00:00",
+  "ended_at": "2026-09-10T22:59:55.141466+00:00",
+  "elapsed_minutes": 80.15235776666667,
+  "scope": "Protocol, implementation, authoring, repeated review, debugging, regeneration and verification up to package creation. Includes inactive/tool time; not isolated annotation effort. Documentation finishing time is outside this endpoint.",
+  "source": "Recorded task session start and current wall clock; raw per-capture and review timestamps are also retained.",
+  "human_effort_minutes": null,
+  "additional_provider_calls": 0,
+  "additional_api_cost_gbp": 0,
+  "assistant_account_cost": null,
+  "python": "3.14.4 (main, Apr  7 2026, 13:13:20) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "versions": {
+    "jsonschema": "4.26.0",
+    "pytest": "9.0.3",
+    "ruff": "0.15.15",
+    "mypy": "2.1.0"
+  }
+}

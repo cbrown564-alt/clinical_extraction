@@ -1,0 +1,11 @@
+{
+  "patient_id": "generated-012",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-012 | age 52\nConsultation: 2025-02-01\n\nCarried-forward Dx: epilepsy.\n\nPatient: prolonged shaking, 2/month, 1 Nov 2024–20 Jan 2025; last 20 Jan. Recorded as epileptic. Only event type reported throughout 1 Nov 2024–1 Feb 2025.\n\nPatient confirms lamotrigine start: 10 Jan 2025.\n\nEEG requested 5 Jan 2025. Result not documented here.\n"
+    }
+  ]
+}

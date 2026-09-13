@@ -1,0 +1,4 @@
+Fictional outpatient letter | generated-011 | age 51
+Consultation: 2025-12-10
+
+Admin attendance only; follow-up rearranged. No clinical information.

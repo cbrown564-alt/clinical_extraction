@@ -1,0 +1,58 @@
+{
+  "checked": "2026-09-10",
+  "exect_release": {
+    "url": "https://zenodo.org/records/8381080",
+    "api_url": "https://zenodo.org/api/records/8381080",
+    "response_sha256": "69a2c2978702d3588b8c7b8337b8b3ee71eb3e84fc8531bdc1f87059d09b8a05",
+    "id": 8381080,
+    "doi": "10.5281/zenodo.8381080",
+    "title": "Gold standard annotation of epilepsy clinic letters for the development of information extraction tools",
+    "version": "version 1",
+    "license": {
+      "id": "cc-by-4.0"
+    },
+    "access_right": "open",
+    "creators": [
+      "Fonferko-Shadrach, Beata",
+      "Strafford, Huw",
+      "Jones, Carys",
+      "Khan, Russell",
+      "Brown, Sharon",
+      "Edwards, Jenny",
+      "Hawken, Jonathan",
+      "Shrimpton,  L",
+      "White, Cathy P",
+      "Powell, Robert",
+      "Sawhney, IMS",
+      "Pickrell, William Owen",
+      "Lacey, Arron"
+    ],
+    "local_release_match": null,
+    "source_records_selected": 0
+  },
+  "gan": {
+    "checked_source": "https://arxiv.org/html/2603.11407v1",
+    "finding": "Paper describes ten base letters and synthetic frequency descriptions. No matching release/license for the local 1500-letter subset identified.",
+    "source_conditioned_use": "not_cleared",
+    "source_records_selected": 0
+  },
+  "next_batch": {
+    "origin": "seed_free",
+    "source_record_ids": [],
+    "upstream_seed_families": [],
+    "split": "development_only",
+    "new_patient_family_rule": "One new authoring family per independently authored history; descendants of shared histories/templates stay in the same connected group."
+  },
+  "split_metadata": [
+    {
+      "path": "data/ExECTv2 (2025)/splits/exectv2_split_v2.json",
+      "sha256": "d5109b158d18c4234a86d4dacfc9621421351045b5d4b9351479b941ebb92cbc",
+      "inspection": "metadata only; no source rows or locked IDs displayed"
+    },
+    {
+      "path": "data/Gan (2026)/splits/gan2026_split_v1.json",
+      "sha256": "c5f512d8744261916bd6d92562430489a3ba0494b0bf7c6575bfaa9e58680143",
+      "inspection": "metadata only; no source rows or locked IDs displayed"
+    }
+  ]
+}

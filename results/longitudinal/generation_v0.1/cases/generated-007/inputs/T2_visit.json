@@ -1,0 +1,11 @@
+{
+  "patient_id": "generated-007",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-007 | age 47\nConsultation: 2025-02-01\n\nThis outpatient review concerns the patient’s established focal epilepsy.\n\nThe patient reports no epileptic seizures at all between 1 November 2024 and today, 1 February 2025. In particular, the patient disputes that the caregiver’s reported episode on 15 January occurred.\n\nThe caregiver gives a different account, reporting a focal seizure on 15 January 2025. I cannot resolve whether that specific episode occurred or whether it was epileptic.\n"
+    }
+  ]
+}

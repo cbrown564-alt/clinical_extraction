@@ -1,0 +1,77 @@
+{
+  "program_version": "longitudinal-prototype-0.1",
+  "patients": [
+    {
+      "id": "authored_patient_001",
+      "case_id": "authored-001",
+      "label": "Patient 001",
+      "origin": "AI-authored fictional development example; no source seed or real patient"
+    },
+    {
+      "id": "authored_patient_002",
+      "case_id": "authored-002",
+      "label": "Patient 002",
+      "origin": "AI-authored fictional development example (Ordinary unchanged follow-up, stable seizure frequency, established monotherapy); no source seed or real patient"
+    },
+    {
+      "id": "authored_patient_003",
+      "case_id": "authored-003",
+      "label": "Patient 003",
+      "origin": "AI-authored fictional development example (Copied boilerplate history with subtle breakthrough event appended); no source seed or real patient"
+    },
+    {
+      "id": "authored_patient_004",
+      "case_id": "authored-004",
+      "label": "Patient 004",
+      "origin": "AI-authored fictional development example (Change of descriptive terminology without change in pathology); no source seed or real patient"
+    },
+    {
+      "id": "authored_patient_005",
+      "case_id": "authored-005",
+      "label": "Patient 005",
+      "origin": "AI-authored fictional development example (Sparse dates and fuzzy temporal bounds with outpatient EEG); no source seed or real patient"
+    },
+    {
+      "id": "authored_patient_006",
+      "case_id": "authored-006",
+      "label": "Patient 006",
+      "origin": "AI-authored fictional development example (Contradictory reports between informants, preserved without voting); no source seed or real patient"
+    },
+    {
+      "id": "authored_patient_007",
+      "case_id": "authored-007",
+      "label": "Patient 007",
+      "origin": "AI-authored fictional development example (No-reference letters without explicit discursive cross-references); no source seed or real patient"
+    },
+    {
+      "id": "authored_patient_008",
+      "case_id": "authored-008",
+      "label": "Patient 008",
+      "origin": "AI-authored fictional development example (Irregular follow-up with 18-month gap, medication discontinuation, and cluster relapse); no source seed or real patient"
+    },
+    {
+      "id": "authored_patient_009",
+      "case_id": "authored-009",
+      "label": "Patient 009",
+      "origin": "AI-authored fictional development example (Missing outcomes and incomplete negative reporting (unrecorded test/drug results)); no source seed or real patient"
+    },
+    {
+      "id": "authored_patient_010",
+      "case_id": "authored-010",
+      "label": "Patient 010",
+      "origin": "AI-authored fictional development example (Actual medication start and titration, qualifying EEG with confirmed result); no source seed or real patient"
+    },
+    {
+      "id": "authored_patient_011",
+      "case_id": "authored-011",
+      "label": "Patient 011",
+      "origin": "AI-authored fictional development example (Seizure clusters vs isolated events, testing cluster count and burden schema); no source seed or real patient"
+    },
+    {
+      "id": "authored_patient_012",
+      "case_id": "authored-012",
+      "label": "Patient 012",
+      "origin": "AI-authored fictional development example (Ambiguous semiology with unresolved diagnostic classification (epilepsy vs migraine aura)); no source seed or real patient"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "rendered_payload": "results/longitudinal/pilot_v0.6/schema_v0.2_input_preview.json",
+  "sha256": "08991b71294640e1d00b97d6a707169a7b03b169ec378d263bb0cefee30e48b5",
+  "deployed_payload_changed": false,
+  "guide_version": "0.2",
+  "rendered_prompt_inspected": true,
+  "plain_language": true,
+  "research_metadata_separate": true,
+  "non_obvious_schema_fields_described": true,
+  "jargon_removed_or_defined": true,
+  "length_matches_purpose": true,
+  "controlled_deviations": null,
+  "new_model_calls": 0
+}

@@ -1,0 +1,38 @@
+{
+  "date": "2026-09-10",
+  "scope": "Phase 2 authored-development changes and evidence; existing benchmark failures remain separate",
+  "focused_pytest": {
+    "command": "python -m pytest tests/test_longitudinal_annotations.py -q",
+    "passed": 23,
+    "failed": 0
+  },
+  "always_on_pytest": {
+    "command": "python -m pytest",
+    "passed": 803,
+    "failed": 2,
+    "failures": [
+      "tests/test_architecture_stage_manifests.py::test_published_documents_match_the_pipeline \u2014 stale gan-2166 generated documentation",
+      "tests/test_paper_experiments.py::test_inventory_covers_present_and_missing_cells \u2014 stale expected inventory omits six aggregate Gan cells"
+    ],
+    "log": "scratch/longitudinal-review/pytest-v08-final.txt",
+    "log_sha256": "d335881739f625ec5a9affad6126040fe6fbd1334c92a4dde7fdce623db6feb6",
+    "preexisting": true
+  },
+  "ruff": "ruff check src tests scripts/longitudinal \u2014 pass",
+  "mypy": "mypy src \u2014 pass, 399 files",
+  "documentation_hygiene": "python scripts/check_doc_hygiene.py \u2014 pass",
+  "diff_format": "git diff --check \u2014 pass",
+  "active_markdown_targets_checked": 12,
+  "missing_markdown_targets": [],
+  "offline_evidence_verifier": "python scripts/longitudinal/verify_phase2_pilot.py \u2014 pass",
+  "not_run": [
+    "deep pytest tier (no deep-only obligation changed)",
+    "frontend tests/browser QA (no frontend changed)"
+  ],
+  "source_and_reference_preservation": "preserved_inputs.json and completion_checks.json",
+  "new_model_calls": 18,
+  "call_or_parse_failures": 0,
+  "semantic_repair": false,
+  "clinical_validation": false,
+  "human_time_measured": false
+}

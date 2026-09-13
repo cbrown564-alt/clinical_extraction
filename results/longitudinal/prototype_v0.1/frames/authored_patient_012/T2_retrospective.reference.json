@@ -1,0 +1,2418 @@
+{
+  "program_version": "longitudinal-prototype-0.1",
+  "status": "ready",
+  "provenance": {
+    "mode": "provisional_reference_facts",
+    "expert_review": false
+  },
+  "documents": [
+    {
+      "letter_id": "L1",
+      "version": 2,
+      "visit_date": "2025-03-05",
+      "available_date": "2025-03-05",
+      "path": "letters/L1.txt",
+      "sha256": "fc0d3bf80dbd46071f8e2ed2c102aa63afe9bf5ed715fc16003a578cb45ae855",
+      "text": "Epilepsy clinic letter\nConsultation: 05 March 2025\nPatient: Laura Chen, aged 28\n\nDear colleague,\n\nLaura attended our clinic following referral for episodic paroxysmal sensory symptoms.\n\nShe describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications.\n\nWe arranged brain MRI and routine outpatient EEG. Follow-up in four months.\n\nLaura says she has never lost awareness during her sensory episodes. Her mother reports that Laura did not respond to her voice during the episode on 28 February and believes awareness was lost. Laura disputes this account. I have not resolved this reporter disagreement; neither report settles the epilepsy versus migraine differential.\n"
+    },
+    {
+      "letter_id": "L2",
+      "version": 1,
+      "visit_date": "2025-07-16",
+      "available_date": "2025-07-16",
+      "path": "letters/L2.txt",
+      "sha256": "3b07469ecbf4443e6f7d3c3a5d33f9f6b8bf47d91f5a0fee4c7d861b59b4a28b",
+      "text": "Epilepsy clinic letter\nConsultation: 16 July 2025\nPatient: Laura Chen\n\nDear colleague,\n\nI reviewed Laura today. Her brain MRI was completely normal.\n\nShe continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved.\n\nNo anti-seizure medication commenced. We agreed to arrange prolonged ambulatory EEG monitoring. Follow-up in four months.\n"
+    },
+    {
+      "letter_id": "L3",
+      "version": 1,
+      "visit_date": "2025-11-14",
+      "available_date": "2025-11-14",
+      "path": "letters/L3.txt",
+      "sha256": "b2dca410b6205702e2de4a55a4f7ec7cdaeeb627e13d90affb49044165bf6a84",
+      "text": "Epilepsy clinic letter\nConsultation: 14 November 2025\nPatient: Laura Chen\n\nDear colleague,\n\nLaura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura.\n\nNo medication changes. Review in six months.\n"
+    }
+  ],
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "L1.diagnosis",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "possible",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal sensory epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L2.diagnosis",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "possible",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal sensory epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L3.diagnosis",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "possible",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-11-14",
+            "latest": "2025-11-14"
+          },
+          "end": {
+            "earliest": "2025-11-14",
+            "latest": "2025-11-14"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal sensory epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L1.pattern",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "sensory episode"
+          ],
+          "kind": "pattern",
+          "interpretation": "uncertain",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "roughly weekly",
+            "count": {
+              "lower": 1,
+              "upper": 1
+            },
+            "period": {
+              "amount": {
+                "lower": 1,
+                "upper": 1
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "L2.pattern",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "sensory episode"
+          ],
+          "kind": "pattern",
+          "interpretation": "uncertain",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "roughly weekly",
+            "count": {
+              "lower": 1,
+              "upper": 1
+            },
+            "period": {
+              "amount": {
+                "lower": 1,
+                "upper": 1
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "L3.pattern",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-11-14",
+            "latest": "2025-11-14"
+          },
+          "end": {
+            "earliest": "2025-11-14",
+            "latest": "2025-11-14"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "sensory episode"
+          ],
+          "kind": "pattern",
+          "interpretation": "uncertain",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1.latest",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-28",
+            "latest": "2025-02-28"
+          },
+          "end": {
+            "earliest": "2025-02-28",
+            "latest": "2025-02-28"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "sensory episode"
+          ],
+          "kind": "occurrence",
+          "interpretation": "uncertain",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L2.latest",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-07-10",
+            "latest": "2025-07-10"
+          },
+          "end": {
+            "earliest": "2025-07-10",
+            "latest": "2025-07-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "sensory episode"
+          ],
+          "kind": "occurrence",
+          "interpretation": "uncertain",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L3.captured_event",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "unknown",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "sensory episode"
+          ],
+          "kind": "occurrence",
+          "interpretation": "uncertain",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1.mri_request",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 696,
+            "end": 772,
+            "text": "We arranged brain MRI and routine outpatient EEG. Follow-up in four months.\n"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "MRI",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L1.eeg_request",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 696,
+            "end": 772,
+            "text": "We arranged brain MRI and routine outpatient EEG. Follow-up in four months.\n"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L2.mri_result",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 88,
+            "end": 148,
+            "text": "I reviewed Laura today. Her brain MRI was completely normal."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "unknown",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "MRI",
+          "status": "result",
+          "result": "completely normal",
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L2.eeg_result",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "unknown",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "result",
+          "result": "non-specific theta slowing without epileptiform discharges",
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L2.ambulatory_request",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 556,
+            "end": 678,
+            "text": "No anti-seizure medication commenced. We agreed to arrange prolonged ambulatory EEG monitoring. Follow-up in four months.\n"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L3.ambulatory_performed",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "unknown",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "performed",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L3.ambulatory_result",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "unknown",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "result",
+          "result": "typical sensory episode without clear electrographic correlate",
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L1.no_asm",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "anti-seizure medication",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L2.no_asm",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 556,
+            "end": 678,
+            "text": "No anti-seizure medication commenced. We agreed to arrange prolonged ambulatory EEG monitoring. Follow-up in four months.\n"
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "medication",
+          "name": "anti-seizure medication",
+          "status": "started",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L1.patient_awareness",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 773,
+            "end": 1110,
+            "text": "Laura says she has never lost awareness during her sensory episodes. Her mother reports that Laura did not respond to her voice during the episode on 28 February and believes awareness was lost. Laura disputes this account. I have not resolved this reporter disagreement; neither report settles the epilepsy versus migraine differential."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-28",
+            "latest": "2025-02-28"
+          },
+          "end": {
+            "earliest": "2025-02-28",
+            "latest": "2025-02-28"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "sensory episode without loss of awareness"
+          ],
+          "kind": "pattern",
+          "interpretation": "uncertain",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1.mother_awareness",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 773,
+            "end": 1110,
+            "text": "Laura says she has never lost awareness during her sensory episodes. Her mother reports that Laura did not respond to her voice during the episode on 28 February and believes awareness was lost. Laura disputes this account. I have not resolved this reporter disagreement; neither report settles the epilepsy versus migraine differential."
+          }
+        ],
+        "reporter": "caregiver",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-02-28",
+            "latest": "2025-02-28"
+          },
+          "end": {
+            "earliest": "2025-02-28",
+            "latest": "2025-02-28"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "sensory episode with loss of awareness"
+          ],
+          "kind": "pattern",
+          "interpretation": "uncertain",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "L1.latest__L1.pattern__same_pattern",
+        "earlier_assertion": "L1.latest",
+        "later_assertion": "L1.pattern",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L1.latest__L2.latest__same_pattern",
+        "earlier_assertion": "L1.latest",
+        "later_assertion": "L2.latest",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          },
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L1.pattern__L2.latest__same_pattern",
+        "earlier_assertion": "L1.pattern",
+        "later_assertion": "L2.latest",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          },
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L1.latest__L2.pattern__same_pattern",
+        "earlier_assertion": "L1.latest",
+        "later_assertion": "L2.pattern",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          },
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L1.pattern__L2.pattern__same_pattern",
+        "earlier_assertion": "L1.pattern",
+        "later_assertion": "L2.pattern",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          },
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L2.latest__L2.pattern__same_pattern",
+        "earlier_assertion": "L2.latest",
+        "later_assertion": "L2.pattern",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L1.latest__L3.captured_event__same_pattern",
+        "earlier_assertion": "L1.latest",
+        "later_assertion": "L3.captured_event",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          },
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L1.pattern__L3.captured_event__same_pattern",
+        "earlier_assertion": "L1.pattern",
+        "later_assertion": "L3.captured_event",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          },
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L2.latest__L3.captured_event__same_pattern",
+        "earlier_assertion": "L2.latest",
+        "later_assertion": "L3.captured_event",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          },
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L2.pattern__L3.captured_event__same_pattern",
+        "earlier_assertion": "L2.pattern",
+        "later_assertion": "L3.captured_event",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          },
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L1.latest__L3.pattern__same_pattern",
+        "earlier_assertion": "L1.latest",
+        "later_assertion": "L3.pattern",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          },
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L1.pattern__L3.pattern__same_pattern",
+        "earlier_assertion": "L1.pattern",
+        "later_assertion": "L3.pattern",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 186,
+            "end": 694,
+            "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+          },
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L2.latest__L3.pattern__same_pattern",
+        "earlier_assertion": "L2.latest",
+        "later_assertion": "L3.pattern",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          },
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L2.pattern__L3.pattern__same_pattern",
+        "earlier_assertion": "L2.pattern",
+        "later_assertion": "L3.pattern",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 554,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+          },
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      },
+      {
+        "link_id": "L3.captured_event__L3.pattern__same_pattern",
+        "earlier_assertion": "L3.captured_event",
+        "later_assertion": "L3.pattern",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 337,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      }
+    ]
+  },
+  "history": [
+    {
+      "assertion_ids": [
+        "L1.diagnosis"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.diagnosis",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "possible",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "end": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "diagnosis",
+            "name": "focal sensory epilepsy",
+            "phase": "current"
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L2.diagnosis"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L2.diagnosis",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "possible",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "end": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "diagnosis",
+            "name": "focal sensory epilepsy",
+            "phase": "current"
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L3.diagnosis"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L3.diagnosis",
+          "letter_id": "L3",
+          "evidence": [
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "possible",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-11-14",
+              "latest": "2025-11-14"
+            },
+            "end": {
+              "earliest": "2025-11-14",
+              "latest": "2025-11-14"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L3"
+          },
+          "content": {
+            "family": "diagnosis",
+            "name": "focal sensory epilepsy",
+            "phase": "current"
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1.mri_request"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.mri_request",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 696,
+              "end": 772,
+              "text": "We arranged brain MRI and routine outpatient EEG. Follow-up in four months.\n"
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "end": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "MRI",
+            "status": "requested",
+            "result": null,
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1.eeg_request"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.eeg_request",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 696,
+              "end": 772,
+              "text": "We arranged brain MRI and routine outpatient EEG. Follow-up in four months.\n"
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "end": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "EEG",
+            "status": "requested",
+            "result": null,
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L2.mri_result"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L2.mri_result",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 88,
+              "end": 148,
+              "text": "I reviewed Laura today. Her brain MRI was completely normal."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "unknown",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "MRI",
+            "status": "result",
+            "result": "completely normal",
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L2.eeg_result"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L2.eeg_result",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "unknown",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "EEG",
+            "status": "result",
+            "result": "non-specific theta slowing without epileptiform discharges",
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L2.ambulatory_request"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L2.ambulatory_request",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 556,
+              "end": 678,
+              "text": "No anti-seizure medication commenced. We agreed to arrange prolonged ambulatory EEG monitoring. Follow-up in four months.\n"
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "end": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "EEG",
+            "status": "requested",
+            "result": null,
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L3.ambulatory_performed"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L3.ambulatory_performed",
+          "letter_id": "L3",
+          "evidence": [
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "unknown",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "EEG",
+            "status": "performed",
+            "result": null,
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L3.ambulatory_result"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L3.ambulatory_result",
+          "letter_id": "L3",
+          "evidence": [
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "unknown",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "EEG",
+            "status": "result",
+            "result": "typical sensory episode without clear electrographic correlate",
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1.no_asm"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.no_asm",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "negated",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "end": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "medication",
+            "name": "anti-seizure medication",
+            "status": "taking",
+            "condition": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L2.no_asm"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L2.no_asm",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 556,
+              "end": 678,
+              "text": "No anti-seizure medication commenced. We agreed to arrange prolonged ambulatory EEG monitoring. Follow-up in four months.\n"
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "negated",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "medication",
+            "name": "anti-seizure medication",
+            "status": "started",
+            "condition": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1.patient_awareness"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.patient_awareness",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 773,
+              "end": 1110,
+              "text": "Laura says she has never lost awareness during her sensory episodes. Her mother reports that Laura did not respond to her voice during the episode on 28 February and believes awareness was lost. Laura disputes this account. I have not resolved this reporter disagreement; neither report settles the epilepsy versus migraine differential."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-28",
+              "latest": "2025-02-28"
+            },
+            "end": {
+              "earliest": "2025-02-28",
+              "latest": "2025-02-28"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "sensory episode without loss of awareness"
+            ],
+            "kind": "pattern",
+            "interpretation": "uncertain",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1.mother_awareness"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.mother_awareness",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 773,
+              "end": 1110,
+              "text": "Laura says she has never lost awareness during her sensory episodes. Her mother reports that Laura did not respond to her voice during the episode on 28 February and believes awareness was lost. Laura disputes this account. I have not resolved this reporter disagreement; neither report settles the epilepsy versus migraine differential."
+            }
+          ],
+          "reporter": "caregiver",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-28",
+              "latest": "2025-02-28"
+            },
+            "end": {
+              "earliest": "2025-02-28",
+              "latest": "2025-02-28"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "sensory episode with loss of awareness"
+            ],
+            "kind": "pattern",
+            "interpretation": "uncertain",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1.latest",
+        "L1.pattern",
+        "L2.latest",
+        "L2.pattern",
+        "L3.captured_event",
+        "L3.pattern"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1.latest",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-02-28",
+              "latest": "2025-02-28"
+            },
+            "end": {
+              "earliest": "2025-02-28",
+              "latest": "2025-02-28"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "sensory episode"
+            ],
+            "kind": "occurrence",
+            "interpretation": "uncertain",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        },
+        {
+          "assertion_id": "L1.pattern",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "end": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "sensory episode"
+            ],
+            "kind": "pattern",
+            "interpretation": "uncertain",
+            "scope": "named_pattern",
+            "burden": {
+              "kind": "rate",
+              "text": "roughly weekly",
+              "count": {
+                "lower": 1,
+                "upper": 1
+              },
+              "period": {
+                "amount": {
+                  "lower": 1,
+                  "upper": 1
+                },
+                "unit": "week"
+              },
+              "events_per_cluster": null,
+              "approximate": true
+            }
+          }
+        },
+        {
+          "assertion_id": "L2.latest",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-07-10",
+              "latest": "2025-07-10"
+            },
+            "end": {
+              "earliest": "2025-07-10",
+              "latest": "2025-07-10"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "sensory episode"
+            ],
+            "kind": "occurrence",
+            "interpretation": "uncertain",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        },
+        {
+          "assertion_id": "L2.pattern",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "end": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "sensory episode"
+            ],
+            "kind": "pattern",
+            "interpretation": "uncertain",
+            "scope": "named_pattern",
+            "burden": {
+              "kind": "rate",
+              "text": "roughly weekly",
+              "count": {
+                "lower": 1,
+                "upper": 1
+              },
+              "period": {
+                "amount": {
+                  "lower": 1,
+                  "upper": 1
+                },
+                "unit": "week"
+              },
+              "events_per_cluster": null,
+              "approximate": true
+            }
+          }
+        },
+        {
+          "assertion_id": "L3.captured_event",
+          "letter_id": "L3",
+          "evidence": [
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "unknown",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "sensory episode"
+            ],
+            "kind": "occurrence",
+            "interpretation": "uncertain",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        },
+        {
+          "assertion_id": "L3.pattern",
+          "letter_id": "L3",
+          "evidence": [
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-11-14",
+              "latest": "2025-11-14"
+            },
+            "end": {
+              "earliest": "2025-11-14",
+              "latest": "2025-11-14"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L3"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "sensory episode"
+            ],
+            "kind": "pattern",
+            "interpretation": "uncertain",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": [
+        {
+          "link_id": "L1.latest__L1.pattern__same_pattern",
+          "earlier_assertion": "L1.latest",
+          "later_assertion": "L1.pattern",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L1.latest__L2.latest__same_pattern",
+          "earlier_assertion": "L1.latest",
+          "later_assertion": "L2.latest",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            },
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L1.pattern__L2.latest__same_pattern",
+          "earlier_assertion": "L1.pattern",
+          "later_assertion": "L2.latest",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            },
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L1.latest__L2.pattern__same_pattern",
+          "earlier_assertion": "L1.latest",
+          "later_assertion": "L2.pattern",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            },
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L1.pattern__L2.pattern__same_pattern",
+          "earlier_assertion": "L1.pattern",
+          "later_assertion": "L2.pattern",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            },
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L2.latest__L2.pattern__same_pattern",
+          "earlier_assertion": "L2.latest",
+          "later_assertion": "L2.pattern",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L1.latest__L3.captured_event__same_pattern",
+          "earlier_assertion": "L1.latest",
+          "later_assertion": "L3.captured_event",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            },
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L1.pattern__L3.captured_event__same_pattern",
+          "earlier_assertion": "L1.pattern",
+          "later_assertion": "L3.captured_event",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            },
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L2.latest__L3.captured_event__same_pattern",
+          "earlier_assertion": "L2.latest",
+          "later_assertion": "L3.captured_event",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            },
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L2.pattern__L3.captured_event__same_pattern",
+          "earlier_assertion": "L2.pattern",
+          "later_assertion": "L3.captured_event",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            },
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L1.latest__L3.pattern__same_pattern",
+          "earlier_assertion": "L1.latest",
+          "later_assertion": "L3.pattern",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            },
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L1.pattern__L3.pattern__same_pattern",
+          "earlier_assertion": "L1.pattern",
+          "later_assertion": "L3.pattern",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 186,
+              "end": 694,
+              "text": "She describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications."
+            },
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L2.latest__L3.pattern__same_pattern",
+          "earlier_assertion": "L2.latest",
+          "later_assertion": "L3.pattern",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            },
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L2.pattern__L3.pattern__same_pattern",
+          "earlier_assertion": "L2.pattern",
+          "later_assertion": "L3.pattern",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 554,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved."
+            },
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        },
+        {
+          "link_id": "L3.captured_event__L3.pattern__same_pattern",
+          "earlier_assertion": "L3.captured_event",
+          "later_assertion": "L3.pattern",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 337,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        }
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "request_id": "T2_retrospective_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2025-09-01",
+      "view": "retrospective",
+      "information_cutoff": "2026-02-28",
+      "retrospective_cutoff": "2026-02-28",
+      "lookback_90_start": "2025-06-04",
+      "lookback_180_start": "2025-03-06",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2025-09-01",
+      "view": "retrospective",
+      "information_cutoff": "2026-02-28",
+      "retrospective_cutoff": "2026-02-28",
+      "lookback_90_start": "2025-06-04",
+      "lookback_180_start": "2025-03-06",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2025-09-01",
+      "view": "retrospective",
+      "information_cutoff": "2026-02-28",
+      "retrospective_cutoff": "2026-02-28",
+      "lookback_90_start": "2025-06-04",
+      "lookback_180_start": "2025-03-06",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2025-09-01",
+      "view": "retrospective",
+      "information_cutoff": "2026-02-28",
+      "retrospective_cutoff": "2026-02-28",
+      "lookback_90_start": "2025-06-04",
+      "lookback_180_start": "2025-03-06",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2025-09-01",
+      "view": "retrospective",
+      "information_cutoff": "2026-02-28",
+      "retrospective_cutoff": "2026-02-28",
+      "lookback_90_start": "2025-06-04",
+      "lookback_180_start": "2025-03-06",
+      "input_path": "inputs/T2_retrospective.json"
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T2_retrospective_Q1",
+      "query_id": "Q1",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "query_id": "Q2",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "query_id": "Q3",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "query_id": "Q4",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "query_id": "Q5",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    }
+  ]
+}

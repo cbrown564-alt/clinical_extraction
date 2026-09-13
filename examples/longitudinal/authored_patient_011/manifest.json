@@ -1,6 +1,6 @@
 {
   "case_id": "authored-011",
-  "version": "0.3",
+  "version": "0.7",
   "task_definition_version": "0.2",
   "origin": "AI-authored fictional development example (Seizure clusters vs isolated events, testing cluster count and burden schema); no source seed or real patient",
   "inspection_policy": "development_only",

@@ -123,11 +123,17 @@
       "polarity": "affirmed",
       "coverage": "not_stated",
       "time": {
-        "text": null,
-        "start": null,
-        "end": null,
-        "kind": "unknown",
-        "anchor_letter_id": null
+        "text": "We initiated",
+        "start": {
+          "earliest": null,
+          "latest": "2023-08-10"
+        },
+        "end": {
+          "earliest": null,
+          "latest": "2023-08-10"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": "L1"
       },
       "content": {
         "family": "medication",

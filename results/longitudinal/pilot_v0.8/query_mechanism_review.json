@@ -1,0 +1,518 @@
+{
+  "source": "query_field_ablation.json",
+  "source_sha256": "1c0089cfbdf8c0bd62146d6a7e6a67cd1cd15d8bf54c72cc4b071a93962ca659",
+  "reviewer": "Codex development review",
+  "unreviewed_mismatches": 0,
+  "reviews": [
+    {
+      "case": "authored_patient_001",
+      "request_id": "T1_visit_Q4",
+      "query": "Q4",
+      "reference_status": "ineligible",
+      "diagnostic_status": "indeterminate",
+      "reference_answer": {
+        "request_id": "T1_visit_Q4",
+        "status": "ineligible",
+        "evidence_ids": [
+          "L1.eeg"
+        ],
+        "reason": "The sole EEG requested in the period has not been performed and has no result at T1."
+      },
+      "reference_evidence": [
+        {
+          "evidence_id": "L1.eeg",
+          "letter_id": "L1",
+          "start": 1213,
+          "end": 1363,
+          "text": "I requested a routine EEG today. It has not yet been performed and no result is available. This is the only EEG requested for Alex since 20 July 2024."
+        }
+      ],
+      "mechanism": "Explicit pending status and complete request coverage can refute the predicate; the current evaluator implements positive request-result witnesses only.",
+      "decision": "Retain the evidence-supported authored answer and conservative evaluator output; implement and test this mechanism in Phase 4 before claiming a complete query evaluator."
+    },
+    {
+      "case": "authored_patient_001",
+      "request_id": "T1_retrospective_Q2",
+      "query": "Q2",
+      "reference_status": "ineligible",
+      "diagnostic_status": "indeterminate",
+      "reference_answer": {
+        "request_id": "T1_retrospective_Q2",
+        "status": "ineligible",
+        "evidence_ids": [
+          "L1.inventory",
+          "L1.convulsions",
+          "L1.staring",
+          "L1.jerks",
+          "L2.identity",
+          "L2.revision",
+          "L2.single_pattern"
+        ],
+        "reason": "The correction applies back to onset. With nocturnal convulsions absent, only the morning-jerk pattern is epileptic in the earlier window."
+      },
+      "reference_evidence": [
+        {
+          "evidence_id": "L1.inventory",
+          "letter_id": "L1",
+          "start": 177,
+          "end": 337,
+          "text": "We discussed three event types today: nocturnal convulsions, daytime staring spells and brief morning jerks. Alex and their partner report no other event types."
+        },
+        {
+          "evidence_id": "L1.convulsions",
+          "letter_id": "L1",
+          "start": 339,
+          "end": 408,
+          "text": "The last nocturnal convulsion was on 12 August 2024, with none since."
+        },
+        {
+          "evidence_id": "L1.staring",
+          "letter_id": "L1",
+          "start": 409,
+          "end": 557,
+          "text": "Daytime staring spells began in November 2024 and continue two to three times a week; I currently regard these as focal impaired-awareness seizures."
+        },
+        {
+          "evidence_id": "L1.jerks",
+          "letter_id": "L1",
+          "start": 602,
+          "end": 832,
+          "text": "Brief jerks of both arms after waking began in December 2024 and have occurred roughly every two weeks, most recently on 10 January. I regard the morning jerks as epileptic, although their precise classification remains uncertain."
+        },
+        {
+          "evidence_id": "L2.identity",
+          "letter_id": "L2",
+          "start": 321,
+          "end": 474,
+          "text": "The daytime staring spells are the events I called focal impaired-awareness seizures in January. They continued intermittently, most recently on 10 June."
+        },
+        {
+          "evidence_id": "L2.revision",
+          "letter_id": "L2",
+          "start": 475,
+          "end": 731,
+          "text": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter."
+        },
+        {
+          "evidence_id": "L2.single_pattern",
+          "letter_id": "L2",
+          "start": 1019,
+          "end": 1251,
+          "text": "There have been no nocturnal convulsions since 12 August 2024. Reviewing the history up to today, the morning jerks have been the only active epileptic pattern since December; the staring spells are a separate non-epileptic pattern."
+        }
+      ],
+      "mechanism": "Complete pattern inventories and retrospective interpretation must be combined across linked assertions; the current evaluator only handles one explicit complete inventory assertion.",
+      "decision": "Retain the evidence-supported authored answer and conservative evaluator output; implement and test this mechanism in Phase 4 before claiming a complete query evaluator."
+    },
+    {
+      "case": "authored_patient_001",
+      "request_id": "T1_retrospective_Q4",
+      "query": "Q4",
+      "reference_status": "ineligible",
+      "diagnostic_status": "indeterminate",
+      "reference_answer": {
+        "request_id": "T1_retrospective_Q4",
+        "status": "ineligible",
+        "evidence_ids": [
+          "L1.eeg",
+          "L2.old_eeg"
+        ],
+        "reason": "The February result cannot be backdated to 15 January."
+      },
+      "reference_evidence": [
+        {
+          "evidence_id": "L1.eeg",
+          "letter_id": "L1",
+          "start": 1213,
+          "end": 1363,
+          "text": "I requested a routine EEG today. It has not yet been performed and no result is available. This is the only EEG requested for Alex since 20 July 2024."
+        },
+        {
+          "evidence_id": "L2.old_eeg",
+          "letter_id": "L2",
+          "start": 1462,
+          "end": 1640,
+          "text": "The routine EEG requested on 15 January was performed on 10 February. Its report became available to our clinical team on 12 February and described no epileptiform abnormalities."
+        }
+      ],
+      "mechanism": "Explicit pending status and complete request coverage can refute the predicate; the current evaluator implements positive request-result witnesses only.",
+      "decision": "Retain the evidence-supported authored answer and conservative evaluator output; implement and test this mechanism in Phase 4 before claiming a complete query evaluator."
+    },
+    {
+      "case": "authored_patient_002",
+      "request_id": "T1_visit_Q2",
+      "query": "Q2",
+      "reference_status": "ineligible",
+      "diagnostic_status": "indeterminate",
+      "reference_answer": {
+        "request_id": "T1_visit_Q2",
+        "status": "ineligible",
+        "evidence_ids": [
+          "L1.p1",
+          "L1.p2",
+          "L1.p3"
+        ],
+        "reason": "L1 describes the stable single pattern over the past year and explicitly reports no other event types."
+      },
+      "reference_evidence": [
+        {
+          "evidence_id": "L1.p1",
+          "letter_id": "L1",
+          "start": 104,
+          "end": 281,
+          "text": "Beatrice attended our clinic for routine annual review. She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021."
+        },
+        {
+          "evidence_id": "L1.p2",
+          "letter_id": "L1",
+          "start": 283,
+          "end": 771,
+          "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects. Over the past year she has continued to experience roughly one focal seizure per month. Her most recent focal seizure occurred on 28 January 2025. She describes a brief epigastric sensation followed by confusion lasting one to two minutes. She has had no generalized tonic-clonic convulsions and reports no other event types."
+        },
+        {
+          "evidence_id": "L1.p3",
+          "letter_id": "L1",
+          "start": 773,
+          "end": 950,
+          "text": "We agreed to make no changes to her carbamazepine dosage. No additional medications or investigations are required at this time. We will arrange routine follow-up in six months."
+        }
+      ],
+      "mechanism": "Complete pattern inventories and retrospective interpretation must be combined across linked assertions; the current evaluator only handles one explicit complete inventory assertion.",
+      "decision": "Retain the evidence-supported authored answer and conservative evaluator output; implement and test this mechanism in Phase 4 before claiming a complete query evaluator."
+    },
+    {
+      "case": "authored_patient_002",
+      "request_id": "T1_retrospective_Q2",
+      "query": "Q2",
+      "reference_status": "ineligible",
+      "diagnostic_status": "indeterminate",
+      "reference_answer": {
+        "request_id": "T1_retrospective_Q2",
+        "status": "ineligible",
+        "evidence_ids": [
+          "L1.p1",
+          "L1.p2",
+          "L1.p3"
+        ],
+        "reason": "L1 describes the stable single pattern over the past year and explicitly reports no other event types."
+      },
+      "reference_evidence": [
+        {
+          "evidence_id": "L1.p1",
+          "letter_id": "L1",
+          "start": 104,
+          "end": 281,
+          "text": "Beatrice attended our clinic for routine annual review. She has an established diagnosis of focal epilepsy with impaired awareness, which has been well characterized since 2021."
+        },
+        {
+          "evidence_id": "L1.p2",
+          "letter_id": "L1",
+          "start": 283,
+          "end": 771,
+          "text": "Her seizure frequency remains entirely stable on carbamazepine modified-release 400 mg twice daily, which she takes regularly without significant adverse effects. Over the past year she has continued to experience roughly one focal seizure per month. Her most recent focal seizure occurred on 28 January 2025. She describes a brief epigastric sensation followed by confusion lasting one to two minutes. She has had no generalized tonic-clonic convulsions and reports no other event types."
+        },
+        {
+          "evidence_id": "L1.p3",
+          "letter_id": "L1",
+          "start": 773,
+          "end": 950,
+          "text": "We agreed to make no changes to her carbamazepine dosage. No additional medications or investigations are required at this time. We will arrange routine follow-up in six months."
+        }
+      ],
+      "mechanism": "Complete pattern inventories and retrospective interpretation must be combined across linked assertions; the current evaluator only handles one explicit complete inventory assertion.",
+      "decision": "Retain the evidence-supported authored answer and conservative evaluator output; implement and test this mechanism in Phase 4 before claiming a complete query evaluator."
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T1_visit_Q1",
+      "query": "Q1",
+      "reference_status": "eligible",
+      "diagnostic_status": "indeterminate",
+      "reference_answer": {
+        "request_id": "T1_visit_Q1",
+        "status": "eligible",
+        "evidence_ids": [
+          "L1.p1",
+          "L1.p2",
+          "L1.p3"
+        ],
+        "reason": "The recurring focal motor history identifies the latest event as around Christmas before the 1 February visit. This holiday reference is safely inside the broad 4 November\u20131 February window; no exact event date is imputed."
+      },
+      "reference_evidence": [
+        {
+          "evidence_id": "L1.p1",
+          "letter_id": "L1",
+          "start": 104,
+          "end": 251,
+          "text": "Edward attended clinic accompanied by his daughter. He has an established diagnosis of focal epilepsy following an ischemic stroke three years ago."
+        },
+        {
+          "evidence_id": "L1.p2",
+          "letter_id": "L1",
+          "start": 253,
+          "end": 619,
+          "text": "He describes recurring focal motor seizures involving clonic jerking of the right hand. His most recent event occurred sometime around Christmas, though the exact calendar date was not noted by the family. He had a prior focal attack a few months ago in autumn 2024. He reports no other seizure patterns or convulsions. He continues levetiracetam 500 mg twice daily."
+        },
+        {
+          "evidence_id": "L1.p3",
+          "letter_id": "L1",
+          "start": 621,
+          "end": 768,
+          "text": "I requested a routine outpatient EEG today to reassess his baseline epileptiform activity. It has not yet been performed. Follow-up in five months."
+        }
+      ],
+      "mechanism": "Holiday wording places an occurrence safely inside the broad window but the schema retains unknown exact bounds; add an evidence-backed qualitative interval evaluator.",
+      "decision": "Retain the evidence-supported authored answer and conservative evaluator output; implement and test this mechanism in Phase 4 before claiming a complete query evaluator."
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T1_visit_Q2",
+      "query": "Q2",
+      "reference_status": "ineligible",
+      "diagnostic_status": "indeterminate",
+      "reference_answer": {
+        "request_id": "T1_visit_Q2",
+        "status": "ineligible",
+        "evidence_ids": [
+          "L1.p1",
+          "L1.p2",
+          "L1.p3"
+        ],
+        "reason": "L1 describes the recurring focal motor history, including autumn and Christmas events, and explicitly excludes all other seizure patterns or convulsions. This is a complete reported pattern inventory for the described first-window history, rather than exclusion of selected named alternatives."
+      },
+      "reference_evidence": [
+        {
+          "evidence_id": "L1.p1",
+          "letter_id": "L1",
+          "start": 104,
+          "end": 251,
+          "text": "Edward attended clinic accompanied by his daughter. He has an established diagnosis of focal epilepsy following an ischemic stroke three years ago."
+        },
+        {
+          "evidence_id": "L1.p2",
+          "letter_id": "L1",
+          "start": 253,
+          "end": 619,
+          "text": "He describes recurring focal motor seizures involving clonic jerking of the right hand. His most recent event occurred sometime around Christmas, though the exact calendar date was not noted by the family. He had a prior focal attack a few months ago in autumn 2024. He reports no other seizure patterns or convulsions. He continues levetiracetam 500 mg twice daily."
+        },
+        {
+          "evidence_id": "L1.p3",
+          "letter_id": "L1",
+          "start": 621,
+          "end": 768,
+          "text": "I requested a routine outpatient EEG today to reassess his baseline epileptiform activity. It has not yet been performed. Follow-up in five months."
+        }
+      ],
+      "mechanism": "Complete pattern inventories and retrospective interpretation must be combined across linked assertions; the current evaluator only handles one explicit complete inventory assertion.",
+      "decision": "Retain the evidence-supported authored answer and conservative evaluator output; implement and test this mechanism in Phase 4 before claiming a complete query evaluator."
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T1_retrospective_Q1",
+      "query": "Q1",
+      "reference_status": "eligible",
+      "diagnostic_status": "indeterminate",
+      "reference_answer": {
+        "request_id": "T1_retrospective_Q1",
+        "status": "eligible",
+        "evidence_ids": [
+          "L1.p1",
+          "L1.p2",
+          "L1.p3"
+        ],
+        "reason": "The recurring focal motor history identifies the latest event as around Christmas before the 1 February visit. This holiday reference is safely inside the broad 4 November\u20131 February window; no exact event date is imputed."
+      },
+      "reference_evidence": [
+        {
+          "evidence_id": "L1.p1",
+          "letter_id": "L1",
+          "start": 104,
+          "end": 251,
+          "text": "Edward attended clinic accompanied by his daughter. He has an established diagnosis of focal epilepsy following an ischemic stroke three years ago."
+        },
+        {
+          "evidence_id": "L1.p2",
+          "letter_id": "L1",
+          "start": 253,
+          "end": 619,
+          "text": "He describes recurring focal motor seizures involving clonic jerking of the right hand. His most recent event occurred sometime around Christmas, though the exact calendar date was not noted by the family. He had a prior focal attack a few months ago in autumn 2024. He reports no other seizure patterns or convulsions. He continues levetiracetam 500 mg twice daily."
+        },
+        {
+          "evidence_id": "L1.p3",
+          "letter_id": "L1",
+          "start": 621,
+          "end": 768,
+          "text": "I requested a routine outpatient EEG today to reassess his baseline epileptiform activity. It has not yet been performed. Follow-up in five months."
+        }
+      ],
+      "mechanism": "Holiday wording places an occurrence safely inside the broad window but the schema retains unknown exact bounds; add an evidence-backed qualitative interval evaluator.",
+      "decision": "Retain the evidence-supported authored answer and conservative evaluator output; implement and test this mechanism in Phase 4 before claiming a complete query evaluator."
+    },
+    {
+      "case": "authored_patient_005",
+      "request_id": "T1_retrospective_Q2",
+      "query": "Q2",
+      "reference_status": "ineligible",
+      "diagnostic_status": "indeterminate",
+      "reference_answer": {
+        "request_id": "T1_retrospective_Q2",
+        "status": "ineligible",
+        "evidence_ids": [
+          "L1.p1",
+          "L1.p2",
+          "L1.p3"
+        ],
+        "reason": "L1 describes the recurring focal motor history, including autumn and Christmas events, and explicitly excludes all other seizure patterns or convulsions. This is a complete reported pattern inventory for the described first-window history, rather than exclusion of selected named alternatives."
+      },
+      "reference_evidence": [
+        {
+          "evidence_id": "L1.p1",
+          "letter_id": "L1",
+          "start": 104,
+          "end": 251,
+          "text": "Edward attended clinic accompanied by his daughter. He has an established diagnosis of focal epilepsy following an ischemic stroke three years ago."
+        },
+        {
+          "evidence_id": "L1.p2",
+          "letter_id": "L1",
+          "start": 253,
+          "end": 619,
+          "text": "He describes recurring focal motor seizures involving clonic jerking of the right hand. His most recent event occurred sometime around Christmas, though the exact calendar date was not noted by the family. He had a prior focal attack a few months ago in autumn 2024. He reports no other seizure patterns or convulsions. He continues levetiracetam 500 mg twice daily."
+        },
+        {
+          "evidence_id": "L1.p3",
+          "letter_id": "L1",
+          "start": 621,
+          "end": 768,
+          "text": "I requested a routine outpatient EEG today to reassess his baseline epileptiform activity. It has not yet been performed. Follow-up in five months."
+        }
+      ],
+      "mechanism": "Complete pattern inventories and retrospective interpretation must be combined across linked assertions; the current evaluator only handles one explicit complete inventory assertion.",
+      "decision": "Retain the evidence-supported authored answer and conservative evaluator output; implement and test this mechanism in Phase 4 before claiming a complete query evaluator."
+    },
+    {
+      "case": "authored_patient_010",
+      "request_id": "T2_retrospective_Q3",
+      "query": "Q3",
+      "reference_status": "ineligible",
+      "diagnostic_status": "indeterminate",
+      "reference_answer": {
+        "request_id": "T2_retrospective_Q3",
+        "status": "ineligible",
+        "evidence_ids": [
+          "L1.p1",
+          "L1.p2",
+          "L1.p3",
+          "L2.p1",
+          "L2.p2",
+          "L2.p3",
+          "L3.p1",
+          "L3.p2"
+        ],
+        "reason": "L2 confirms actual initiation on 18 January, before the 19 January\u201317 July window, reliable titration and ongoing use. L3 retrospectively states that she remains compliant on that same regimen. Together these affirmative continuity statements support the same treatment course across T2; dose titration is not a new initiation."
+      },
+      "reference_evidence": [
+        {
+          "evidence_id": "L1.p1",
+          "letter_id": "L1",
+          "start": 101,
+          "end": 218,
+          "text": "Julia attended clinic today following referral from primary care. She has an established diagnosis of focal epilepsy."
+        },
+        {
+          "evidence_id": "L1.p2",
+          "letter_id": "L1",
+          "start": 220,
+          "end": 547,
+          "text": "She experiences recurring focal sensory seizures characterized by an ascending epigastric sensation and auditory distortion, occurring approximately twice a month. Her most recent focal sensory seizure occurred on 12 January 2025. She has had no generalized convulsions. She is not currently taking any anti-seizure medication."
+        },
+        {
+          "evidence_id": "L1.p3",
+          "letter_id": "L1",
+          "start": 549,
+          "end": 854,
+          "text": "Today, 18 January 2025, we agreed to start lamotrigine at 25 mg once daily, titrating by 25 mg every two weeks towards an initial target dose of 100 mg daily. I also requested a routine outpatient EEG today to establish baseline cortical activity. It has not yet been performed. Follow-up in three months."
+        },
+        {
+          "evidence_id": "L2.p1",
+          "letter_id": "L2",
+          "start": 90,
+          "end": 161,
+          "text": "I reviewed Julia in clinic today. Her diagnosis remains focal epilepsy."
+        },
+        {
+          "evidence_id": "L2.p2",
+          "letter_id": "L2",
+          "start": 163,
+          "end": 692,
+          "text": "The routine outpatient EEG requested on 18 January was performed on 12 February 2025. Its report became available to our clinical team on 16 February 2025 and demonstrated right temporal sharp-and-slow wave discharges. Julia confirms that she initiated lamotrigine on 18 January 2025 and successfully titrated as instructed, reaching 100 mg daily on 1 March 2025, which she continues to take reliably. Her focal sensory seizures have reduced in frequency, with her latest event occurring on 10 April 2025. No convulsive seizures."
+        },
+        {
+          "evidence_id": "L2.p3",
+          "letter_id": "L2",
+          "start": 694,
+          "end": 764,
+          "text": "We agreed to maintain lamotrigine 100 mg daily. Review in four months."
+        },
+        {
+          "evidence_id": "L3.p1",
+          "letter_id": "L3",
+          "start": 91,
+          "end": 293,
+          "text": "Julia was seen for routine review. She remains compliant with lamotrigine 100 mg daily. Her focal sensory seizures remain infrequent, with the latest on 2 August 2025. No new symptoms or investigations."
+        },
+        {
+          "evidence_id": "L3.p2",
+          "letter_id": "L3",
+          "start": 295,
+          "end": 341,
+          "text": "Treatment maintained. Follow-up in six months."
+        }
+      ],
+      "mechanism": "Explicit continuity of the same treatment course across the window excludes a new initiation; the current evaluator does not traverse this continuity.",
+      "decision": "Retain the evidence-supported authored answer and conservative evaluator output; implement and test this mechanism in Phase 4 before claiming a complete query evaluator."
+    },
+    {
+      "case": "authored_patient_011",
+      "request_id": "T1_retrospective_Q2",
+      "query": "Q2",
+      "reference_status": "ineligible",
+      "diagnostic_status": "indeterminate",
+      "reference_answer": {
+        "request_id": "T1_retrospective_Q2",
+        "status": "ineligible",
+        "evidence_ids": [
+          "L1.shaking",
+          "L2.shaking_revised",
+          "L2.only_epileptic"
+        ],
+        "reason": "L2 explicitly revises the shaking pattern back to onset; only focal motor clusters were epileptic in this interval."
+      },
+      "reference_evidence": [
+        {
+          "evidence_id": "L1.shaking",
+          "letter_id": "L1",
+          "start": 639,
+          "end": 985,
+          "text": "A second pattern consists of brief bilateral arm shaking without facial involvement. These shaking episodes and his focal motor clusters have both recurred since November 2024, including throughout January and early February. I currently regard both as epileptic. These are the only two patterns reported since November; they are distinct events."
+        },
+        {
+          "evidence_id": "L2.shaking_revised",
+          "letter_id": "L2",
+          "start": 453,
+          "end": 959,
+          "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+        },
+        {
+          "evidence_id": "L2.only_epileptic",
+          "letter_id": "L2",
+          "start": 453,
+          "end": 959,
+          "text": "The brief bilateral arm shaking is the same second pattern described as epileptic in February; it recurred on 21 May 2025. On review today, 20 June, I explicitly reclassify all of those shaking events, including the February episodes, as functional non-epileptic events. This is the first change from an epileptic to a non-epileptic interpretation in his record, and it was decided today, not earlier. The focal motor clusters remain epileptic and are the only epileptic pattern active since November 2024."
+        }
+      ],
+      "mechanism": "Complete pattern inventories and retrospective interpretation must be combined across linked assertions; the current evaluator only handles one explicit complete inventory assertion.",
+      "decision": "Retain the evidence-supported authored answer and conservative evaluator output; implement and test this mechanism in Phase 4 before claiming a complete query evaluator."
+    }
+  ]
+}

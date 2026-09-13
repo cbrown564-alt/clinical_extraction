@@ -1,0 +1,36 @@
+{
+  "date": "2026-09-10",
+  "scope": "Prepared schema v0.3 and all 18 rendered annotation payloads",
+  "reviewer": "Codex using plain-language-prompt-auditor",
+  "checked_rules": [
+    "Task begins with the requested extraction activity and uses ordinary clinical terms.",
+    "Inputs contain only instructions, patient ID, supplied letters and schema; no reference answers, scenario or hidden truth.",
+    "Unknown dates and unsupported identity remain unknown; proposed care is not enacted care.",
+    "The optional prior-history field requires explicit quotes and does not convert unknown onset into complete history.",
+    "Tool and prior-conversation use are prohibited; actual trace inspection is separate.",
+    "The schema is shared across activities, so timing includes differing output volumes and shared structure."
+  ],
+  "payload_sha256": {
+    "inputs/002_diagnosis.json": "c64b4bdf9303b8ffc8c70bdfbdc571b75f3c32c3131c82d4e863840e3e78daad",
+    "inputs/002_seizure.json": "ba2fbd060fc319be54a235002e950c55118d84fefd10139ae82f01515451b756",
+    "inputs/002_medication.json": "d775bd52d470680094ae6ac3f7bdcae6e81c221040ec102331335bba19a9c3af",
+    "inputs/002_investigation.json": "74adb8fc2316c33e86d6a50040f9f8d8ad0db9e2653d1993011450eca92b7ac6",
+    "inputs/002_temporal.json": "f8e67a902a26f0eed4c3978de40b90c436058f03dddfca3ad28d09588af9c2b3",
+    "inputs/002_relationships.json": "1a153210f2ec37ee481c100ee35ec30f40d7d4e143443f49664fca9e02a21268",
+    "inputs/006_diagnosis.json": "4d29a6144ca40ee05dfbd80005361088014beec97f0fb7f80aa279f41fec710c",
+    "inputs/006_seizure.json": "5fb6a83c9069ce590515116d119700d2d5f523aa02b618c228bc770d8d66548b",
+    "inputs/006_medication.json": "ff88fdb629fc7b66c58261791584381d68e73abd8b20e5a3c5d5da743f472473",
+    "inputs/006_investigation.json": "9801b08c5dbec1a6670b20ea79aaa87da6bf18c737057a810615aa35bb17ce8c",
+    "inputs/006_temporal.json": "639b72d8666d1089e91e1f7d47ed362ee992cd594602ff0a12aebde441e22770",
+    "inputs/006_relationships.json": "019435fbfada5dece2ee73ddabce512f576d016a7bb6d54b686d8ce3d420de3f",
+    "inputs/011_diagnosis.json": "b76219b31965cc7e4c868e773b2592c7e0698a3c7181f0c0a08c17d33de88c01",
+    "inputs/011_seizure.json": "52feb3eab6b784843240ef507f2455e85732f2f628b22b0ac9f0a9a09d620338",
+    "inputs/011_medication.json": "856bb27da25042bf0ee63028a97b4745db09394fa51a47f7ec9817f6762d39c3",
+    "inputs/011_investigation.json": "53b0d148ab8997b73441ae1cb4525d1ca2900ed1248a4c282cbf9f736c30f424",
+    "inputs/011_temporal.json": "45570d2a9d20aabe32de8b8c3d8e1a726953172923d4957f260d5a111d820806",
+    "inputs/011_relationships.json": "233b63e9893fc710051c822c95365479d955b0e360d3602cd9f44e98b89fb180"
+  },
+  "schema_sha256": "47167c0cd15cd588acde1bdce846273d7af500210f1898debccf344d1677b8b7",
+  "prior_history_field_reason": "Four explicit never-used assertions need a supported scope distinct from an unknown onset; field deletion changes four Q3 answers.",
+  "limits": "Prompt compliance and clinical entailment require output review; this audit does not assert them."
+}

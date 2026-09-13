@@ -1,0 +1,10 @@
+Fictional outpatient letter | generated-012 | age 52
+Consultation: 2025-02-01
+
+Carried-forward Dx: epilepsy.
+
+Patient: prolonged shaking, 2/month, 1 Nov 2024–20 Jan 2025; last 20 Jan. Recorded as epileptic. Only event type reported throughout 1 Nov 2024–1 Feb 2025.
+
+Patient confirms lamotrigine start: 10 Jan 2025.
+
+EEG requested 5 Jan 2025. Result not documented here.

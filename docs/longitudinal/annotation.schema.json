@@ -572,6 +572,13 @@
               "$ref": "#/$defs/Investigation"
             }
           ]
+        },
+        "all_prior_history_evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Span"
+          },
+          "description": "Quotes explicitly establishing that this assertion covers the entire earlier patient history through its stated end date. Omit or leave empty when the earlier history is unknown. An unknown start date alone does not establish this scope."
         }
       },
       "required": [

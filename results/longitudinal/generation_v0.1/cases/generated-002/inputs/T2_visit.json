@@ -1,0 +1,17 @@
+{
+  "patient_id": "generated-002",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-002 | age 42\nConsultation: 2025-02-01\n\nThe established diagnosis is focal epilepsy.\n\nThe patient reports staring seizures 2 to 4 times per month from 1 November 2024 through 1 February 2025. I regard these as epileptic.\n\nA separate pattern of right-hand jerks is also epileptic. The patient reports 1 to 2 clusters per month, each containing 3 to 5 jerks, throughout the same period from 1 November 2024 through 1 February 2025.\n\nLamotrigine was proposed on 15 January 2025; this letter does not establish whether it has been started.\n\nAn EEG was requested on 10 January 2025. There is no result information in this letter.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-07-15",
+      "available_date": "2025-07-15",
+      "text": "Fictional outpatient letter | generated-002 | age 42\nConsultation: 2025-07-15\n\nThe patient reports that both the same staring seizures and the separate right-hand jerks continued from 2 February through 15 July 2025: staring 2 to 4 times per month and jerks in 1 to 2 clusters per month of 3 to 5 jerks each. Both remain classified as epileptic.\n\nThe patient confirms never having taken lamotrigine at any time up to today, 15 July 2025; the January proposal was not enacted.\n"
+    }
+  ]
+}

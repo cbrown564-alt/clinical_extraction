@@ -1,0 +1,574 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The patient attended for routine follow-up of established focal epilepsy.",
+          "start": 79,
+          "end": 152
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.staring",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The first pattern consists of staring seizures, reported by the patient 2 to 4 times per month from 1 November 2024 to today, 1 February 2025. My interpretation of this pattern is epileptic.",
+          "start": 154,
+          "end": 344
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The first pattern consists of staring seizures, reported by the patient 2 to 4 times per month from 1 November 2024 to today, 1 February 2025. My interpretation of this pattern is epileptic.",
+        "start": {
+          "earliest": "2024-11-01",
+          "latest": "2024-11-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "staring seizures"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "The first pattern consists of staring seizures, reported by the patient 2 to 4 times per month from 1 November 2024 to today, 1 February 2025. My interpretation of this pattern is epileptic.",
+          "count": {
+            "lower": 2,
+            "upper": 4
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.jerks",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "There is a second, distinct pattern of right-hand jerks, which I also interpret as epileptic. The patient reports 1 to 2 clusters per month and 3 to 5 jerks in each cluster. This pattern was active throughout 1 November 2024 to 1 February 2025 alongside the staring seizures.",
+          "start": 346,
+          "end": 621
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "There is a second, distinct pattern of right-hand jerks, which I also interpret as epileptic. The patient reports 1 to 2 clusters per month and 3 to 5 jerks in each cluster. This pattern was active throughout 1 November 2024 to 1 February 2025 alongside the staring seizures.",
+        "start": {
+          "earliest": "2024-11-01",
+          "latest": "2024-11-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "right-hand jerks"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "clusters",
+          "text": "1 to 2 clusters per month",
+          "count": {
+            "lower": 1,
+            "upper": 2
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": {
+            "lower": 3,
+            "upper": 5
+          },
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.plan",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "We discussed the proposal made on 15 January 2025 to introduce lamotrigine. Whether the patient actually started it has not been established at this consultation.",
+          "start": 623,
+          "end": 785
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "We discussed the proposal made on 15 January 2025 to introduce lamotrigine. Whether the patient actually started it has not been established at this consultation.",
+        "start": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "end": {
+          "earliest": "2025-01-15",
+          "latest": "2025-01-15"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "proposed",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L1.request",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "An EEG request was made on 10 January 2025. No information about its result is included in this letter.",
+          "start": 787,
+          "end": 890
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "An EEG request was made on 10 January 2025. No information about its result is included in this letter.",
+        "start": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "end": {
+          "earliest": "2025-01-10",
+          "latest": "2025-01-10"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "requested",
+        "result": null,
+        "request_count": null
+      }
+    },
+    {
+      "assertion_id": "L2.staring",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "The patient describes continued activity of both previously described patterns throughout 2 February to 15 July 2025. Staring seizures occurred 2 to 4 times per month; the separate right-hand jerks occurred in 1 to 2 clusters per month, each of 3 to 5 jerks. My interpretation of both patterns remains epileptic.",
+          "start": 79,
+          "end": 391
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The patient describes continued activity of both previously described patterns throughout 2 February to 15 July 2025. Staring seizures occurred 2 to 4 times per month; the separate right-hand jerks occurred in 1 to 2 clusters per month, each of 3 to 5 jerks. My interpretation of both patterns remains epileptic.",
+        "start": {
+          "earliest": "2025-02-02",
+          "latest": "2025-02-02"
+        },
+        "end": {
+          "earliest": "2025-07-15",
+          "latest": "2025-07-15"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "staring seizures"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "The patient describes continued activity of both previously described patterns throughout 2 February to 15 July 2025. Staring seizures occurred 2 to 4 times per month; the separate right-hand jerks occurred in 1 to 2 clusters per month, each of 3 to 5 jerks. My interpretation of both patterns remains epileptic.",
+          "count": {
+            "lower": 2,
+            "upper": 4
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L2.jerks",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "The patient describes continued activity of both previously described patterns throughout 2 February to 15 July 2025. Staring seizures occurred 2 to 4 times per month; the separate right-hand jerks occurred in 1 to 2 clusters per month, each of 3 to 5 jerks. My interpretation of both patterns remains epileptic.",
+          "start": 79,
+          "end": 391
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The patient describes continued activity of both previously described patterns throughout 2 February to 15 July 2025. Staring seizures occurred 2 to 4 times per month; the separate right-hand jerks occurred in 1 to 2 clusters per month, each of 3 to 5 jerks. My interpretation of both patterns remains epileptic.",
+        "start": {
+          "earliest": "2025-02-02",
+          "latest": "2025-02-02"
+        },
+        "end": {
+          "earliest": "2025-07-15",
+          "latest": "2025-07-15"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "right-hand jerks"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "clusters",
+          "text": "1 to 2 clusters per month",
+          "count": {
+            "lower": 1,
+            "upper": 2
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": {
+            "lower": 3,
+            "upper": 5
+          },
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L2.not-started",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "On direct review of the entire medication history, the patient confirms that lamotrigine has never been taken at any time through 15 July 2025. The January proposal was not enacted.",
+          "start": 393,
+          "end": 574
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "On direct review of the entire medication history, the patient confirms that lamotrigine has never been taken at any time through 15 July 2025. The January proposal was not enacted.",
+        "start": null,
+        "end": {
+          "earliest": "2025-07-15",
+          "latest": "2025-07-15"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "not_started",
+        "condition": null
+      },
+      "all_prior_history_evidence": [
+        {
+          "letter_id": "L2",
+          "text": "On direct review of the entire medication history, the patient confirms that lamotrigine has never been taken at any time through 15 July 2025. The January proposal was not enacted.",
+          "start": 393,
+          "end": 574
+        }
+      ]
+    },
+    {
+      "assertion_id": "L3.started",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "text": "The patient now confirms that lamotrigine was actually started on 25 July 2025. This was after the appointment at which the January proposal was still unfulfilled.",
+          "start": 79,
+          "end": 242
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The patient now confirms that lamotrigine was actually started on 25 July 2025. This was after the appointment at which the January proposal was still unfulfilled.",
+        "start": {
+          "earliest": "2025-07-25",
+          "latest": "2025-07-25"
+        },
+        "end": {
+          "earliest": "2025-07-25",
+          "latest": "2025-07-25"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "medication",
+        "name": "lamotrigine",
+        "status": "started",
+        "condition": null
+      }
+    },
+    {
+      "assertion_id": "L3.result",
+      "letter_id": "L3",
+      "evidence": [
+        {
+          "letter_id": "L3",
+          "text": "The result now documented here is specifically for the EEG requested on 10 January 2025. Its report was normal and first became available to the treating team on 20 February 2025.",
+          "start": 244,
+          "end": 423
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The result now documented here is specifically for the EEG requested on 10 January 2025. Its report was normal and first became available to the treating team on 20 February 2025.",
+        "start": {
+          "earliest": "2025-02-20",
+          "latest": "2025-02-20"
+        },
+        "end": {
+          "earliest": "2025-02-20",
+          "latest": "2025-02-20"
+        },
+        "kind": "result_available",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "investigation",
+        "modality": "EEG",
+        "status": "result",
+        "result": "normal",
+        "request_count": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "two-patterns-L1",
+      "earlier_assertion": "L1.staring",
+      "later_assertion": "L1.jerks",
+      "relation": "overlaps_active",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The first pattern consists of staring seizures, reported by the patient 2 to 4 times per month from 1 November 2024 to today, 1 February 2025. My interpretation of this pattern is epileptic.",
+          "start": 154,
+          "end": 344
+        },
+        {
+          "letter_id": "L1",
+          "text": "There is a second, distinct pattern of right-hand jerks, which I also interpret as epileptic. The patient reports 1 to 2 clusters per month and 3 to 5 jerks in each cluster. This pattern was active throughout 1 November 2024 to 1 February 2025 alongside the staring seizures.",
+          "start": 346,
+          "end": 621
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "same-staring",
+      "earlier_assertion": "L1.staring",
+      "later_assertion": "L2.staring",
+      "relation": "updates",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The first pattern consists of staring seizures, reported by the patient 2 to 4 times per month from 1 November 2024 to today, 1 February 2025. My interpretation of this pattern is epileptic.",
+          "start": 154,
+          "end": 344
+        },
+        {
+          "letter_id": "L2",
+          "text": "The patient describes continued activity of both previously described patterns throughout 2 February to 15 July 2025. Staring seizures occurred 2 to 4 times per month; the separate right-hand jerks occurred in 1 to 2 clusters per month, each of 3 to 5 jerks. My interpretation of both patterns remains epileptic.",
+          "start": 79,
+          "end": 391
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "same-jerks",
+      "earlier_assertion": "L1.jerks",
+      "later_assertion": "L2.jerks",
+      "relation": "updates",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "There is a second, distinct pattern of right-hand jerks, which I also interpret as epileptic. The patient reports 1 to 2 clusters per month and 3 to 5 jerks in each cluster. This pattern was active throughout 1 November 2024 to 1 February 2025 alongside the staring seizures.",
+          "start": 346,
+          "end": 621
+        },
+        {
+          "letter_id": "L2",
+          "text": "The patient describes continued activity of both previously described patterns throughout 2 February to 15 July 2025. Staring seizures occurred 2 to 4 times per month; the separate right-hand jerks occurred in 1 to 2 clusters per month, each of 3 to 5 jerks. My interpretation of both patterns remains epileptic.",
+          "start": 79,
+          "end": 391
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "two-patterns-L2",
+      "earlier_assertion": "L2.staring",
+      "later_assertion": "L2.jerks",
+      "relation": "overlaps_active",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "The patient describes continued activity of both previously described patterns throughout 2 February to 15 July 2025. Staring seizures occurred 2 to 4 times per month; the separate right-hand jerks occurred in 1 to 2 clusters per month, each of 3 to 5 jerks. My interpretation of both patterns remains epileptic.",
+          "start": 79,
+          "end": 391
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "plan-not-enacted",
+      "earlier_assertion": "L1.plan",
+      "later_assertion": "L2.not-started",
+      "relation": "plan_not_enacted",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "We discussed the proposal made on 15 January 2025 to introduce lamotrigine. Whether the patient actually started it has not been established at this consultation.",
+          "start": 623,
+          "end": 785
+        },
+        {
+          "letter_id": "L2",
+          "text": "On direct review of the entire medication history, the patient confirms that lamotrigine has never been taken at any time through 15 July 2025. The January proposal was not enacted.",
+          "start": 393,
+          "end": 574
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "EEG-result",
+      "earlier_assertion": "L1.request",
+      "later_assertion": "L3.result",
+      "relation": "request_has_result",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "An EEG request was made on 10 January 2025. No information about its result is included in this letter.",
+          "start": 787,
+          "end": 890
+        },
+        {
+          "letter_id": "L3",
+          "text": "The result now documented here is specifically for the EEG requested on 10 January 2025. Its report was normal and first became available to the treating team on 20 February 2025.",
+          "start": 244,
+          "end": 423
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

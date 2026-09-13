@@ -1,0 +1,384 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "At this routine outpatient review, the established diagnosis remains focal epilepsy.",
+          "start": 79,
+          "end": 163
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L1.pattern",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The patient describes the same brief focal impaired-awareness seizures, with 1 to 2 per month between 1 October 2024 and today, 1 February 2025. The most recent occurred on 20 January 2025. Asked about the entire period, the patient reports no other event types.",
+          "start": 165,
+          "end": 427
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "The patient describes the same brief focal impaired-awareness seizures, with 1 to 2 per month between 1 October 2024 and today, 1 February 2025. The most recent occurred on 20 January 2025. Asked about the entire period, the patient reports no other event types.",
+        "start": {
+          "earliest": "2024-10-01",
+          "latest": "2024-10-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal impaired-awareness seizures"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "1 to 2 per month",
+          "count": {
+            "lower": 1,
+            "upper": 2
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L1.latest",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The patient describes the same brief focal impaired-awareness seizures, with 1 to 2 per month between 1 October 2024 and today, 1 February 2025. The most recent occurred on 20 January 2025. Asked about the entire period, the patient reports no other event types.",
+          "start": 165,
+          "end": 427
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "20 January 2025",
+        "start": {
+          "earliest": "2025-01-20",
+          "latest": "2025-01-20"
+        },
+        "end": {
+          "earliest": "2025-01-20",
+          "latest": "2025-01-20"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal impaired-awareness seizures"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L1.inventory",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The patient describes the same brief focal impaired-awareness seizures, with 1 to 2 per month between 1 October 2024 and today, 1 February 2025. The most recent occurred on 20 January 2025. Asked about the entire period, the patient reports no other event types.",
+          "start": 165,
+          "end": 427
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "The patient describes the same brief focal impaired-awareness seizures, with 1 to 2 per month between 1 October 2024 and today, 1 February 2025. The most recent occurred on 20 January 2025. Asked about the entire period, the patient reports no other event types.",
+        "start": {
+          "earliest": "2024-10-01",
+          "latest": "2024-10-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal impaired-awareness seizures"
+        ],
+        "kind": "inventory",
+        "interpretation": "epileptic",
+        "scope": "all_reported",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.copied",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "The following diagnosis is copied as background from the February letter: the diagnosis remains focal epilepsy.",
+          "start": 79,
+          "end": 190
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "February letter",
+        "start": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "end": {
+          "earliest": "2025-02-01",
+          "latest": "2025-02-01"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "L2.pattern",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "For the period from 2 February to 31 July 2025, the patient reports continued activity of the same focal impaired-awareness pattern at 1 to 2 seizures per month. The last was on 20 July 2025. There have been no other event types anywhere in this interval.",
+          "start": 192,
+          "end": 447
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "For the period from 2 February to 31 July 2025, the patient reports continued activity of the same focal impaired-awareness pattern at 1 to 2 seizures per month. The last was on 20 July 2025. There have been no other event types anywhere in this interval.",
+        "start": {
+          "earliest": "2025-02-02",
+          "latest": "2025-02-02"
+        },
+        "end": {
+          "earliest": "2025-07-31",
+          "latest": "2025-07-31"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal impaired-awareness seizures"
+        ],
+        "kind": "pattern",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": {
+          "kind": "rate",
+          "text": "For the period from 2 February to 31 July 2025, the patient reports continued activity of the same focal impaired-awareness pattern at 1 to 2 seizures per month. The last was on 20 July 2025. There have been no other event types anywhere in this interval.",
+          "count": {
+            "lower": 1,
+            "upper": 2
+          },
+          "period": {
+            "amount": {
+              "lower": 1,
+              "upper": 1
+            },
+            "unit": "month"
+          },
+          "events_per_cluster": null,
+          "approximate": false
+        }
+      }
+    },
+    {
+      "assertion_id": "L2.latest",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "For the period from 2 February to 31 July 2025, the patient reports continued activity of the same focal impaired-awareness pattern at 1 to 2 seizures per month. The last was on 20 July 2025. There have been no other event types anywhere in this interval.",
+          "start": 192,
+          "end": 447
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": "For the period from 2 February to 31 July 2025, the patient reports continued activity of the same focal impaired-awareness pattern at 1 to 2 seizures per month. The last was on 20 July 2025. There have been no other event types anywhere in this interval.",
+        "start": {
+          "earliest": "2025-07-20",
+          "latest": "2025-07-20"
+        },
+        "end": {
+          "earliest": "2025-07-20",
+          "latest": "2025-07-20"
+        },
+        "kind": "occurrence",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal impaired-awareness seizures"
+        ],
+        "kind": "occurrence",
+        "interpretation": "epileptic",
+        "scope": "named_pattern",
+        "burden": null
+      }
+    },
+    {
+      "assertion_id": "L2.inventory",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "text": "For the period from 2 February to 31 July 2025, the patient reports continued activity of the same focal impaired-awareness pattern at 1 to 2 seizures per month. The last was on 20 July 2025. There have been no other event types anywhere in this interval.",
+          "start": 192,
+          "end": 447
+        }
+      ],
+      "reporter": "patient",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "complete",
+      "time": {
+        "text": "For the period from 2 February to 31 July 2025, the patient reports continued activity of the same focal impaired-awareness pattern at 1 to 2 seizures per month. The last was on 20 July 2025. There have been no other event types anywhere in this interval.",
+        "start": {
+          "earliest": "2025-02-02",
+          "latest": "2025-02-02"
+        },
+        "end": {
+          "earliest": "2025-07-31",
+          "latest": "2025-07-31"
+        },
+        "kind": "active_interval",
+        "anchor_letter_id": null
+      },
+      "content": {
+        "family": "seizure",
+        "names": [
+          "focal impaired-awareness seizures"
+        ],
+        "kind": "inventory",
+        "interpretation": "epileptic",
+        "scope": "all_reported",
+        "burden": null
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "copied-diagnosis",
+      "earlier_assertion": "L1.diagnosis",
+      "later_assertion": "L2.copied",
+      "relation": "repeats",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "At this routine outpatient review, the established diagnosis remains focal epilepsy.",
+          "start": 79,
+          "end": 163
+        },
+        {
+          "letter_id": "L2",
+          "text": "The following diagnosis is copied as background from the February letter: the diagnosis remains focal epilepsy.",
+          "start": 79,
+          "end": 190
+        }
+      ],
+      "decision_time": null
+    },
+    {
+      "link_id": "same-followup",
+      "earlier_assertion": "L1.pattern",
+      "later_assertion": "L2.pattern",
+      "relation": "updates",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "text": "The patient describes the same brief focal impaired-awareness seizures, with 1 to 2 per month between 1 October 2024 and today, 1 February 2025. The most recent occurred on 20 January 2025. Asked about the entire period, the patient reports no other event types.",
+          "start": 165,
+          "end": 427
+        },
+        {
+          "letter_id": "L2",
+          "text": "For the period from 2 February to 31 July 2025, the patient reports continued activity of the same focal impaired-awareness pattern at 1 to 2 seizures per month. The last was on 20 July 2025. There have been no other event types anywhere in this interval.",
+          "start": 192,
+          "end": 447
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

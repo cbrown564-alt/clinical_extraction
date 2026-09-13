@@ -1,0 +1,23 @@
+{
+  "patient_id": "generated-006",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-006 | age 46\nConsultation: 2025-02-01\n\nThe patient attended for routine follow-up of established focal epilepsy.\n\nThe first pattern consists of staring seizures, reported by the patient 2 to 4 times per month from 1 November 2024 to today, 1 February 2025. My interpretation of this pattern is epileptic.\n\nThere is a second, distinct pattern of right-hand jerks, which I also interpret as epileptic. The patient reports 1 to 2 clusters per month and 3 to 5 jerks in each cluster. This pattern was active throughout 1 November 2024 to 1 February 2025 alongside the staring seizures.\n\nWe discussed the proposal made on 15 January 2025 to introduce lamotrigine. Whether the patient actually started it has not been established at this consultation.\n\nAn EEG request was made on 10 January 2025. No information about its result is included in this letter.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-07-15",
+      "available_date": "2025-07-15",
+      "text": "Fictional outpatient letter | generated-006 | age 46\nConsultation: 2025-07-15\n\nThe patient describes continued activity of both previously described patterns throughout 2 February to 15 July 2025. Staring seizures occurred 2 to 4 times per month; the separate right-hand jerks occurred in 1 to 2 clusters per month, each of 3 to 5 jerks. My interpretation of both patterns remains epileptic.\n\nOn direct review of the entire medication history, the patient confirms that lamotrigine has never been taken at any time through 15 July 2025. The January proposal was not enacted.\n"
+    },
+    {
+      "letter_id": "L3",
+      "visit_date": "2025-08-20",
+      "available_date": "2025-08-20",
+      "text": "Fictional outpatient letter | generated-006 | age 46\nConsultation: 2025-08-20\n\nThe patient now confirms that lamotrigine was actually started on 25 July 2025. This was after the appointment at which the January proposal was still unfulfilled.\n\nThe result now documented here is specifically for the EEG requested on 10 January 2025. Its report was normal and first became available to the treating team on 20 February 2025.\n"
+    }
+  ]
+}

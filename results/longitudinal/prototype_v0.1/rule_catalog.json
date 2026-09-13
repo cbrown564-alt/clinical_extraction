@@ -1,0 +1,41 @@
+{
+  "format_normalization": {
+    "rule": "exact-offset",
+    "owner": "evidence.py",
+    "meaning": "Unique exact-quotation offset repair; clinical fields unchanged"
+  },
+  "evidence_selection": {
+    "owner": "evidence.py",
+    "meaning": "Grounded source paragraph for explicit link context"
+  },
+  "semantic_linking": {
+    "owner": "history.py",
+    "meaning": "Identity, correction, conflict, study and medication links"
+  },
+  "semantic_query_policy": {
+    "owner": "queries.py and temporal.py",
+    "rule_ids": [
+      "Q1-complete-event-absence",
+      "Q1-diagnosis-and-bounded-event",
+      "Q1-diagnosis-and-qualitative-christmas-inclusion",
+      "Q1-diagnosis-explicitly-withdrawn",
+      "Q2-bounded-inventory",
+      "Q2-complete-event-absence",
+      "Q2-complete-inventory-linked-exclusions",
+      "Q2-distinct-overlapping-patterns",
+      "Q2-inventory-calendar-scope",
+      "Q2-inventory-past-year",
+      "Q2-inventory-recurring-autumn-history",
+      "Q3-complete-no-initiation-history",
+      "Q3-confirmed-start",
+      "Q3-explicit-continuous-prewindow-course",
+      "Q4-complete-requests-without-result-by-index",
+      "Q4-matched-clinically-available-result",
+      "Q5-complete-all-event-absence",
+      "Q5-first-patient-reinterpretation-after-index",
+      "Q5-linked-event-and-dated-reinterpretation"
+    ],
+    "meaning": "Clinical selection, scope, date inclusion and negative coverage; no treatment causality"
+  },
+  "semantic_extraction_repair": false
+}

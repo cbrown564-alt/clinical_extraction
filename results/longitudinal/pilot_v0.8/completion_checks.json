@@ -1,0 +1,151 @@
+{
+  "scope": "Internal synthetic-development Phase 2 evidence; no expert validation",
+  "case_checks": [
+    {
+      "case": "authored_patient_001",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_001",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 25,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 35,
+      "links": 10
+    },
+    {
+      "case": "authored_patient_002",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_002",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 6,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 12,
+      "links": 1
+    },
+    {
+      "case": "authored_patient_003",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_003",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 7,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 16,
+      "links": 2
+    },
+    {
+      "case": "authored_patient_004",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_004",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 14,
+      "links": 3
+    },
+    {
+      "case": "authored_patient_005",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_005",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 16,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 26,
+      "links": 7
+    },
+    {
+      "case": "authored_patient_006",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_006",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 11,
+      "links": 4
+    },
+    {
+      "case": "authored_patient_007",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_007",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 15,
+      "links": 2
+    },
+    {
+      "case": "authored_patient_008",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_008",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 12,
+      "links": 2
+    },
+    {
+      "case": "authored_patient_009",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_009",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 14,
+      "links": 2
+    },
+    {
+      "case": "authored_patient_010",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_010",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 19,
+      "links": 6
+    },
+    {
+      "case": "authored_patient_011",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_011",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 13,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 16,
+      "links": 4
+    },
+    {
+      "case": "authored_patient_012",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_012",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 10,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 20,
+      "links": 6
+    }
+  ],
+  "source_letters_and_query_references_preserved": 48,
+  "temporal_pairs_reviewed": 144,
+  "unaligned_link_instances_reviewed": 89,
+  "query_replay_matches": 229,
+  "query_replay_requests": 240,
+  "explicit_query_mechanism_gaps": 11,
+  "timed_calls": 18,
+  "timed_capture_counts": {
+    "parsed": 18
+  },
+  "query_and_timing_replay_equal": true,
+  "generation_config_hashes_match": true,
+  "human_effort_measured": false,
+  "clinical_validation": false
+}

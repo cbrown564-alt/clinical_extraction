@@ -1,0 +1,313 @@
+{
+  "case_id": "generated-011",
+  "version": "1",
+  "task_definition_version": "0.2",
+  "annotation_guide_version": "0.3",
+  "origin": "AI-authored fictional seed-free development case",
+  "inspection_policy": "development_only",
+  "expert_review": false,
+  "independent_annotation": false,
+  "lineage": [
+    "authoring-template:generation-0.1",
+    "scenario:reporter_conflict"
+  ],
+  "scenario": "reporter_conflict",
+  "style": "shorthand",
+  "author": {
+    "identity": "current Codex authoring assistant",
+    "model": "GPT-6 family as supplied in session instructions",
+    "exact_hosted_snapshot": null,
+    "sampling_parameters": null,
+    "external_provider": null,
+    "independent": false
+  },
+  "documents": [
+    {
+      "letter_id": "L1",
+      "version": 1,
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "path": "letters/L1.txt",
+      "sha256": "ee471a16c47cd4a5dc73dd1ced78c3ef9556f7c1bbdb4b9fcba4beebf03a559f"
+    },
+    {
+      "letter_id": "L2",
+      "version": 1,
+      "visit_date": "2025-08-10",
+      "available_date": "2025-08-10",
+      "path": "letters/L2.txt",
+      "sha256": "4a6d4f54841c6651ed21c5ce62179d86f5f10aa735e3d4cbbe4eae6c90b37711"
+    },
+    {
+      "letter_id": "L3",
+      "version": 1,
+      "visit_date": "2025-12-10",
+      "available_date": "2025-12-10",
+      "path": "letters/L3.txt",
+      "sha256": "cbc157f1ee750d402bd9abd3bdca5394854d34576e8a2dbf47e0707ee9c9061c"
+    }
+  ],
+  "requests": [
+    {
+      "request_id": "T1_visit_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2025-02-01",
+      "view": "visit",
+      "information_cutoff": "2025-02-01",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2025-02-01",
+      "view": "visit",
+      "information_cutoff": "2025-02-01",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2025-02-01",
+      "view": "visit",
+      "information_cutoff": "2025-02-01",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2025-02-01",
+      "view": "visit",
+      "information_cutoff": "2025-02-01",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2025-02-01",
+      "view": "visit",
+      "information_cutoff": "2025-02-01",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_visit.json"
+    },
+    {
+      "request_id": "T1_retrospective_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2025-02-01",
+      "view": "retrospective",
+      "information_cutoff": "2025-07-31",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_retrospective.json"
+    },
+    {
+      "request_id": "T1_retrospective_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2025-02-01",
+      "view": "retrospective",
+      "information_cutoff": "2025-07-31",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_retrospective.json"
+    },
+    {
+      "request_id": "T1_retrospective_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2025-02-01",
+      "view": "retrospective",
+      "information_cutoff": "2025-07-31",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_retrospective.json"
+    },
+    {
+      "request_id": "T1_retrospective_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2025-02-01",
+      "view": "retrospective",
+      "information_cutoff": "2025-07-31",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_retrospective.json"
+    },
+    {
+      "request_id": "T1_retrospective_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2025-02-01",
+      "view": "retrospective",
+      "information_cutoff": "2025-07-31",
+      "retrospective_cutoff": "2025-07-31",
+      "lookback_90_start": "2024-11-04",
+      "lookback_180_start": "2024-08-06",
+      "input_path": "inputs/T1_retrospective.json"
+    },
+    {
+      "request_id": "T2_visit_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2025-07-31",
+      "view": "visit",
+      "information_cutoff": "2025-07-31",
+      "retrospective_cutoff": "2026-01-27",
+      "lookback_90_start": "2025-05-03",
+      "lookback_180_start": "2025-02-02",
+      "input_path": "inputs/T2_visit.json"
+    },
+    {
+      "request_id": "T2_visit_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2025-07-31",
+      "view": "visit",
+      "information_cutoff": "2025-07-31",
+      "retrospective_cutoff": "2026-01-27",
+      "lookback_90_start": "2025-05-03",
+      "lookback_180_start": "2025-02-02",
+      "input_path": "inputs/T2_visit.json"
+    },
+    {
+      "request_id": "T2_visit_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2025-07-31",
+      "view": "visit",
+      "information_cutoff": "2025-07-31",
+      "retrospective_cutoff": "2026-01-27",
+      "lookback_90_start": "2025-05-03",
+      "lookback_180_start": "2025-02-02",
+      "input_path": "inputs/T2_visit.json"
+    },
+    {
+      "request_id": "T2_visit_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2025-07-31",
+      "view": "visit",
+      "information_cutoff": "2025-07-31",
+      "retrospective_cutoff": "2026-01-27",
+      "lookback_90_start": "2025-05-03",
+      "lookback_180_start": "2025-02-02",
+      "input_path": "inputs/T2_visit.json"
+    },
+    {
+      "request_id": "T2_visit_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2025-07-31",
+      "view": "visit",
+      "information_cutoff": "2025-07-31",
+      "retrospective_cutoff": "2026-01-27",
+      "lookback_90_start": "2025-05-03",
+      "lookback_180_start": "2025-02-02",
+      "input_path": "inputs/T2_visit.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2025-07-31",
+      "view": "retrospective",
+      "information_cutoff": "2026-01-27",
+      "retrospective_cutoff": "2026-01-27",
+      "lookback_90_start": "2025-05-03",
+      "lookback_180_start": "2025-02-02",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2025-07-31",
+      "view": "retrospective",
+      "information_cutoff": "2026-01-27",
+      "retrospective_cutoff": "2026-01-27",
+      "lookback_90_start": "2025-05-03",
+      "lookback_180_start": "2025-02-02",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2025-07-31",
+      "view": "retrospective",
+      "information_cutoff": "2026-01-27",
+      "retrospective_cutoff": "2026-01-27",
+      "lookback_90_start": "2025-05-03",
+      "lookback_180_start": "2025-02-02",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2025-07-31",
+      "view": "retrospective",
+      "information_cutoff": "2026-01-27",
+      "retrospective_cutoff": "2026-01-27",
+      "lookback_90_start": "2025-05-03",
+      "lookback_180_start": "2025-02-02",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2025-07-31",
+      "view": "retrospective",
+      "information_cutoff": "2026-01-27",
+      "retrospective_cutoff": "2026-01-27",
+      "lookback_90_start": "2025-05-03",
+      "lookback_180_start": "2025-02-02",
+      "input_path": "inputs/T2_retrospective.json"
+    }
+  ],
+  "annotation": {
+    "no_assertion_letters": {
+      "L3": "Administrative only; no clinical statements."
+    }
+  }
+}

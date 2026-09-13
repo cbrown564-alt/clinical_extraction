@@ -1,0 +1,4 @@
+Fictional outpatient letter | generated-005 | age 45
+Consultation: 2025-11-20
+
+This attendance was used only to arrange the next outpatient appointment. No clinical history was taken and no clinical review took place.

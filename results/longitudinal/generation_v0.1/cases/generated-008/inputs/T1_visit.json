@@ -1,0 +1,11 @@
+{
+  "patient_id": "generated-008",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-008 | age 48\nConsultation: 2025-02-01\n\nThe diagnosis carried forward in this outpatient letter is epilepsy.\n\nThe patient describes prolonged shaking episodes at a rate of twice per month from 1 November 2024 to 20 January 2025. They are carried forward here as epileptic seizures. The most recent episode was on 20 January. The patient reports that these were the only event type throughout 1 November 2024 to 1 February 2025.\n\nThe patient confirms that lamotrigine was actually started on 10 January 2025.\n\nAn EEG request was made on 5 January 2025. Its result is not documented in this letter, so this account does not establish when the team received it.\n"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "assertions": [
+    {
+      "assertion_id": "a1",
+      "letter_id": "L1",
+      "evidence": [
+        {
+          "letter_id": "L1",
+          "start": 134,
+          "end": 190,
+          "text": "He has an established diagnosis of focal motor epilepsy."
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": {
+          "earliest": "2025-02-12",
+          "latest": "2025-02-12"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L1"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal motor epilepsy",
+        "phase": "current"
+      }
+    },
+    {
+      "assertion_id": "a2",
+      "letter_id": "L2",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 126,
+          "end": 168,
+          "text": "His diagnosis remains focal motor epilepsy"
+        }
+      ],
+      "reporter": "clinician",
+      "certainty": "asserted",
+      "polarity": "affirmed",
+      "coverage": "not_stated",
+      "time": {
+        "text": null,
+        "start": null,
+        "end": {
+          "earliest": "2025-06-20",
+          "latest": "2025-06-20"
+        },
+        "kind": "as_of",
+        "anchor_letter_id": "L2"
+      },
+      "content": {
+        "family": "diagnosis",
+        "name": "focal motor epilepsy",
+        "phase": "current"
+      }
+    }
+  ],
+  "links": [
+    {
+      "link_id": "l1",
+      "earlier_assertion": "a1",
+      "later_assertion": "a2",
+      "relation": "repeats",
+      "certainty": "asserted",
+      "evidence": [
+        {
+          "letter_id": "L2",
+          "start": 126,
+          "end": 168,
+          "text": "His diagnosis remains focal motor epilepsy"
+        }
+      ],
+      "decision_time": null
+    }
+  ]
+}

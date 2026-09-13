@@ -1,0 +1,2251 @@
+{
+  "reviewer": "current Codex authoring assistant",
+  "independent": false,
+  "scope": "Same-assistant final-text review. Each item has an evidence-bound disposition. No clinical expert or independent model review.",
+  "representation_limits": [
+    "Some event assertions retain patient-reported burden together with an explicitly attributed clinician interpretation in the same quote. Splitting those assertions is an acceptable alternative; agreement is not claimed.",
+    "Negative reinterpretation completeness remains in query evidence/reasons because schema v0.3 has no general negative-reclassification inventory."
+  ],
+  "patients": [
+    {
+      "patient_id": "generated-001",
+      "case_sha256": "daa8c769169ec67dcdea7544c2be53fbdbf88cada4fe3a0485e5451bf12aed9e",
+      "qc_sha256": "4f226669cd15b6ebc641e0cf487b3c7e0a4b346b7f3968caee3a5c81d966623f",
+      "disposition": "accepted",
+      "reason": "All assertions, relationships and query answers reviewed against final text. Cutoff-specific reasons preserve unavailable information as unknown. Explicit disagreements and diagnostic mismatches remain in the record.",
+      "items": [
+        {
+          "item_id": "assertion:L1.diagnosis",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports diagnosis focal epilepsy with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.pattern",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.latest",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure occurrence with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.inventory",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure inventory with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.copied",
+          "disposition": "supported",
+          "reason": "Explicitly copied diagnosis retains its February observation date, rather than corroborating a new July diagnosis."
+        },
+        {
+          "item_id": "assertion:L2.pattern",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.latest",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure occurrence with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.inventory",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure inventory with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "link:copied-diagnosis",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:same-followup",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "answer:T1_visit_Q1",
+          "disposition": "supported",
+          "reason": "The established epilepsy diagnosis and a focal seizure on 20 January support the conjunction within this 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q2",
+          "disposition": "supported",
+          "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T1_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T1_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "The established epilepsy diagnosis and a focal seizure on 20 January support the conjunction within this 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q1",
+          "disposition": "supported",
+          "reason": "The established epilepsy diagnosis and a focal seizure on 20 July support the conjunction within this 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q2",
+          "disposition": "supported",
+          "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T2_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "The established epilepsy diagnosis and a focal seizure on 20 July support the conjunction within this 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "diagnostic:T1_visit_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The implemented Q2 diagnostic lacks the complete single-pattern inventory negative. The letter explicitly excludes all other event types throughout this lookback. Preserve the text-supported ineligible answer."
+        },
+        {
+          "item_id": "diagnostic:T1_retrospective_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The implemented Q2 diagnostic lacks the complete single-pattern inventory negative. The letter explicitly excludes all other event types throughout this lookback. Preserve the text-supported ineligible answer."
+        },
+        {
+          "item_id": "diagnostic:T2_visit_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The implemented Q2 diagnostic lacks the complete single-pattern inventory negative. The letter explicitly excludes all other event types throughout this lookback. Preserve the text-supported ineligible answer."
+        },
+        {
+          "item_id": "diagnostic:T2_retrospective_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The implemented Q2 diagnostic lacks the complete single-pattern inventory negative. The letter explicitly excludes all other event types throughout this lookback. Preserve the text-supported ineligible answer."
+        }
+      ]
+    },
+    {
+      "patient_id": "generated-002",
+      "case_sha256": "0a394fd623c9d6eb1af131243901585f12990416f77d2d2b4ecd6148c766f845",
+      "qc_sha256": "8a04bde28e13c42a410fc72959a93e1ed8d4723c78d0c3786e215630d8f9e140",
+      "disposition": "accepted",
+      "reason": "All assertions, relationships and query answers reviewed against final text. Cutoff-specific reasons preserve unavailable information as unknown. Explicit disagreements and diagnostic mismatches remain in the record.",
+      "items": [
+        {
+          "item_id": "assertion:L1.diagnosis",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports diagnosis focal epilepsy with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.staring",
+          "disposition": "supported",
+          "reason": "Patient supplies event frequency and dates; the same span separately states the clinician epileptic interpretation. Reporter identifies the event report, not a claim of independent agreement."
+        },
+        {
+          "item_id": "assertion:L1.jerks",
+          "disposition": "supported",
+          "reason": "Cluster frequency (1–2/month) and events per cluster (3–5) are separate. Distinct pattern and epileptic interpretation are explicit; no midpoint or total-event rate is invented."
+        },
+        {
+          "item_id": "assertion:L1.plan",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports medication proposed with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.request",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation requested with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.staring",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.jerks",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.not-started",
+          "disposition": "supported",
+          "reason": "Explicit never-use covers all prior history through 15 July. Onset is unknown; the separate all-prior-history evidence supplies exhaustive scope. It cannot cover 16–31 July."
+        },
+        {
+          "item_id": "assertion:L3.started",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports medication started with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L3.result",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation result with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "link:two-patterns-L1",
+          "disposition": "supported",
+          "reason": "Two explicitly separate epileptic patterns have the same stated active interval, covering the first 90-day lookback."
+        },
+        {
+          "item_id": "link:same-staring",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:same-jerks",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:two-patterns-L2",
+          "disposition": "supported",
+          "reason": "The single report explicitly distinguishes both earlier patterns and states their concurrent activity through 15 July. It does not extend activity to 31 July."
+        },
+        {
+          "item_id": "link:plan-not-enacted",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:EEG-result",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "answer:T1_visit_Q1",
+          "disposition": "supported",
+          "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q2",
+          "disposition": "supported",
+          "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "A proposal is not evidence of initiation or a complete negative medication history."
+        },
+        {
+          "item_id": "answer:T1_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The January EEG request has no documented result availability by this index, and other EEG requests are not exhausted."
+        },
+        {
+          "item_id": "answer:T1_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q3",
+          "disposition": "supported",
+          "reason": "The July report explicitly covers never-use throughout the entire prior history, including the first index lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The January EEG request has no documented result availability by this index, and other EEG requests are not exhausted."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q1",
+          "disposition": "supported",
+          "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q2",
+          "disposition": "supported",
+          "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "Non-use is supported only through 15 July; a start between 16 and 31 July remains unobserved at this cutoff."
+        },
+        {
+          "item_id": "answer:T2_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The known January EEG request predates this lookback; there is no exhaustive inventory of other EEG requests during the lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q3",
+          "disposition": "supported",
+          "reason": "The later letter confirms an actual start on 25 July, inside the second index lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The known January EEG request predates this lookback; there is no exhaustive inventory of other EEG requests during the lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        }
+      ]
+    },
+    {
+      "patient_id": "generated-003",
+      "case_sha256": "1663ccc439acecec60d15830f4258afa55bc35c18affd2fe5655ef86e5816724",
+      "qc_sha256": "6b59bc685c5c5d5a805e6c9c059be78169746c7a7e5f8394520743cef2716009",
+      "disposition": "accepted",
+      "reason": "All assertions, relationships and query answers reviewed against final text. Cutoff-specific reasons preserve unavailable information as unknown. Explicit disagreements and diagnostic mismatches remain in the record.",
+      "items": [
+        {
+          "item_id": "assertion:L1.diagnosis",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports diagnosis focal epilepsy with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.absence",
+          "disposition": "supported",
+          "reason": "This is the patient’s exhaustive denial only, preserved alongside a conflicting caregiver account; it is not adjudicated seizure freedom."
+        },
+        {
+          "item_id": "assertion:L1.caregiver",
+          "disposition": "supported",
+          "reason": "The caregiver asserts a dated focal seizure. Keep that assertion separate from the patient’s denial and the clinician’s uncertainty."
+        },
+        {
+          "item_id": "assertion:L1.uncertain",
+          "disposition": "supported",
+          "reason": "The clinician explicitly cannot resolve occurrence or epileptic interpretation; no majority vote or later-account preference is applied."
+        },
+        {
+          "item_id": "assertion:L2.undated",
+          "disposition": "supported",
+          "reason": "The report is qualitative and undated. Numeric endpoints remain unknown; the phrase since February does not identify an occurrence wholly within May–July. The text explicitly leaves the January dispute unresolved."
+        },
+        {
+          "item_id": "link:reporter-disagreement",
+          "disposition": "supported",
+          "reason": "The patient specifically denies the same caregiver-reported episode on 15 January; the disagreement concerns the same scope and time."
+        },
+        {
+          "item_id": "answer:T1_visit_Q1",
+          "disposition": "uncertainty_preserved",
+          "reason": "The patient’s whole-interval denial and caregiver’s dated epileptic-event account conflict; the clinician cannot resolve them."
+        },
+        {
+          "item_id": "answer:T1_visit_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval."
+        },
+        {
+          "item_id": "answer:T1_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T1_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T1_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q1",
+          "disposition": "uncertainty_preserved",
+          "reason": "The patient’s whole-interval denial and caregiver’s dated epileptic-event account conflict; the clinician cannot resolve them."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q1",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not settle whether an epileptic seizure occurred in this 90-day interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T2_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q1",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not settle whether an epileptic seizure occurred in this 90-day interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        }
+      ]
+    },
+    {
+      "patient_id": "generated-004",
+      "case_sha256": "ebe2b6cb40bbd779dfdafbd3cf58ea1faea56616704d9361bc2d791f4dcb5b82",
+      "qc_sha256": "1287801d0925251d6c0c54cf7e9b92c6d4e276384675189a15d63a3e3c11f89b",
+      "disposition": "accepted",
+      "reason": "All assertions, relationships and query answers reviewed against final text. Cutoff-specific reasons preserve unavailable information as unknown. Explicit disagreements and diagnostic mismatches remain in the record.",
+      "items": [
+        {
+          "item_id": "assertion:L1.diagnosis",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports diagnosis epilepsy with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.shaking",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.latest",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure occurrence with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.inventory",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure inventory with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.started",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports medication started with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.request",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation requested with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.correction",
+          "disposition": "supported",
+          "reason": "Explicit correction identifies the same earlier episodes. Their occurrence interval remains on the earlier assertion; it is not restated here. The 28 January decision is stored on the link; March availability stays in metadata."
+        },
+        {
+          "item_id": "assertion:L2.diagnosis-withdrawn",
+          "disposition": "supported",
+          "reason": "The clinician explicitly withdrew epilepsy on 28 January and says it remained withdrawn at the first index. This is documented diagnosis, not an inference from a normal EEG."
+        },
+        {
+          "item_id": "assertion:L2.no-events",
+          "disposition": "supported",
+          "reason": "Last event was 20 January; under inclusive dates, the explicit no-further-event interval begins 21 January and ends at the 20 February consultation."
+        },
+        {
+          "item_id": "assertion:L2.performed",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation performed with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.result",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation result with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.stopped",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports medication stopped with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L3.no-events",
+          "disposition": "supported",
+          "reason": "Complete event absence explicitly covers the second 90-day lookback. The separate no-reclassification statement remains evidence for the Q5 negative; schema v0.3 has no general negative-reclassification inventory field."
+        },
+        {
+          "item_id": "assertion:L3.not-restarted",
+          "disposition": "supported",
+          "reason": "Explicit non-reinitiation covers the complete second 180-day lookback. It does not erase the confirmed January initiation."
+        },
+        {
+          "item_id": "assertion:L3.no-requests",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation request_inventory with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "link:shaking-correction",
+          "disposition": "supported",
+          "reason": "Text explicitly identifies the same prolonged shaking, corrects the February account and dates the decision to 28 January. First-ever scope is patient-wide. The March letter is excluded at the February visit cutoff."
+        },
+        {
+          "item_id": "link:diagnosis-update",
+          "disposition": "supported",
+          "reason": "The later clinician statement explicitly withdraws the diagnosis and identifies the diagnostic position at the earlier consultation; earlier documentation remains preserved."
+        },
+        {
+          "item_id": "link:EEG-performed",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:EEG-result",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "answer:T1_visit_Q1",
+          "disposition": "supported",
+          "reason": "The permitted letter documents epilepsy and a January epileptic event inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q2",
+          "disposition": "supported",
+          "reason": "Only one event pattern is explicitly reported throughout the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q3",
+          "disposition": "supported",
+          "reason": "Actual initiation on 10 January is within this 180-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "No result availability is documented at this cutoff and there is no exhaustive request inventory."
+        },
+        {
+          "item_id": "answer:T1_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "No dated correction or complete reassessment history is documented at this cutoff."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "The later letter explicitly rules out epilepsy by the first index. This documented diagnostic withdrawal remains unreversed at the second index."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "Only one event pattern is explicitly reported throughout the first lookback; its later non-epileptic interpretation cannot create a second epileptic pattern."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q3",
+          "disposition": "supported",
+          "reason": "Actual initiation on 10 January is within this 180-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q4",
+          "disposition": "supported",
+          "reason": "The January request is explicitly matched to a report available to the team on 25 January, before T1, despite later letter availability."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q5",
+          "disposition": "supported",
+          "reason": "A January episode previously documented as epileptic is explicitly reinterpreted; the decision on 28 January is before T1, although its letter is available later."
+        },
+        {
+          "item_id": "answer:T2_visit_Q1",
+          "disposition": "supported",
+          "reason": "The later letter explicitly rules out epilepsy by the first index. This documented diagnostic withdrawal remains unreversed at the second index."
+        },
+        {
+          "item_id": "answer:T2_visit_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not observe the second 90-day interval; do not extend February absence through July."
+        },
+        {
+          "item_id": "answer:T2_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The January course predates the second lookback; stopping in January alone does not exclude a later start before 31 July."
+        },
+        {
+          "item_id": "answer:T2_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The known January request predates this lookback and other requests are not exhausted."
+        },
+        {
+          "item_id": "answer:T2_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The documented correction concerns January events before this lookback. Reclassification history for the remainder of the lookback is not covered."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "The later letter explicitly rules out epilepsy by the first index. This documented diagnostic withdrawal remains unreversed at the second index."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "Explicit absence of all events covers the entire second 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q3",
+          "disposition": "supported",
+          "reason": "Explicit non-reinitiation from 29 January to 10 August covers the entire second lookback, 2 February to 31 July."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The EEG no-request inventory covers 3 February through 10 August, but this lookback starts on 2 February. The uncovered first day prevents a definitive negative, and no qualifying request/result is established."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q5",
+          "disposition": "supported",
+          "reason": "The only ever earlier pattern last occurred on 20 January, outside the second lookback. The two later letters cover absence of any further events through 10 August and no further reinterpretations; no qualifying event from the second lookback exists."
+        },
+        {
+          "item_id": "diagnostic:T1_visit_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic lacks this complete single-pattern inventory or all-event absence negative. The reference uses explicit whole-interval wording; it does not infer absence from silence."
+        },
+        {
+          "item_id": "diagnostic:T1_retrospective_Q1",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic does not apply the explicit diagnosis withdrawal and its persistence to the earlier carried-forward diagnosis. Its T1 retrospective positive also retains a January occurrence without following the corrected pattern identity. The text explicitly rules out epilepsy by T1; preserve ineligible."
+        },
+        {
+          "item_id": "diagnostic:T1_retrospective_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic lacks this complete single-pattern inventory or all-event absence negative. The reference uses explicit whole-interval wording; it does not infer absence from silence."
+        },
+        {
+          "item_id": "diagnostic:T2_visit_Q1",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic does not apply the explicit diagnosis withdrawal and its persistence to the earlier carried-forward diagnosis. Its T1 retrospective positive also retains a January occurrence without following the corrected pattern identity. The text explicitly rules out epilepsy by T1; preserve ineligible."
+        },
+        {
+          "item_id": "diagnostic:T2_retrospective_Q1",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic does not apply the explicit diagnosis withdrawal and its persistence to the earlier carried-forward diagnosis. Its T1 retrospective positive also retains a January occurrence without following the corrected pattern identity. The text explicitly rules out epilepsy by T1; preserve ineligible."
+        },
+        {
+          "item_id": "diagnostic:T2_retrospective_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic lacks this complete single-pattern inventory or all-event absence negative. The reference uses explicit whole-interval wording; it does not infer absence from silence."
+        },
+        {
+          "item_id": "diagnostic:T2_retrospective_Q5",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic does not combine the exhaustive January event inventory, last-event date and later no-event/no-reclassification evidence to refute existence over the entire second lookback. Keep the negative with all its text evidence."
+        }
+      ]
+    },
+    {
+      "patient_id": "generated-005",
+      "case_sha256": "84fa0298abb90bc1bde35e7a16fa3501fc58bb7cd727664399068310c2e9da83",
+      "qc_sha256": "e3c06be6f603a3b992372f19696ee64b5517d4db0ce139cac4630bac6fd85a61",
+      "disposition": "accepted",
+      "reason": "All assertions, relationships and query answers reviewed against final text. Cutoff-specific reasons preserve unavailable information as unknown. Explicit disagreements and diagnostic mismatches remain in the record.",
+      "items": [
+        {
+          "item_id": "assertion:L1.diagnosis",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports diagnosis focal epilepsy with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.pattern",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.latest",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure occurrence with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.inventory",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure inventory with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.copied",
+          "disposition": "supported",
+          "reason": "Explicitly copied diagnosis retains its February observation date, rather than corroborating a new July diagnosis."
+        },
+        {
+          "item_id": "assertion:L2.pattern",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.latest",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure occurrence with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.inventory",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure inventory with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "link:copied-diagnosis",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:same-followup",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "answer:T1_visit_Q1",
+          "disposition": "supported",
+          "reason": "The established epilepsy diagnosis and a focal seizure on 20 January support the conjunction within this 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q2",
+          "disposition": "supported",
+          "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T1_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T1_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "The established epilepsy diagnosis and a focal seizure on 20 January support the conjunction within this 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q1",
+          "disposition": "supported",
+          "reason": "The established epilepsy diagnosis and a focal seizure on 20 July support the conjunction within this 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q2",
+          "disposition": "supported",
+          "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T2_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "The established epilepsy diagnosis and a focal seizure on 20 July support the conjunction within this 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "diagnostic:T1_visit_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The implemented Q2 diagnostic lacks the complete single-pattern inventory negative. The letter explicitly excludes all other event types throughout this lookback. Preserve the text-supported ineligible answer."
+        },
+        {
+          "item_id": "diagnostic:T1_retrospective_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The implemented Q2 diagnostic lacks the complete single-pattern inventory negative. The letter explicitly excludes all other event types throughout this lookback. Preserve the text-supported ineligible answer."
+        },
+        {
+          "item_id": "diagnostic:T2_visit_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The implemented Q2 diagnostic lacks the complete single-pattern inventory negative. The letter explicitly excludes all other event types throughout this lookback. Preserve the text-supported ineligible answer."
+        },
+        {
+          "item_id": "diagnostic:T2_retrospective_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The implemented Q2 diagnostic lacks the complete single-pattern inventory negative. The letter explicitly excludes all other event types throughout this lookback. Preserve the text-supported ineligible answer."
+        }
+      ]
+    },
+    {
+      "patient_id": "generated-006",
+      "case_sha256": "e12aac8dfdc05056196ae1793b22497a38a7b7140ee0dbbd42b90bb590f75468",
+      "qc_sha256": "b15678b79649a45d099e40a43d22f112cb26714b1fa80986f8fa37d13d457474",
+      "disposition": "accepted",
+      "reason": "All assertions, relationships and query answers reviewed against final text. Cutoff-specific reasons preserve unavailable information as unknown. Explicit disagreements and diagnostic mismatches remain in the record.",
+      "items": [
+        {
+          "item_id": "assertion:L1.diagnosis",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports diagnosis focal epilepsy with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.staring",
+          "disposition": "supported",
+          "reason": "Patient supplies event frequency and dates; the same span separately states the clinician epileptic interpretation. Reporter identifies the event report, not a claim of independent agreement."
+        },
+        {
+          "item_id": "assertion:L1.jerks",
+          "disposition": "supported",
+          "reason": "Cluster frequency (1–2/month) and events per cluster (3–5) are separate. Distinct pattern and epileptic interpretation are explicit; no midpoint or total-event rate is invented."
+        },
+        {
+          "item_id": "assertion:L1.plan",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports medication proposed with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.request",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation requested with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.staring",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.jerks",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.not-started",
+          "disposition": "supported",
+          "reason": "Explicit never-use covers all prior history through 15 July. Onset is unknown; the separate all-prior-history evidence supplies exhaustive scope. It cannot cover 16–31 July."
+        },
+        {
+          "item_id": "assertion:L3.started",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports medication started with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L3.result",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation result with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "link:two-patterns-L1",
+          "disposition": "supported",
+          "reason": "Two explicitly separate epileptic patterns have the same stated active interval, covering the first 90-day lookback."
+        },
+        {
+          "item_id": "link:same-staring",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:same-jerks",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:two-patterns-L2",
+          "disposition": "supported",
+          "reason": "The single report explicitly distinguishes both earlier patterns and states their concurrent activity through 15 July. It does not extend activity to 31 July."
+        },
+        {
+          "item_id": "link:plan-not-enacted",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:EEG-result",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "answer:T1_visit_Q1",
+          "disposition": "supported",
+          "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q2",
+          "disposition": "supported",
+          "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "A proposal is not evidence of initiation or a complete negative medication history."
+        },
+        {
+          "item_id": "answer:T1_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The January EEG request has no documented result availability by this index, and other EEG requests are not exhausted."
+        },
+        {
+          "item_id": "answer:T1_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q3",
+          "disposition": "supported",
+          "reason": "The July report explicitly covers never-use throughout the entire prior history, including the first index lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The January EEG request has no documented result availability by this index, and other EEG requests are not exhausted."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q1",
+          "disposition": "supported",
+          "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q2",
+          "disposition": "supported",
+          "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "Non-use is supported only through 15 July; a start between 16 and 31 July remains unobserved at this cutoff."
+        },
+        {
+          "item_id": "answer:T2_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The known January EEG request predates this lookback; there is no exhaustive inventory of other EEG requests during the lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q3",
+          "disposition": "supported",
+          "reason": "The later letter confirms an actual start on 25 July, inside the second index lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The known January EEG request predates this lookback; there is no exhaustive inventory of other EEG requests during the lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        }
+      ]
+    },
+    {
+      "patient_id": "generated-007",
+      "case_sha256": "aa4f30c57b67092c1abe0c4911efc7f667d31050fdb302b06050d94cf8b6571c",
+      "qc_sha256": "6b59bc685c5c5d5a805e6c9c059be78169746c7a7e5f8394520743cef2716009",
+      "disposition": "accepted",
+      "reason": "All assertions, relationships and query answers reviewed against final text. Cutoff-specific reasons preserve unavailable information as unknown. Explicit disagreements and diagnostic mismatches remain in the record.",
+      "items": [
+        {
+          "item_id": "assertion:L1.diagnosis",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports diagnosis focal epilepsy with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.absence",
+          "disposition": "supported",
+          "reason": "This is the patient’s exhaustive denial only, preserved alongside a conflicting caregiver account; it is not adjudicated seizure freedom."
+        },
+        {
+          "item_id": "assertion:L1.caregiver",
+          "disposition": "supported",
+          "reason": "The caregiver asserts a dated focal seizure. Keep that assertion separate from the patient’s denial and the clinician’s uncertainty."
+        },
+        {
+          "item_id": "assertion:L1.uncertain",
+          "disposition": "supported",
+          "reason": "The clinician explicitly cannot resolve occurrence or epileptic interpretation; no majority vote or later-account preference is applied."
+        },
+        {
+          "item_id": "assertion:L2.undated",
+          "disposition": "supported",
+          "reason": "The report is qualitative and undated. Numeric endpoints remain unknown; the phrase since February does not identify an occurrence wholly within May–July. The text explicitly leaves the January dispute unresolved."
+        },
+        {
+          "item_id": "link:reporter-disagreement",
+          "disposition": "supported",
+          "reason": "The patient specifically denies the same caregiver-reported episode on 15 January; the disagreement concerns the same scope and time."
+        },
+        {
+          "item_id": "answer:T1_visit_Q1",
+          "disposition": "uncertainty_preserved",
+          "reason": "The patient’s whole-interval denial and caregiver’s dated epileptic-event account conflict; the clinician cannot resolve them."
+        },
+        {
+          "item_id": "answer:T1_visit_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval."
+        },
+        {
+          "item_id": "answer:T1_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T1_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T1_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q1",
+          "disposition": "uncertainty_preserved",
+          "reason": "The patient’s whole-interval denial and caregiver’s dated epileptic-event account conflict; the clinician cannot resolve them."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q1",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not settle whether an epileptic seizure occurred in this 90-day interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T2_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q1",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not settle whether an epileptic seizure occurred in this 90-day interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        }
+      ]
+    },
+    {
+      "patient_id": "generated-008",
+      "case_sha256": "14c381fc2a552456524301c3cc1f23e7f485d47fbb71b1aa67e2d4fad0ecd148",
+      "qc_sha256": "68504c9a71daf35cb1d4fac5d3906edddd5a387a820950e18111110e3e29b1e4",
+      "disposition": "accepted",
+      "reason": "All assertions, relationships and query answers reviewed against final text. Cutoff-specific reasons preserve unavailable information as unknown. Explicit disagreements and diagnostic mismatches remain in the record.",
+      "items": [
+        {
+          "item_id": "assertion:L1.diagnosis",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports diagnosis epilepsy with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.shaking",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.latest",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure occurrence with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.inventory",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure inventory with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.started",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports medication started with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.request",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation requested with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.correction",
+          "disposition": "supported",
+          "reason": "Explicit correction identifies the same earlier episodes. Their occurrence interval remains on the earlier assertion; it is not restated here. The 28 January decision is stored on the link; March availability stays in metadata."
+        },
+        {
+          "item_id": "assertion:L2.diagnosis-withdrawn",
+          "disposition": "supported",
+          "reason": "The clinician explicitly withdrew epilepsy on 28 January and says it remained withdrawn at the first index. This is documented diagnosis, not an inference from a normal EEG."
+        },
+        {
+          "item_id": "assertion:L2.no-events",
+          "disposition": "supported",
+          "reason": "Last event was 20 January; under inclusive dates, the explicit no-further-event interval begins 21 January and ends at the 20 February consultation."
+        },
+        {
+          "item_id": "assertion:L2.performed",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation performed with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.result",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation result with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.stopped",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports medication stopped with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L3.no-events",
+          "disposition": "supported",
+          "reason": "Complete event absence explicitly covers the second 90-day lookback. The separate no-reclassification statement remains evidence for the Q5 negative; schema v0.3 has no general negative-reclassification inventory field."
+        },
+        {
+          "item_id": "assertion:L3.not-restarted",
+          "disposition": "supported",
+          "reason": "Explicit non-reinitiation covers the complete second 180-day lookback. It does not erase the confirmed January initiation."
+        },
+        {
+          "item_id": "assertion:L3.no-requests",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation request_inventory with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "link:shaking-correction",
+          "disposition": "supported",
+          "reason": "Text explicitly identifies the same prolonged shaking, corrects the February account and dates the decision to 28 January. First-ever scope is patient-wide. The March letter is excluded at the February visit cutoff."
+        },
+        {
+          "item_id": "link:diagnosis-update",
+          "disposition": "supported",
+          "reason": "The later clinician statement explicitly withdraws the diagnosis and identifies the diagnostic position at the earlier consultation; earlier documentation remains preserved."
+        },
+        {
+          "item_id": "link:EEG-performed",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:EEG-result",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "answer:T1_visit_Q1",
+          "disposition": "supported",
+          "reason": "The permitted letter documents epilepsy and a January epileptic event inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q2",
+          "disposition": "supported",
+          "reason": "Only one event pattern is explicitly reported throughout the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q3",
+          "disposition": "supported",
+          "reason": "Actual initiation on 10 January is within this 180-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "No result availability is documented at this cutoff and there is no exhaustive request inventory."
+        },
+        {
+          "item_id": "answer:T1_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "No dated correction or complete reassessment history is documented at this cutoff."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "The later letter explicitly rules out epilepsy by the first index. This documented diagnostic withdrawal remains unreversed at the second index."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "Only one event pattern is explicitly reported throughout the first lookback; its later non-epileptic interpretation cannot create a second epileptic pattern."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q3",
+          "disposition": "supported",
+          "reason": "Actual initiation on 10 January is within this 180-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q4",
+          "disposition": "supported",
+          "reason": "The January request is explicitly matched to a report available to the team on 25 January, before T1, despite later letter availability."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q5",
+          "disposition": "supported",
+          "reason": "A January episode previously documented as epileptic is explicitly reinterpreted; the decision on 28 January is before T1, although its letter is available later."
+        },
+        {
+          "item_id": "answer:T2_visit_Q1",
+          "disposition": "supported",
+          "reason": "The later letter explicitly rules out epilepsy by the first index. This documented diagnostic withdrawal remains unreversed at the second index."
+        },
+        {
+          "item_id": "answer:T2_visit_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not observe the second 90-day interval; do not extend February absence through July."
+        },
+        {
+          "item_id": "answer:T2_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The January course predates the second lookback; stopping in January alone does not exclude a later start before 31 July."
+        },
+        {
+          "item_id": "answer:T2_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The known January request predates this lookback and other requests are not exhausted."
+        },
+        {
+          "item_id": "answer:T2_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The documented correction concerns January events before this lookback. Reclassification history for the remainder of the lookback is not covered."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "The later letter explicitly rules out epilepsy by the first index. This documented diagnostic withdrawal remains unreversed at the second index."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "Explicit absence of all events covers the entire second 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q3",
+          "disposition": "supported",
+          "reason": "Explicit non-reinitiation from 29 January to 10 August covers the entire second lookback, 2 February to 31 July."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The EEG no-request inventory covers 3 February through 10 August, but this lookback starts on 2 February. The uncovered first day prevents a definitive negative, and no qualifying request/result is established."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q5",
+          "disposition": "supported",
+          "reason": "The only ever earlier pattern last occurred on 20 January, outside the second lookback. The two later letters cover absence of any further events through 10 August and no further reinterpretations; no qualifying event from the second lookback exists."
+        },
+        {
+          "item_id": "diagnostic:T1_visit_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic lacks this complete single-pattern inventory or all-event absence negative. The reference uses explicit whole-interval wording; it does not infer absence from silence."
+        },
+        {
+          "item_id": "diagnostic:T1_retrospective_Q1",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic does not apply the explicit diagnosis withdrawal and its persistence to the earlier carried-forward diagnosis. Its T1 retrospective positive also retains a January occurrence without following the corrected pattern identity. The text explicitly rules out epilepsy by T1; preserve ineligible."
+        },
+        {
+          "item_id": "diagnostic:T1_retrospective_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic lacks this complete single-pattern inventory or all-event absence negative. The reference uses explicit whole-interval wording; it does not infer absence from silence."
+        },
+        {
+          "item_id": "diagnostic:T2_visit_Q1",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic does not apply the explicit diagnosis withdrawal and its persistence to the earlier carried-forward diagnosis. Its T1 retrospective positive also retains a January occurrence without following the corrected pattern identity. The text explicitly rules out epilepsy by T1; preserve ineligible."
+        },
+        {
+          "item_id": "diagnostic:T2_retrospective_Q1",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic does not apply the explicit diagnosis withdrawal and its persistence to the earlier carried-forward diagnosis. Its T1 retrospective positive also retains a January occurrence without following the corrected pattern identity. The text explicitly rules out epilepsy by T1; preserve ineligible."
+        },
+        {
+          "item_id": "diagnostic:T2_retrospective_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic lacks this complete single-pattern inventory or all-event absence negative. The reference uses explicit whole-interval wording; it does not infer absence from silence."
+        },
+        {
+          "item_id": "diagnostic:T2_retrospective_Q5",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic does not combine the exhaustive January event inventory, last-event date and later no-event/no-reclassification evidence to refute existence over the entire second lookback. Keep the negative with all its text evidence."
+        }
+      ]
+    },
+    {
+      "patient_id": "generated-009",
+      "case_sha256": "5f09bab8e50e823b1caf5a79069dcf7a65b2f15b209899ebc2d55389caf0d0dc",
+      "qc_sha256": "1c1c6e75a10c0195420b3a62e1149c0741e22d9cbcba9c55bdd70e8c14402ea4",
+      "disposition": "accepted",
+      "reason": "All assertions, relationships and query answers reviewed against final text. Cutoff-specific reasons preserve unavailable information as unknown. Explicit disagreements and diagnostic mismatches remain in the record.",
+      "items": [
+        {
+          "item_id": "assertion:L1.diagnosis",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports diagnosis focal epilepsy with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.pattern",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.latest",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure occurrence with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.inventory",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure inventory with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.copied",
+          "disposition": "supported",
+          "reason": "Explicitly copied diagnosis retains its February observation date, rather than corroborating a new July diagnosis."
+        },
+        {
+          "item_id": "assertion:L2.pattern",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.latest",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure occurrence with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.inventory",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure inventory with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "link:copied-diagnosis",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:same-followup",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "answer:T1_visit_Q1",
+          "disposition": "supported",
+          "reason": "The established epilepsy diagnosis and a focal seizure on 20 January support the conjunction within this 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q2",
+          "disposition": "supported",
+          "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T1_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T1_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "The established epilepsy diagnosis and a focal seizure on 20 January support the conjunction within this 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q1",
+          "disposition": "supported",
+          "reason": "The established epilepsy diagnosis and a focal seizure on 20 July support the conjunction within this 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q2",
+          "disposition": "supported",
+          "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T2_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "The established epilepsy diagnosis and a focal seizure on 20 July support the conjunction within this 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "The patient explicitly reports only the single named pattern throughout an interval covering the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "diagnostic:T1_visit_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The implemented Q2 diagnostic lacks the complete single-pattern inventory negative. The letter explicitly excludes all other event types throughout this lookback. Preserve the text-supported ineligible answer."
+        },
+        {
+          "item_id": "diagnostic:T1_retrospective_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The implemented Q2 diagnostic lacks the complete single-pattern inventory negative. The letter explicitly excludes all other event types throughout this lookback. Preserve the text-supported ineligible answer."
+        },
+        {
+          "item_id": "diagnostic:T2_visit_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The implemented Q2 diagnostic lacks the complete single-pattern inventory negative. The letter explicitly excludes all other event types throughout this lookback. Preserve the text-supported ineligible answer."
+        },
+        {
+          "item_id": "diagnostic:T2_retrospective_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The implemented Q2 diagnostic lacks the complete single-pattern inventory negative. The letter explicitly excludes all other event types throughout this lookback. Preserve the text-supported ineligible answer."
+        }
+      ]
+    },
+    {
+      "patient_id": "generated-010",
+      "case_sha256": "1b8c352f9e6cb04189e9fe772a47957576da96084c0e1dd3e56bcc42c2a77b54",
+      "qc_sha256": "33440f284d65b80656f152952cd239ae10d37a61507c47be3304cb32e1cf5ca1",
+      "disposition": "accepted",
+      "reason": "All assertions, relationships and query answers reviewed against final text. Cutoff-specific reasons preserve unavailable information as unknown. Explicit disagreements and diagnostic mismatches remain in the record.",
+      "items": [
+        {
+          "item_id": "assertion:L1.diagnosis",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports diagnosis focal epilepsy with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.staring",
+          "disposition": "supported",
+          "reason": "Patient supplies event frequency and dates; the same span separately states the clinician epileptic interpretation. Reporter identifies the event report, not a claim of independent agreement."
+        },
+        {
+          "item_id": "assertion:L1.jerks",
+          "disposition": "supported",
+          "reason": "Cluster frequency (1–2/month) and events per cluster (3–5) are separate. Distinct pattern and epileptic interpretation are explicit; no midpoint or total-event rate is invented."
+        },
+        {
+          "item_id": "assertion:L1.plan",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports medication proposed with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.request",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation requested with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.staring",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.jerks",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.not-started",
+          "disposition": "supported",
+          "reason": "Explicit never-use covers all prior history through 15 July. Onset is unknown; the separate all-prior-history evidence supplies exhaustive scope. It cannot cover 16–31 July."
+        },
+        {
+          "item_id": "assertion:L3.started",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports medication started with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L3.result",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation result with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "link:two-patterns-L1",
+          "disposition": "supported",
+          "reason": "Two explicitly separate epileptic patterns have the same stated active interval, covering the first 90-day lookback."
+        },
+        {
+          "item_id": "link:same-staring",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:same-jerks",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:two-patterns-L2",
+          "disposition": "supported",
+          "reason": "The single report explicitly distinguishes both earlier patterns and states their concurrent activity through 15 July. It does not extend activity to 31 July."
+        },
+        {
+          "item_id": "link:plan-not-enacted",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:EEG-result",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "answer:T1_visit_Q1",
+          "disposition": "supported",
+          "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q2",
+          "disposition": "supported",
+          "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "A proposal is not evidence of initiation or a complete negative medication history."
+        },
+        {
+          "item_id": "answer:T1_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The January EEG request has no documented result availability by this index, and other EEG requests are not exhausted."
+        },
+        {
+          "item_id": "answer:T1_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q3",
+          "disposition": "supported",
+          "reason": "The July report explicitly covers never-use throughout the entire prior history, including the first index lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The January EEG request has no documented result availability by this index, and other EEG requests are not exhausted."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q1",
+          "disposition": "supported",
+          "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q2",
+          "disposition": "supported",
+          "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "Non-use is supported only through 15 July; a start between 16 and 31 July remains unobserved at this cutoff."
+        },
+        {
+          "item_id": "answer:T2_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The known January EEG request predates this lookback; there is no exhaustive inventory of other EEG requests during the lookback."
+        },
+        {
+          "item_id": "answer:T2_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q3",
+          "disposition": "supported",
+          "reason": "The later letter confirms an actual start on 25 July, inside the second index lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The known January EEG request predates this lookback; there is no exhaustive inventory of other EEG requests during the lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        }
+      ]
+    },
+    {
+      "patient_id": "generated-011",
+      "case_sha256": "7f0c1a62611dc8aefeb1c9cd15205a751fd4f9466896d5fedade92d666342f8d",
+      "qc_sha256": "6b59bc685c5c5d5a805e6c9c059be78169746c7a7e5f8394520743cef2716009",
+      "disposition": "accepted",
+      "reason": "All assertions, relationships and query answers reviewed against final text. Cutoff-specific reasons preserve unavailable information as unknown. Explicit disagreements and diagnostic mismatches remain in the record.",
+      "items": [
+        {
+          "item_id": "assertion:L1.diagnosis",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports diagnosis focal epilepsy with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.absence",
+          "disposition": "supported",
+          "reason": "This is the patient’s exhaustive denial only, preserved alongside a conflicting caregiver account; it is not adjudicated seizure freedom."
+        },
+        {
+          "item_id": "assertion:L1.caregiver",
+          "disposition": "supported",
+          "reason": "The caregiver asserts a dated focal seizure. Keep that assertion separate from the patient’s denial and the clinician’s uncertainty."
+        },
+        {
+          "item_id": "assertion:L1.uncertain",
+          "disposition": "supported",
+          "reason": "The clinician explicitly cannot resolve occurrence or epileptic interpretation; no majority vote or later-account preference is applied."
+        },
+        {
+          "item_id": "assertion:L2.undated",
+          "disposition": "supported",
+          "reason": "The report is qualitative and undated. Numeric endpoints remain unknown; the phrase since February does not identify an occurrence wholly within May–July. The text explicitly leaves the January dispute unresolved."
+        },
+        {
+          "item_id": "link:reporter-disagreement",
+          "disposition": "supported",
+          "reason": "The patient specifically denies the same caregiver-reported episode on 15 January; the disagreement concerns the same scope and time."
+        },
+        {
+          "item_id": "answer:T1_visit_Q1",
+          "disposition": "uncertainty_preserved",
+          "reason": "The patient’s whole-interval denial and caregiver’s dated epileptic-event account conflict; the clinician cannot resolve them."
+        },
+        {
+          "item_id": "answer:T1_visit_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval."
+        },
+        {
+          "item_id": "answer:T1_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T1_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T1_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q1",
+          "disposition": "uncertainty_preserved",
+          "reason": "The patient’s whole-interval denial and caregiver’s dated epileptic-event account conflict; the clinician cannot resolve them."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q1",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not settle whether an epileptic seizure occurred in this 90-day interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T2_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T2_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q1",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not settle whether an epileptic seizure occurred in this 90-day interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval."
+        }
+      ]
+    },
+    {
+      "patient_id": "generated-012",
+      "case_sha256": "30e6cc1c9f4ef5c0b5901ff459ed279ebe6dab404e61dcbb5baf1fad2e70c38e",
+      "qc_sha256": "8ab2603a2dce542a4acdf98b37fae7d48407d845d42e72bc0cadff475a6ba950",
+      "disposition": "accepted",
+      "reason": "All assertions, relationships and query answers reviewed against final text. Cutoff-specific reasons preserve unavailable information as unknown. Explicit disagreements and diagnostic mismatches remain in the record.",
+      "items": [
+        {
+          "item_id": "assertion:L1.diagnosis",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports diagnosis epilepsy with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.shaking",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure pattern with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.latest",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure occurrence with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.inventory",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports seizure inventory with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.started",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports medication started with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L1.request",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation requested with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.correction",
+          "disposition": "supported",
+          "reason": "Explicit correction identifies the same earlier episodes. Their occurrence interval remains on the earlier assertion; it is not restated here. The 28 January decision is stored on the link; March availability stays in metadata."
+        },
+        {
+          "item_id": "assertion:L2.diagnosis-withdrawn",
+          "disposition": "supported",
+          "reason": "The clinician explicitly withdrew epilepsy on 28 January and says it remained withdrawn at the first index. This is documented diagnosis, not an inference from a normal EEG."
+        },
+        {
+          "item_id": "assertion:L2.no-events",
+          "disposition": "supported",
+          "reason": "Last event was 20 January; under inclusive dates, the explicit no-further-event interval begins 21 January and ends at the 20 February consultation."
+        },
+        {
+          "item_id": "assertion:L2.performed",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation performed with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.result",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation result with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L2.stopped",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports medication stopped with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "assertion:L3.no-events",
+          "disposition": "supported",
+          "reason": "Complete event absence explicitly covers the second 90-day lookback. The separate no-reclassification statement remains evidence for the Q5 negative; schema v0.3 has no general negative-reclassification inventory field."
+        },
+        {
+          "item_id": "assertion:L3.not-restarted",
+          "disposition": "supported",
+          "reason": "Explicit non-reinitiation covers the complete second 180-day lookback. It does not erase the confirmed January initiation."
+        },
+        {
+          "item_id": "assertion:L3.no-requests",
+          "disposition": "supported",
+          "reason": "The quoted statement explicitly supports investigation request_inventory with the recorded reporter, scope and time; no later interval is inferred."
+        },
+        {
+          "item_id": "link:shaking-correction",
+          "disposition": "supported",
+          "reason": "Text explicitly identifies the same prolonged shaking, corrects the February account and dates the decision to 28 January. First-ever scope is patient-wide. The March letter is excluded at the February visit cutoff."
+        },
+        {
+          "item_id": "link:diagnosis-update",
+          "disposition": "supported",
+          "reason": "The later clinician statement explicitly withdraws the diagnosis and identifies the diagnostic position at the earlier consultation; earlier documentation remains preserved."
+        },
+        {
+          "item_id": "link:EEG-performed",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "link:EEG-result",
+          "disposition": "supported",
+          "reason": "The later wording explicitly identifies the earlier statement and this relationship."
+        },
+        {
+          "item_id": "answer:T1_visit_Q1",
+          "disposition": "supported",
+          "reason": "The permitted letter documents epilepsy and a January epileptic event inside the 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q2",
+          "disposition": "supported",
+          "reason": "Only one event pattern is explicitly reported throughout the complete 90-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q3",
+          "disposition": "supported",
+          "reason": "Actual initiation on 10 January is within this 180-day lookback."
+        },
+        {
+          "item_id": "answer:T1_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "No result availability is documented at this cutoff and there is no exhaustive request inventory."
+        },
+        {
+          "item_id": "answer:T1_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "No dated correction or complete reassessment history is documented at this cutoff."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "The later letter explicitly rules out epilepsy by the first index. This documented diagnostic withdrawal remains unreversed at the second index."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "Only one event pattern is explicitly reported throughout the first lookback; its later non-epileptic interpretation cannot create a second epileptic pattern."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q3",
+          "disposition": "supported",
+          "reason": "Actual initiation on 10 January is within this 180-day lookback."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q4",
+          "disposition": "supported",
+          "reason": "The January request is explicitly matched to a report available to the team on 25 January, before T1, despite later letter availability."
+        },
+        {
+          "item_id": "answer:T1_retrospective_Q5",
+          "disposition": "supported",
+          "reason": "A January episode previously documented as epileptic is explicitly reinterpreted; the decision on 28 January is before T1, although its letter is available later."
+        },
+        {
+          "item_id": "answer:T2_visit_Q1",
+          "disposition": "supported",
+          "reason": "The later letter explicitly rules out epilepsy by the first index. This documented diagnostic withdrawal remains unreversed at the second index."
+        },
+        {
+          "item_id": "answer:T2_visit_Q2",
+          "disposition": "uncertainty_preserved",
+          "reason": "The permitted letters do not observe the second 90-day interval; do not extend February absence through July."
+        },
+        {
+          "item_id": "answer:T2_visit_Q3",
+          "disposition": "uncertainty_preserved",
+          "reason": "The January course predates the second lookback; stopping in January alone does not exclude a later start before 31 July."
+        },
+        {
+          "item_id": "answer:T2_visit_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The known January request predates this lookback and other requests are not exhausted."
+        },
+        {
+          "item_id": "answer:T2_visit_Q5",
+          "disposition": "uncertainty_preserved",
+          "reason": "The documented correction concerns January events before this lookback. Reclassification history for the remainder of the lookback is not covered."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q1",
+          "disposition": "supported",
+          "reason": "The later letter explicitly rules out epilepsy by the first index. This documented diagnostic withdrawal remains unreversed at the second index."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q2",
+          "disposition": "supported",
+          "reason": "Explicit absence of all events covers the entire second 90-day lookback."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q3",
+          "disposition": "supported",
+          "reason": "Explicit non-reinitiation from 29 January to 10 August covers the entire second lookback, 2 February to 31 July."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q4",
+          "disposition": "uncertainty_preserved",
+          "reason": "The EEG no-request inventory covers 3 February through 10 August, but this lookback starts on 2 February. The uncovered first day prevents a definitive negative, and no qualifying request/result is established."
+        },
+        {
+          "item_id": "answer:T2_retrospective_Q5",
+          "disposition": "supported",
+          "reason": "The only ever earlier pattern last occurred on 20 January, outside the second lookback. The two later letters cover absence of any further events through 10 August and no further reinterpretations; no qualifying event from the second lookback exists."
+        },
+        {
+          "item_id": "diagnostic:T1_visit_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic lacks this complete single-pattern inventory or all-event absence negative. The reference uses explicit whole-interval wording; it does not infer absence from silence."
+        },
+        {
+          "item_id": "diagnostic:T1_retrospective_Q1",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic does not apply the explicit diagnosis withdrawal and its persistence to the earlier carried-forward diagnosis. Its T1 retrospective positive also retains a January occurrence without following the corrected pattern identity. The text explicitly rules out epilepsy by T1; preserve ineligible."
+        },
+        {
+          "item_id": "diagnostic:T1_retrospective_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic lacks this complete single-pattern inventory or all-event absence negative. The reference uses explicit whole-interval wording; it does not infer absence from silence."
+        },
+        {
+          "item_id": "diagnostic:T2_visit_Q1",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic does not apply the explicit diagnosis withdrawal and its persistence to the earlier carried-forward diagnosis. Its T1 retrospective positive also retains a January occurrence without following the corrected pattern identity. The text explicitly rules out epilepsy by T1; preserve ineligible."
+        },
+        {
+          "item_id": "diagnostic:T2_retrospective_Q1",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic does not apply the explicit diagnosis withdrawal and its persistence to the earlier carried-forward diagnosis. Its T1 retrospective positive also retains a January occurrence without following the corrected pattern identity. The text explicitly rules out epilepsy by T1; preserve ineligible."
+        },
+        {
+          "item_id": "diagnostic:T2_retrospective_Q2",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic lacks this complete single-pattern inventory or all-event absence negative. The reference uses explicit whole-interval wording; it does not infer absence from silence."
+        },
+        {
+          "item_id": "diagnostic:T2_retrospective_Q5",
+          "disposition": "diagnostic_limit",
+          "reason": "The diagnostic does not combine the exhaustive January event inventory, last-event date and later no-event/no-reclassification evidence to refute existence over the entire second lookback. Keep the negative with all its text evidence."
+        }
+      ]
+    }
+  ],
+  "review_recorded_at": "2026-09-10T22:54:37.122735+00:00",
+  "capture_sha256": "a6496e038f2acfd75138a87fcedadec1e51dfedef4720c28ff119abc1acd825c"
+}

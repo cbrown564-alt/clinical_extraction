@@ -1,0 +1,6 @@
+Fictional outpatient letter | generated-010 | age 50
+Consultation: 2025-07-15
+
+Patient: same A and separate B active 2 Feb–15 Jul 2025. A staring: 2 to 4/month. B right-hand jerks: 1 to 2 clusters/month, 3 to 5/cluster. Clinician: both epileptic.
+
+Patient: never taken lamotrigine, entire history through 15 Jul 2025. Jan proposal not enacted.

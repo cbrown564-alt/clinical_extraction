@@ -1,6 +1,6 @@
 {
   "case_id": "authored-010",
-  "version": "0.5",
+  "version": "0.7",
   "task_definition_version": "0.2",
   "origin": "AI-authored fictional development example (Actual medication start and titration, qualifying EEG with confirmed result); no source seed or real patient",
   "inspection_policy": "development_only",

@@ -1,6 +1,6 @@
 {
   "case_id": "authored-008",
-  "version": "0.2",
+  "version": "0.7",
   "task_definition_version": "0.2",
   "origin": "AI-authored fictional development example (Irregular follow-up with 18-month gap, medication discontinuation, and cluster relapse); no source seed or real patient",
   "inspection_policy": "development_only",

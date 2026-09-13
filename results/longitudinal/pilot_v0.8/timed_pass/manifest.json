@@ -1,0 +1,144 @@
+{
+  "status": "captured",
+  "model": "gemini-3.8-flash-medium",
+  "interface": "agy",
+  "jobs": [
+    {
+      "id": "002_diagnosis",
+      "activity": "diagnosis",
+      "case": "authored_patient_002",
+      "input": "inputs/002_diagnosis.json",
+      "sha256": "c64b4bdf9303b8ffc8c70bdfbdc571b75f3c32c3131c82d4e863840e3e78daad"
+    },
+    {
+      "id": "002_seizure",
+      "activity": "seizure",
+      "case": "authored_patient_002",
+      "input": "inputs/002_seizure.json",
+      "sha256": "ba2fbd060fc319be54a235002e950c55118d84fefd10139ae82f01515451b756"
+    },
+    {
+      "id": "002_medication",
+      "activity": "medication",
+      "case": "authored_patient_002",
+      "input": "inputs/002_medication.json",
+      "sha256": "d775bd52d470680094ae6ac3f7bdcae6e81c221040ec102331335bba19a9c3af"
+    },
+    {
+      "id": "002_investigation",
+      "activity": "investigation",
+      "case": "authored_patient_002",
+      "input": "inputs/002_investigation.json",
+      "sha256": "74adb8fc2316c33e86d6a50040f9f8d8ad0db9e2653d1993011450eca92b7ac6"
+    },
+    {
+      "id": "002_temporal",
+      "activity": "temporal",
+      "case": "authored_patient_002",
+      "input": "inputs/002_temporal.json",
+      "sha256": "f8e67a902a26f0eed4c3978de40b90c436058f03dddfca3ad28d09588af9c2b3"
+    },
+    {
+      "id": "002_relationships",
+      "activity": "relationships",
+      "case": "authored_patient_002",
+      "input": "inputs/002_relationships.json",
+      "sha256": "1a153210f2ec37ee481c100ee35ec30f40d7d4e143443f49664fca9e02a21268"
+    },
+    {
+      "id": "006_diagnosis",
+      "activity": "diagnosis",
+      "case": "authored_patient_006",
+      "input": "inputs/006_diagnosis.json",
+      "sha256": "4d29a6144ca40ee05dfbd80005361088014beec97f0fb7f80aa279f41fec710c"
+    },
+    {
+      "id": "006_seizure",
+      "activity": "seizure",
+      "case": "authored_patient_006",
+      "input": "inputs/006_seizure.json",
+      "sha256": "5fb6a83c9069ce590515116d119700d2d5f523aa02b618c228bc770d8d66548b"
+    },
+    {
+      "id": "006_medication",
+      "activity": "medication",
+      "case": "authored_patient_006",
+      "input": "inputs/006_medication.json",
+      "sha256": "ff88fdb629fc7b66c58261791584381d68e73abd8b20e5a3c5d5da743f472473"
+    },
+    {
+      "id": "006_investigation",
+      "activity": "investigation",
+      "case": "authored_patient_006",
+      "input": "inputs/006_investigation.json",
+      "sha256": "9801b08c5dbec1a6670b20ea79aaa87da6bf18c737057a810615aa35bb17ce8c"
+    },
+    {
+      "id": "006_temporal",
+      "activity": "temporal",
+      "case": "authored_patient_006",
+      "input": "inputs/006_temporal.json",
+      "sha256": "639b72d8666d1089e91e1f7d47ed362ee992cd594602ff0a12aebde441e22770"
+    },
+    {
+      "id": "006_relationships",
+      "activity": "relationships",
+      "case": "authored_patient_006",
+      "input": "inputs/006_relationships.json",
+      "sha256": "019435fbfada5dece2ee73ddabce512f576d016a7bb6d54b686d8ce3d420de3f"
+    },
+    {
+      "id": "011_diagnosis",
+      "activity": "diagnosis",
+      "case": "authored_patient_011",
+      "input": "inputs/011_diagnosis.json",
+      "sha256": "b76219b31965cc7e4c868e773b2592c7e0698a3c7181f0c0a08c17d33de88c01"
+    },
+    {
+      "id": "011_seizure",
+      "activity": "seizure",
+      "case": "authored_patient_011",
+      "input": "inputs/011_seizure.json",
+      "sha256": "52feb3eab6b784843240ef507f2455e85732f2f628b22b0ac9f0a9a09d620338"
+    },
+    {
+      "id": "011_medication",
+      "activity": "medication",
+      "case": "authored_patient_011",
+      "input": "inputs/011_medication.json",
+      "sha256": "856bb27da25042bf0ee63028a97b4745db09394fa51a47f7ec9817f6762d39c3"
+    },
+    {
+      "id": "011_investigation",
+      "activity": "investigation",
+      "case": "authored_patient_011",
+      "input": "inputs/011_investigation.json",
+      "sha256": "53b0d148ab8997b73441ae1cb4525d1ca2900ed1248a4c282cbf9f736c30f424"
+    },
+    {
+      "id": "011_temporal",
+      "activity": "temporal",
+      "case": "authored_patient_011",
+      "input": "inputs/011_temporal.json",
+      "sha256": "45570d2a9d20aabe32de8b8c3d8e1a726953172923d4957f260d5a111d820806"
+    },
+    {
+      "id": "011_relationships",
+      "activity": "relationships",
+      "case": "authored_patient_011",
+      "input": "inputs/011_relationships.json",
+      "sha256": "233b63e9893fc710051c822c95365479d955b0e360d3602cd9f44e98b89fb180"
+    }
+  ],
+  "calls": 18,
+  "workers": 1,
+  "stop_after_first_failure": true,
+  "retry_budget": 0,
+  "additional_paid_api_cap_gbp": 0,
+  "cost_condition": "User confirmed on 2026-09-10 that agy has no per-call charge. No paid API fallback.",
+  "measurement": "Wall time by extraction family and focused temporal/relationship activity; not human time or pure field-attributable compute.",
+  "incremental_charge_gbp": 0,
+  "cost_basis": "User confirmation, not provider billing telemetry",
+  "schema_version": "0.3",
+  "schema_sha256": "47167c0cd15cd588acde1bdce846273d7af500210f1898debccf344d1677b8b7"
+}

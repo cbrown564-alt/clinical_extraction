@@ -1,0 +1,939 @@
+{
+  "date": "2026-09-10",
+  "scope": "authored development pilot and saved primary attempts only",
+  "program_sha256": "4082fcd79e4031878e365139515cacfe0f9e0fedad87026e1758b870f572b578",
+  "temporal_flagged_pairs_reviewed": 144,
+  "temporal_unreviewed": 0,
+  "case_checks": [
+    {
+      "case": "authored_patient_001",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_001",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 25,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 35,
+      "links": 10
+    },
+    {
+      "case": "authored_patient_002",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_002",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 6,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 12,
+      "links": 1
+    },
+    {
+      "case": "authored_patient_003",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_003",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 7,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 16,
+      "links": 2
+    },
+    {
+      "case": "authored_patient_004",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_004",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 14,
+      "links": 3
+    },
+    {
+      "case": "authored_patient_005",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_005",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 16,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 26,
+      "links": 7
+    },
+    {
+      "case": "authored_patient_006",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_006",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 11,
+      "links": 4
+    },
+    {
+      "case": "authored_patient_007",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_007",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 15,
+      "links": 2
+    },
+    {
+      "case": "authored_patient_008",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_008",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 12,
+      "links": 2
+    },
+    {
+      "case": "authored_patient_009",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_009",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 14,
+      "links": 2
+    },
+    {
+      "case": "authored_patient_010",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_010",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 8,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 19,
+      "links": 6
+    },
+    {
+      "case": "authored_patient_011",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_011",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 13,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 16,
+      "links": 4
+    },
+    {
+      "case": "authored_patient_012",
+      "case_dir": "/Users/cobro/code/clinical-extraction/examples/longitudinal/authored_patient_012",
+      "documents": 3,
+      "requests": 20,
+      "evidence_spans": 10,
+      "answers": 20,
+      "annotations_checked": true,
+      "assertions": 20,
+      "links": 6
+    }
+  ],
+  "query_status_counts": {
+    "Q1": {
+      "eligible": 31,
+      "indeterminate": 14,
+      "ineligible": 3
+    },
+    "Q2": {
+      "eligible": 2,
+      "ineligible": 10,
+      "indeterminate": 36
+    },
+    "Q3": {
+      "indeterminate": 41,
+      "ineligible": 5,
+      "eligible": 2
+    },
+    "Q4": {
+      "ineligible": 2,
+      "indeterminate": 44,
+      "eligible": 2
+    },
+    "Q5": {
+      "indeterminate": 42,
+      "ineligible": 2,
+      "eligible": 4
+    }
+  },
+  "query_minimums_met": true,
+  "attempts": [
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_001/T1_retrospective/attempt.json",
+      "sha256": "c81b0a8b0e2b74fdd108ec83efbb09dde1a07367b5a6791f7259444ba7f312e7",
+      "status": "parsed",
+      "wall_seconds": 42.13599404197885,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25802,
+        "output_tokens": 12647,
+        "thinking_tokens": 3524,
+        "cache_read_tokens": 0,
+        "total_tokens": 38449
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_001/T1_visit/attempt.json",
+      "sha256": "9166f67ac1217f3cac0a7f1de4f1ef220cecece07e63a980ffd70df5ba8b5538",
+      "status": "parsed",
+      "wall_seconds": 63.18979525001487,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25311,
+        "output_tokens": 23541,
+        "thinking_tokens": 17556,
+        "cache_read_tokens": 0,
+        "total_tokens": 48852
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_001/T2_retrospective/attempt.json",
+      "sha256": "489fb421474ac15fee113e0471271860ef688d29d7956786315eaac7fa40491b",
+      "status": "parsed",
+      "wall_seconds": 102.19222108297981,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 26210,
+        "output_tokens": 35494,
+        "thinking_tokens": 23614,
+        "cache_read_tokens": 0,
+        "total_tokens": 61704
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_001/T2_visit/attempt.json",
+      "sha256": "2c9824c9b321cb4919b41135342e487e600b2e72b61d4ed506175c5d83b7df22",
+      "status": "parsed",
+      "wall_seconds": 94.17458525003167,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25791,
+        "output_tokens": 32975,
+        "thinking_tokens": 21007,
+        "cache_read_tokens": 0,
+        "total_tokens": 58766
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_002/T1_retrospective/attempt.json",
+      "sha256": "7ddfe68d67930181822d8f00a8c4328a6afb5e68d4a0e30580482f03175ba95c",
+      "status": "parsed",
+      "wall_seconds": 57.542903708002996,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25204,
+        "output_tokens": 21517,
+        "thinking_tokens": 17860,
+        "cache_read_tokens": 0,
+        "total_tokens": 46721
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_002/T1_visit/attempt.json",
+      "sha256": "5289d75486df40837623a2dbfbfd2cf8fac13eb67f1436466d33aa25c86f1669",
+      "status": "parsed",
+      "wall_seconds": 70.21323566703359,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25194,
+        "output_tokens": 26016,
+        "thinking_tokens": 23291,
+        "cache_read_tokens": 0,
+        "total_tokens": 51210
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_002/T2_retrospective/attempt.json",
+      "sha256": "2145a8e0f64931cbe995dabe8e800fc375726f2e34efbc73d620264f9fbca408",
+      "status": "parsed",
+      "wall_seconds": 65.63418604200706,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25542,
+        "output_tokens": 27024,
+        "thinking_tokens": 21825,
+        "cache_read_tokens": 0,
+        "total_tokens": 52566
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_002/T2_visit/attempt.json",
+      "sha256": "5c920b9834adb2b5818d158fde96478e9b3ed7f7291b4f8709690deb54051742",
+      "status": "parsed",
+      "wall_seconds": 62.57981587498216,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25192,
+        "output_tokens": 23429,
+        "thinking_tokens": 20701,
+        "cache_read_tokens": 0,
+        "total_tokens": 48621
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_003/T1_retrospective/attempt.json",
+      "sha256": "ceca7e80df36c4b472d5255eaa081a95fe7d430eef1c297f79300954274e88cd",
+      "status": "parsed",
+      "wall_seconds": 23.32098041602876,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25419,
+        "output_tokens": 7935,
+        "thinking_tokens": 5112,
+        "cache_read_tokens": 0,
+        "total_tokens": 33354
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_003/T1_visit/attempt.json",
+      "sha256": "9346e5b64dc8f4921da2ed0c34ca49069b61a3ca9f1c7e8705b4b6d67723c92f",
+      "status": "parsed",
+      "wall_seconds": 61.621736166998744,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25136,
+        "output_tokens": 20908,
+        "thinking_tokens": 18171,
+        "cache_read_tokens": 0,
+        "total_tokens": 46044
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_003/T2_retrospective/attempt.json",
+      "sha256": "5a9cdefc77e9859f1be5510394845e9e91314125946c446d2951e12ec5e41d14",
+      "status": "parsed",
+      "wall_seconds": 71.4331197499996,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25608,
+        "output_tokens": 26296,
+        "thinking_tokens": 21131,
+        "cache_read_tokens": 0,
+        "total_tokens": 51904
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_003/T2_visit/attempt.json",
+      "sha256": "4d4603582118f1e34caf923a5a7e66bd137a3b47597bc0ec98efdf5b88c555c4",
+      "status": "parsed",
+      "wall_seconds": 68.18353508401196,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 17261,
+        "output_tokens": 25677,
+        "thinking_tokens": 20908,
+        "cache_read_tokens": 8158,
+        "total_tokens": 42938
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_004/T1_retrospective/attempt.json",
+      "sha256": "9df08b60a0607aa7eb31e34ef154f3b6caf06b03aebfeff1036ea82d3dc847a0",
+      "status": "parsed",
+      "wall_seconds": 22.907001041981857,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25397,
+        "output_tokens": 7538,
+        "thinking_tokens": 3139,
+        "cache_read_tokens": 0,
+        "total_tokens": 32935
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_004/T1_visit/attempt.json",
+      "sha256": "7733ebd0130c9113a495042966888216ea865a154939d667534605d5362c9ca6",
+      "status": "parsed",
+      "wall_seconds": 57.57292058301391,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25152,
+        "output_tokens": 21868,
+        "thinking_tokens": 18553,
+        "cache_read_tokens": 0,
+        "total_tokens": 47020
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_004/T2_retrospective/attempt.json",
+      "sha256": "2aa7dc9fd9797236ea2ab67f438e7316309d77571502a418a5ed9065aa8eb0fc",
+      "status": "failed",
+      "wall_seconds": 102.72573775000637,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": null
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_004/T2_visit/attempt.json",
+      "sha256": "eeec2014814e3a142b27e7b32586240cddcbb338965f63e3bda675ad795ac144",
+      "status": "failed",
+      "wall_seconds": 85.57426770799793,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": null
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_005/T1_retrospective/attempt.json",
+      "sha256": "f8c68abc3f21a3ea2ef92082d316a26a00f4585d4135e31c4a3bc7ba394823bb",
+      "status": "parsed",
+      "wall_seconds": 57.5783419579966,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25226,
+        "output_tokens": 28508,
+        "thinking_tokens": 24670,
+        "cache_read_tokens": 0,
+        "total_tokens": 53734
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_005/T1_visit/attempt.json",
+      "sha256": "b8cc54958f2953397a9e568b7e1674c0022f3abb4ed39f57be9d53f2f8c7ca88",
+      "status": "failed",
+      "wall_seconds": 72.26424966700142,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": null
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_005/T2_retrospective/attempt.json",
+      "sha256": "75d09abed4c05145cc69a0d1e2b8440063a6f30f08ea47f655d321850ae2f720",
+      "status": "parsed",
+      "wall_seconds": 74.74337712494889,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25702,
+        "output_tokens": 29128,
+        "thinking_tokens": 21591,
+        "cache_read_tokens": 0,
+        "total_tokens": 54830
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_005/T2_visit/attempt.json",
+      "sha256": "ad664a2b4a7009d74bf05c98ad7795dd78696cb7b584eb96549621b68d0f90b1",
+      "status": "failed",
+      "wall_seconds": 68.55444854096277,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": null
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_006/T1_retrospective/attempt.json",
+      "sha256": "141f89ff0793a4aade1e67f090e33e0677b324071c2f4d80c17d4c624085bb4c",
+      "status": "parsed",
+      "wall_seconds": 63.104545833019074,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25416,
+        "output_tokens": 24750,
+        "thinking_tokens": 19239,
+        "cache_read_tokens": 0,
+        "total_tokens": 50166
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_006/T1_visit/attempt.json",
+      "sha256": "54371e27a35efbbdf811a2f5276c4eeb27542c81c0b5d3e14a941db8b4713231",
+      "status": "parsed",
+      "wall_seconds": 60.03374529199209,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25188,
+        "output_tokens": 25290,
+        "thinking_tokens": 22284,
+        "cache_read_tokens": 0,
+        "total_tokens": 50478
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_006/T2_retrospective/attempt.json",
+      "sha256": "23c71068306384bb8bcec6278a6a6f6ce462a3329382dd6a82852c23bbfe58db",
+      "status": "parsed",
+      "wall_seconds": 28.47818462504074,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 17436,
+        "output_tokens": 10097,
+        "thinking_tokens": 3484,
+        "cache_read_tokens": 8158,
+        "total_tokens": 27533
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_006/T2_visit/attempt.json",
+      "sha256": "c176dac4538e2c5c81a8a266c694db755301a7231745ebee41d9ccf5957ef798",
+      "status": "parsed",
+      "wall_seconds": 66.48464116698597,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25407,
+        "output_tokens": 27282,
+        "thinking_tokens": 23178,
+        "cache_read_tokens": 0,
+        "total_tokens": 52689
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_007/T1_retrospective/attempt.json",
+      "sha256": "cd625e14a6594eb342b3cc51c899a82551500f4ef69a7b9395533f8dcbf0ebf1",
+      "status": "parsed",
+      "wall_seconds": 49.85838570800843,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25341,
+        "output_tokens": 17878,
+        "thinking_tokens": 13526,
+        "cache_read_tokens": 0,
+        "total_tokens": 43219
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_007/T1_visit/attempt.json",
+      "sha256": "a57953965c879d95fc783454d465fbea1e316b3f15ba224b9e04df6dc17bc307",
+      "status": "parsed",
+      "wall_seconds": 67.55396666598972,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25141,
+        "output_tokens": 27810,
+        "thinking_tokens": 24891,
+        "cache_read_tokens": 0,
+        "total_tokens": 52951
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_007/T2_retrospective/attempt.json",
+      "sha256": "d48c1f9417a951ceefa84aceade3b55794dd748992f5ac366d4218dd85d57f72",
+      "status": "parsed",
+      "wall_seconds": 54.86784674995579,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25492,
+        "output_tokens": 22538,
+        "thinking_tokens": 17236,
+        "cache_read_tokens": 0,
+        "total_tokens": 48030
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_007/T2_visit/attempt.json",
+      "sha256": "f75401c4285aa266706273eb8adc7ae73f47c4ee5b10353a07949ab51b717d85",
+      "status": "parsed",
+      "wall_seconds": 50.34791154199047,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25330,
+        "output_tokens": 21318,
+        "thinking_tokens": 17646,
+        "cache_read_tokens": 0,
+        "total_tokens": 46648
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_008/T1_retrospective/attempt.json",
+      "sha256": "bc2e65ba6a0e34259afa6edc5abb1c32866e0049f343da9c0c8cf71c341f33d9",
+      "status": "parsed",
+      "wall_seconds": 30.554920124995988,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25100,
+        "output_tokens": 11653,
+        "thinking_tokens": 10042,
+        "cache_read_tokens": 0,
+        "total_tokens": 36753
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_008/T1_visit/attempt.json",
+      "sha256": "1409f183b373767f49ae5da6e6fee684f1671c3e06b745bf5781c07cb0149638",
+      "status": "parsed",
+      "wall_seconds": 28.487329583032988,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25095,
+        "output_tokens": 10615,
+        "thinking_tokens": 8996,
+        "cache_read_tokens": 0,
+        "total_tokens": 35710
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_008/T2_retrospective/attempt.json",
+      "sha256": "5247868a4b5a06ab738d4d0798df6b5a8988a6e76901d3fdcc9da6c4d05b3516",
+      "status": "parsed",
+      "wall_seconds": 56.95902987499721,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25100,
+        "output_tokens": 20404,
+        "thinking_tokens": 18646,
+        "cache_read_tokens": 0,
+        "total_tokens": 45504
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_008/T2_visit/attempt.json",
+      "sha256": "816227ef0b236ec45f3e13bf4df5dad154e90d64a6c363a7f3441fee4e3238cb",
+      "status": "parsed",
+      "wall_seconds": 26.471144290990196,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25096,
+        "output_tokens": 9840,
+        "thinking_tokens": 8144,
+        "cache_read_tokens": 0,
+        "total_tokens": 34936
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_009/T1_retrospective/attempt.json",
+      "sha256": "55f3b1a49852735bce911b3c109088b67581fc0dfe401a6f5fb55e5914ed7833",
+      "status": "parsed",
+      "wall_seconds": 39.72853483300423,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25368,
+        "output_tokens": 15932,
+        "thinking_tokens": 11838,
+        "cache_read_tokens": 0,
+        "total_tokens": 41300
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_009/T1_visit/attempt.json",
+      "sha256": "ca05a81e867446d2308efa0061b4eacd0883197188b1f6aa3c4fbe7a73daee2a",
+      "status": "parsed",
+      "wall_seconds": 62.007084666984156,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25145,
+        "output_tokens": 25136,
+        "thinking_tokens": 22222,
+        "cache_read_tokens": 0,
+        "total_tokens": 50281
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_009/T2_retrospective/attempt.json",
+      "sha256": "5a7cc2a7567f075606997db2dfbf097f16d3214743d562aa93c9766a84d5b937",
+      "status": "parsed",
+      "wall_seconds": 31.057703333033714,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25539,
+        "output_tokens": 12092,
+        "thinking_tokens": 7068,
+        "cache_read_tokens": 0,
+        "total_tokens": 37631
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_009/T2_visit/attempt.json",
+      "sha256": "ac61a335caa53b7a458a47c2526fb9220c0aefcc603af53ca9766e6ee833c3bd",
+      "status": "parsed",
+      "wall_seconds": 49.786684083985165,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25365,
+        "output_tokens": 20905,
+        "thinking_tokens": 17143,
+        "cache_read_tokens": 0,
+        "total_tokens": 46270
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_010/T1_retrospective/attempt.json",
+      "sha256": "3502f6a9a7dc56f87cd62e1376fc0d9c73d8dbfafa68da7095d92dd3a4608433",
+      "status": "parsed",
+      "wall_seconds": 51.29357550002169,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 17307,
+        "output_tokens": 20787,
+        "thinking_tokens": 14369,
+        "cache_read_tokens": 8158,
+        "total_tokens": 38094
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_010/T1_visit/attempt.json",
+      "sha256": "c097f141ef749ee28f63da1b88364dc4a5153afcbe0b48f08a204402a7fd5a80",
+      "status": "parsed",
+      "wall_seconds": 43.18085170799168,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25180,
+        "output_tokens": 16505,
+        "thinking_tokens": 13424,
+        "cache_read_tokens": 0,
+        "total_tokens": 41685
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_010/T2_retrospective/attempt.json",
+      "sha256": "7ec1c30bf78bd9a6ea0624d65b5f5b1ea4069f8e123d21e34a93bf9aedd2e6bb",
+      "status": "parsed",
+      "wall_seconds": 97.4812128750491,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25622,
+        "output_tokens": 37096,
+        "thinking_tokens": 30532,
+        "cache_read_tokens": 0,
+        "total_tokens": 62718
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_010/T2_visit/attempt.json",
+      "sha256": "fea7186a97a00719cbdb9498e2b247439c36c26b9a42de196d7824e4dcc4f026",
+      "status": "parsed",
+      "wall_seconds": 95.98915458400734,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 17297,
+        "output_tokens": 36335,
+        "thinking_tokens": 30335,
+        "cache_read_tokens": 8158,
+        "total_tokens": 53632
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_011/T1_retrospective/attempt.json",
+      "sha256": "7a9aaee89abda6a921bb3a6d1df854cbaab58ca4ac3c6d58d7aac585d6cdea9e",
+      "status": "parsed",
+      "wall_seconds": 51.77013620897196,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25524,
+        "output_tokens": 21117,
+        "thinking_tokens": 14455,
+        "cache_read_tokens": 0,
+        "total_tokens": 46641
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_011/T1_visit/attempt.json",
+      "sha256": "1cb921f402ab1ec952b452843c0b017001b88d21da4dcf62d3ae69e9d6689ae2",
+      "status": "parsed",
+      "wall_seconds": 63.94075404200703,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25211,
+        "output_tokens": 26076,
+        "thinking_tokens": 22180,
+        "cache_read_tokens": 0,
+        "total_tokens": 51287
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_011/T2_retrospective/attempt.json",
+      "sha256": "fd7c0ba8481c82525cda9d9e32c581c9bd2d03f9605dfa4c09ec209c5200095d",
+      "status": "parsed",
+      "wall_seconds": 81.6605209169793,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 17508,
+        "output_tokens": 36395,
+        "thinking_tokens": 33282,
+        "cache_read_tokens": 8158,
+        "total_tokens": 53903
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_011/T2_visit/attempt.json",
+      "sha256": "e9769d68020d717eaf7c5679a238bf3a652d7d50c1a3a9e1a72f5904c7ef8499",
+      "status": "parsed",
+      "wall_seconds": 22.88949249999132,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25511,
+        "output_tokens": 8076,
+        "thinking_tokens": 2577,
+        "cache_read_tokens": 0,
+        "total_tokens": 33587
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_012/T1_retrospective/attempt.json",
+      "sha256": "1fc61676402a75d851caff9b7651b6b151a0778a784157907b809627656ee75a",
+      "status": "parsed",
+      "wall_seconds": 59.43420383299235,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25437,
+        "output_tokens": 23948,
+        "thinking_tokens": 19225,
+        "cache_read_tokens": 0,
+        "total_tokens": 49385
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_012/T1_visit/attempt.json",
+      "sha256": "f9e03322574ca176c708f31a69ae7808986cb872fb7c317166267c3ae0ec1320",
+      "status": "parsed",
+      "wall_seconds": 60.45244416699279,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25216,
+        "output_tokens": 23139,
+        "thinking_tokens": 20352,
+        "cache_read_tokens": 0,
+        "total_tokens": 48355
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_012/T2_retrospective/attempt.json",
+      "sha256": "cdb5169d5b2f0427ae9c6e7afd58cec608cd9c0a4ec88d80bb4c7a56246f8f3c",
+      "status": "parsed",
+      "wall_seconds": 55.94332762499107,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 25584,
+        "output_tokens": 23418,
+        "thinking_tokens": 17724,
+        "cache_read_tokens": 0,
+        "total_tokens": 49002
+      }
+    },
+    {
+      "path": "results/longitudinal/pilot_v0.3/agy_pass_medium/attempts/authored_patient_012/T2_visit/attempt.json",
+      "sha256": "b2bd2d89305d8d1940cb7cd6bfc92acc4f5dcccb894ae08cacf87870c6768a9e",
+      "status": "parsed",
+      "wall_seconds": 23.93727041699458,
+      "model": "gemini-3.8-flash-medium",
+      "provider_cost": null,
+      "usage": {
+        "input_tokens": 17268,
+        "output_tokens": 8096,
+        "thinking_tokens": 2995,
+        "cache_read_tokens": 8158,
+        "total_tokens": 25364
+      }
+    }
+  ],
+  "attempt_counts": {
+    "parsed": 44,
+    "failed": 4
+  },
+  "successful_job_wall_seconds": {
+    "n": 44,
+    "sum": 2468.7783517930075,
+    "min": 22.88949249999132,
+    "median": 57.575631270505255,
+    "p90_nearest_rank": 81.6605209169793,
+    "max": 102.19222108297981
+  },
+  "failed_job_wall_seconds": [
+    102.72573775000637,
+    85.57426770799793,
+    72.26424966700142,
+    68.55444854096277
+  ],
+  "family_review": {
+    "diagnosis": {
+      "literal_matched_pairs": 53,
+      "field_difference_counts": {
+        "time": 52,
+        "reporter": 0,
+        "certainty": 0,
+        "polarity": 0,
+        "coverage": 0
+      },
+      "machine_seconds": null,
+      "human_minutes": null
+    },
+    "seizure": {
+      "literal_matched_pairs": 34,
+      "field_difference_counts": {
+        "time": 32,
+        "reporter": 5,
+        "certainty": 0,
+        "polarity": 2,
+        "coverage": 4
+      },
+      "machine_seconds": null,
+      "human_minutes": null
+    },
+    "medication": {
+      "literal_matched_pairs": 74,
+      "field_difference_counts": {
+        "time": 72,
+        "reporter": 26,
+        "certainty": 2,
+        "polarity": 0,
+        "coverage": 2
+      },
+      "machine_seconds": null,
+      "human_minutes": null
+    },
+    "investigation": {
+      "literal_matched_pairs": 41,
+      "field_difference_counts": {
+        "time": 31,
+        "reporter": 0,
+        "certainty": 0,
+        "polarity": 0,
+        "coverage": 5
+      },
+      "machine_seconds": null,
+      "human_minutes": null
+    }
+  },
+  "human_annotation_minutes": null,
+  "human_cost": null,
+  "effort_decision": "Human effort and within-call family time are not identifiable from saved captures. No schema deletion or scale-up claim may use total model wall time as human time.",
+  "timing_limit": "Successful call wall time includes CLI overhead and may include interruption; it is not active inference or annotation labor. Four failed primary calls remain separate; diagnostic retry excluded."
+}

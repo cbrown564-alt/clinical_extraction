@@ -1,6 +1,7 @@
 # Pilot case coverage
 
-Updated: 2026-09-09. Pilot v0.5 retains authored coverage with adjudicated reference corrections.
+Updated: 2026-09-10. Pilot v0.8 retains authored coverage and reference statuses.
+Internal development coverage accepted; clinical validation remains absent.
 Query dates are unchanged. Earlier files for revised cases 002, 005, 007, 011 and 012
 are retained under `results/longitudinal/pilot_v0.2/source_snapshot/`.
 This document owns coverage; [task definition](task_definition.md) owns requirements.
@@ -39,20 +40,25 @@ include 001 T1 retrospective Q2, 011 T1 retrospective Q2, and 011 T2 Q5. The
 earlier interpretation and later revision must both be retained. 005 T2 visit
 cannot access the delayed confirmation that makes retrospective Q3/Q4 eligible.
 
-## Limits and next review
+## Internal acceptance and remaining limits
 
-These counts establish authored coverage, not agreement with independent readers.
-The [independent-pass inputs](../../results/longitudinal/pilot_v0.3/independent_pass/README.md)
-are prepared without expected answers. That pass, measured disagreement/effort
-and field-utility analysis remain unperformed. Schema v0.1 remains provisional.
+The required patient-level examples above and the two-per-query/status minimums
+are accepted for authored development coverage. This decision follows the saved
+44 successful independent AI outputs, query-status adjudication and the v0.7
+source-backed temporal review. It is not an expert-validation claim. The
+[pilot review](pilot_disagreement_report.md) owns disagreement, measured query-field
+comparisons and remaining representation defects. All source letters and fixed
+query dates remain unchanged by v0.8.
 
-The earlier proposed percentage balance and 25% view-divergence targets were
-additional design suggestions, not task-definition minimums. They remain unmet
-(75% indeterminate; 11.7% divergence) and are not used as completion requirements.
-The canonical task requires both agreeing and differing views, and two examples
-per query/status. Dates and reference decisions must not be tuned to percentages.
+The earlier suggested class-balance and 25% view-divergence targets were not
+canonical task minimums. Current references are 73.75% indeterminate, with 12.5%
+view divergence; dates and reference decisions are not tuned to percentages.
 
-A cluster-size range is still not demonstrated by patient 011's exact cluster
-counts. This is a useful future stress case rather than a minimum patient-count
-requirement. Seasonal date conventions also need independent review. No clinical
-validation, extraction result or Phase 2 completion is claimed.
+Patient 011 demonstrates exact cluster counts rather than a cluster-size range.
+That range is a future history stress case, not an unmet minimum patient count.
+Qualitative seasonal dates still need explicit interpretation, and current Q1–Q4
+structured evaluation leaves 11 reference-supported answers indeterminate.
+The v0.8 timed probe measures AI wall time by activity on three selected patients;
+human effort and comprehensive semantic link agreement remain unestablished.
+Phase 2 is complete under its provisional-development criteria, with these
+limitations explicit in the pilot review. No corpus freeze is authorized by coverage.

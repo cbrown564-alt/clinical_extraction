@@ -1,0 +1,23 @@
+{
+  "patient_id": "generated-003",
+  "documents": [
+    {
+      "letter_id": "L1",
+      "visit_date": "2025-02-01",
+      "available_date": "2025-02-01",
+      "text": "Fictional outpatient letter | generated-003 | age 43\nConsultation: 2025-02-01\n\nThe established diagnosis is focal epilepsy.\n\nThe patient denies having any epileptic seizures from 1 November 2024 through 1 February 2025 and specifically denies the episode reported by the caregiver on 15 January.\n\nThe caregiver reports a focal seizure on 15 January 2025. I cannot resolve whether this disputed episode occurred or was epileptic.\n"
+    },
+    {
+      "letter_id": "L2",
+      "visit_date": "2025-08-10",
+      "available_date": "2025-08-10",
+      "text": "Fictional outpatient letter | generated-003 | age 43\nConsultation: 2025-08-10\n\nNo reliable diary is available. The patient recalls some spells since February but cannot date or characterize them; their epileptic nature remains uncertain. The January disagreement is unresolved.\n"
+    },
+    {
+      "letter_id": "L3",
+      "visit_date": "2025-12-10",
+      "available_date": "2025-12-10",
+      "text": "Fictional outpatient letter | generated-003 | age 43\nConsultation: 2025-12-10\n\nThis was an administrative attendance to rearrange follow-up. No clinical information was recorded.\n"
+    }
+  ]
+}

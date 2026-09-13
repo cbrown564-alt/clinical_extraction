@@ -1,0 +1,117 @@
+{
+  "version": "execution-0.1",
+  "mode": "seed_free_authoring",
+  "execution_status": "configured",
+  "source_conditioned_generation": false,
+  "source_records": [],
+  "inspection_policy": "development_only",
+  "stage_patient_counts": [
+    1,
+    5,
+    12
+  ],
+  "letters_per_patient": 3,
+  "query_indexes_apart_days": 180,
+  "retrospective_followup_days": 180,
+  "provider_enabled": false,
+  "model": null,
+  "additional_paid_call_cap_gbp": 0,
+  "per_patient_paid_call_cap_gbp": 0,
+  "automatic_retries": 0,
+  "schema_path": "docs/longitudinal/annotation.schema.json",
+  "guide_path": "docs/longitudinal/annotation_guide.md",
+  "protocol_path": "docs/longitudinal/generation_protocol.md",
+  "retain_failed_cases": true,
+  "reference_from_final_text_only": true,
+  "lineage_policy": "all shared authoring/history/template descendants form connected development families",
+  "style_assignment": "independent of scenario and reference status",
+  "next_stage_requires_recorded_internal_review": true,
+  "pinned_sha256": {
+    "docs/longitudinal/annotation.schema.json": "47167c0cd15cd588acde1bdce846273d7af500210f1898debccf344d1677b8b7",
+    "docs/longitudinal/annotation_guide.md": "392d36b668341f5e1ccbe8e7604787b181ee745a7cae0905073a1c7bca405a80",
+    "docs/longitudinal/generation_protocol.md": "4f6c50b19f1caccc6cc877ea7c93d0f3b27e4ca86dfe2848e043bd26410888d4",
+    "configs/longitudinal/authoring_instructions.json": "1387d1a6e11281ba206ad312b9ac8202f48be824f814dc0faa6c65509df6a3b8",
+    "scripts/longitudinal/generate_seed_free_batch.py": "b5097cfa268de7c7c884ffcaa12ca5942c78461477e6f7fe7cb9fc6c68d35757",
+    "scripts/longitudinal/check_annotations.py": "771c6852cb196f8d41e27746c57041499c5ca36f103675d5f26a4f344e3155dc",
+    "scripts/longitudinal/verify_patient_case.py": "4365e66996fbef494edf79522669552423b8cfb6a47d12e60191cdad33d42eab",
+    "scripts/longitudinal/evaluate_query_witnesses.py": "438f4b7bd6d795579584931c918305cd8f7376db8ce914a7a04f12cef5182bc6",
+    "scripts/longitudinal/evaluate_q5_slice.py": "b81db65f31d8b1d7cc6549d9f87be9ce3846cd22e9917ee7998824f8f7b6496a",
+    "docs/longitudinal/task_definition.md": "0331dae3708c42f0bb1c421de768e648278b0598ba475469ff7bd9a3ea2c50e3"
+  },
+  "patients": [
+    {
+      "patient_id": "generated-001",
+      "style": "concise",
+      "scenario": "ordinary"
+    },
+    {
+      "patient_id": "generated-002",
+      "style": "concise",
+      "scenario": "concurrent_plan"
+    },
+    {
+      "patient_id": "generated-003",
+      "style": "concise",
+      "scenario": "reporter_conflict"
+    },
+    {
+      "patient_id": "generated-004",
+      "style": "concise",
+      "scenario": "delayed_correction"
+    },
+    {
+      "patient_id": "generated-005",
+      "style": "detailed",
+      "scenario": "ordinary"
+    },
+    {
+      "patient_id": "generated-006",
+      "style": "detailed",
+      "scenario": "concurrent_plan"
+    },
+    {
+      "patient_id": "generated-007",
+      "style": "detailed",
+      "scenario": "reporter_conflict"
+    },
+    {
+      "patient_id": "generated-008",
+      "style": "detailed",
+      "scenario": "delayed_correction"
+    },
+    {
+      "patient_id": "generated-009",
+      "style": "shorthand",
+      "scenario": "ordinary"
+    },
+    {
+      "patient_id": "generated-010",
+      "style": "shorthand",
+      "scenario": "concurrent_plan"
+    },
+    {
+      "patient_id": "generated-011",
+      "style": "shorthand",
+      "scenario": "reporter_conflict"
+    },
+    {
+      "patient_id": "generated-012",
+      "style": "shorthand",
+      "scenario": "delayed_correction"
+    }
+  ],
+  "author": {
+    "identity": "current Codex authoring assistant",
+    "model": "GPT-6 family as supplied in session instructions",
+    "exact_hosted_snapshot": null,
+    "sampling_parameters": null,
+    "external_provider": null,
+    "independent": false
+  },
+  "randomness": {
+    "style_assignment": "fixed full crossing; no random sampling",
+    "seed": null
+  },
+  "common_ancestor": "authoring-template:generation-0.1",
+  "source_context": "Phase 2 authored examples and guide; no benchmark corpus seeds"
+}

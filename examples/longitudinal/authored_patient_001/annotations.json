@@ -808,7 +808,15 @@
         "name": "lamotrigine",
         "status": "not_started",
         "condition": null
-      }
+      },
+      "all_prior_history_evidence": [
+        {
+          "letter_id": "L2",
+          "start": 1318,
+          "end": 1422,
+          "text": "Alex confirms that they have never taken lamotrigine. The addition discussed in January was not enacted."
+        }
+      ]
     },
     {
       "assertion_id": "L2.old_performed",
@@ -1140,7 +1148,15 @@
         "name": "lamotrigine",
         "status": "not_started",
         "condition": null
-      }
+      },
+      "all_prior_history_evidence": [
+        {
+          "letter_id": "L3",
+          "start": 942,
+          "end": 1094,
+          "text": "At the consultation Alex confirmed that they had never taken lamotrigine, including between 20 June and 14 July. The January proposal was never started."
+        }
+      ]
     },
     {
       "assertion_id": "L3.performed",

@@ -1,0 +1,4 @@
+Fictional outpatient letter | generated-003 | age 43
+Consultation: 2025-12-10
+
+This was an administrative attendance to rearrange follow-up. No clinical information was recorded.

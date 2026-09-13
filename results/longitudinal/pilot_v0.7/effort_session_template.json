@@ -1,0 +1,15 @@
+{
+  "status": "unstarted_template_not_measurement",
+  "reviewer_id": null,
+  "reviewer_type": "human",
+  "prior_reference_exposure": null,
+  "case_id": null,
+  "input_sha256": null,
+  "schema_version": "0.2",
+  "maximum_active_minutes": 60,
+  "segments": [],
+  "segment_fields": ["family_or_activity", "started_at", "ended_at", "paused_seconds", "completed_items", "unfinished_items", "output_path", "notes"],
+  "allowed_activities": ["diagnosis", "seizure", "medication", "investigation", "temporal", "relationships", "queries"],
+  "active_minutes": null,
+  "unfinished_work": null
+}

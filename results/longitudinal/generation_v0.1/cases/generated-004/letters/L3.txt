@@ -1,0 +1,8 @@
+Fictional outpatient letter | generated-004 | age 44
+Consultation: 2025-08-10
+
+The patient confirms no events of any kind between 20 February and today, 10 August 2025. There have been no further changes from epileptic to non-epileptic interpretation during that whole period.
+
+The patient confirms never restarting lamotrigine at any time from 29 January through 10 August 2025.
+
+No EEG was requested anywhere in the care record from 3 February through 10 August 2025.

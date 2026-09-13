@@ -1,0 +1,305 @@
+{
+  "evidence": [
+    {
+      "evidence_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "text": "The established diagnosis is focal epilepsy.",
+      "start": 79,
+      "end": 123
+    },
+    {
+      "evidence_id": "L1.staring",
+      "letter_id": "L1",
+      "text": "The patient reports staring seizures 2 to 4 times per month from 1 November 2024 through 1 February 2025. I regard these as epileptic.",
+      "start": 125,
+      "end": 259
+    },
+    {
+      "evidence_id": "L1.jerks",
+      "letter_id": "L1",
+      "text": "A separate pattern of right-hand jerks is also epileptic. The patient reports 1 to 2 clusters per month, each containing 3 to 5 jerks, throughout the same period from 1 November 2024 through 1 February 2025.",
+      "start": 261,
+      "end": 468
+    },
+    {
+      "evidence_id": "L1.plan",
+      "letter_id": "L1",
+      "text": "Lamotrigine was proposed on 15 January 2025; this letter does not establish whether it has been started.",
+      "start": 470,
+      "end": 574
+    },
+    {
+      "evidence_id": "L1.request",
+      "letter_id": "L1",
+      "text": "An EEG was requested on 10 January 2025. There is no result information in this letter.",
+      "start": 576,
+      "end": 663
+    },
+    {
+      "evidence_id": "L2.patterns",
+      "letter_id": "L2",
+      "text": "The patient reports that both the same staring seizures and the separate right-hand jerks continued from 2 February through 15 July 2025: staring 2 to 4 times per month and jerks in 1 to 2 clusters per month of 3 to 5 jerks each. Both remain classified as epileptic.",
+      "start": 79,
+      "end": 345
+    },
+    {
+      "evidence_id": "L2.not-started",
+      "letter_id": "L2",
+      "text": "The patient confirms never having taken lamotrigine at any time up to today, 15 July 2025; the January proposal was not enacted.",
+      "start": 347,
+      "end": 475
+    },
+    {
+      "evidence_id": "L3.started",
+      "letter_id": "L3",
+      "text": "The patient confirms actually starting lamotrigine on 25 July 2025, after the July clinic appointment.",
+      "start": 79,
+      "end": 181
+    },
+    {
+      "evidence_id": "L3.result",
+      "letter_id": "L3",
+      "text": "The report for the EEG requested on 10 January became available to our team on 20 February 2025 and was normal.",
+      "start": 183,
+      "end": 294
+    }
+  ],
+  "links": [
+    {
+      "link_id": "two-patterns-L1",
+      "earlier_evidence": "L1.staring",
+      "later_evidence": "L1.jerks",
+      "supporting_evidence": [],
+      "relation": "overlaps_active"
+    },
+    {
+      "link_id": "same-staring",
+      "earlier_evidence": "L1.staring",
+      "later_evidence": "L2.patterns",
+      "supporting_evidence": [],
+      "relation": "updates"
+    },
+    {
+      "link_id": "same-jerks",
+      "earlier_evidence": "L1.jerks",
+      "later_evidence": "L2.patterns",
+      "supporting_evidence": [],
+      "relation": "updates"
+    },
+    {
+      "link_id": "two-patterns-L2",
+      "earlier_evidence": "L2.patterns",
+      "later_evidence": "L2.patterns",
+      "supporting_evidence": [],
+      "relation": "overlaps_active"
+    },
+    {
+      "link_id": "plan-not-enacted",
+      "earlier_evidence": "L1.plan",
+      "later_evidence": "L2.not-started",
+      "supporting_evidence": [],
+      "relation": "plan_not_enacted"
+    },
+    {
+      "link_id": "EEG-result",
+      "earlier_evidence": "L1.request",
+      "later_evidence": "L3.result",
+      "supporting_evidence": [],
+      "relation": "request_has_result"
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L1.staring"
+      ],
+      "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.staring",
+        "L1.jerks"
+      ],
+      "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback.",
+      "link_ids": [
+        "two-patterns-L1"
+      ]
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.plan"
+      ],
+      "reason": "A proposal is not evidence of initiation or a complete negative medication history.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.request"
+      ],
+      "reason": "The January EEG request has no documented result availability by this index, and other EEG requests are not exhausted.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L1.staring"
+      ],
+      "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q2",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.staring",
+        "L1.jerks"
+      ],
+      "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback.",
+      "link_ids": [
+        "two-patterns-L1"
+      ]
+    },
+    {
+      "request_id": "T1_retrospective_Q3",
+      "status": "ineligible",
+      "evidence_ids": [
+        "L2.not-started"
+      ],
+      "reason": "The July report explicitly covers never-use throughout the entire prior history, including the first index lookback.",
+      "link_ids": [
+        "plan-not-enacted"
+      ]
+    },
+    {
+      "request_id": "T1_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.request"
+      ],
+      "reason": "The January EEG request has no documented result availability by this index, and other EEG requests are not exhausted.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L2.patterns"
+      ],
+      "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q2",
+      "status": "eligible",
+      "evidence_ids": [
+        "L2.patterns"
+      ],
+      "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback.",
+      "link_ids": [
+        "two-patterns-L2"
+      ]
+    },
+    {
+      "request_id": "T2_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L2.not-started"
+      ],
+      "reason": "Non-use is supported only through 15 July; a start between 16 and 31 July remains unobserved at this cutoff.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.request"
+      ],
+      "reason": "The known January EEG request predates this lookback; there is no exhaustive inventory of other EEG requests during the lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "eligible",
+      "evidence_ids": [
+        "L1.diagnosis",
+        "L2.patterns"
+      ],
+      "reason": "Documented epilepsy and recurring epileptic events in the stated interval support at least one occurrence within the 90-day lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "eligible",
+      "evidence_ids": [
+        "L2.patterns"
+      ],
+      "reason": "The two explicitly distinct epileptic patterns are active over a shared interval inside the 90-day lookback.",
+      "link_ids": [
+        "two-patterns-L2"
+      ]
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "eligible",
+      "evidence_ids": [
+        "L3.started"
+      ],
+      "reason": "The later letter confirms an actual start on 25 July, inside the second index lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.request",
+        "L3.result"
+      ],
+      "reason": "The known January EEG request predates this lookback; there is no exhaustive inventory of other EEG requests during the lookback.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval.",
+      "link_ids": []
+    }
+  ],
+  "case_id": "generated-002",
+  "version": "2",
+  "reference_kind": "provisional same-assistant text review; not expert gold"
+}

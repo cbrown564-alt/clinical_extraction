@@ -1,0 +1,6 @@
+Fictional outpatient letter | generated-009 | age 49
+Consultation: 2025-02-01
+
+Dx: established focal epilepsy.
+
+Sz: focal impaired-awareness, 1 to 2/month, 1 Oct 2024–1 Feb 2025. Patient: last 20 Jan 2025; no other event types in that period.

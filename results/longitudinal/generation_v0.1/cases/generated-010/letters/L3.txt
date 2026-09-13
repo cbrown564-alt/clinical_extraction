@@ -1,0 +1,6 @@
+Fictional outpatient letter | generated-010 | age 50
+Consultation: 2025-08-20
+
+Patient confirms lamotrigine started 25 Jul 2025, after Jul clinic.
+
+EEG: the 10 Jan request; normal report first available to team 20 Feb 2025.

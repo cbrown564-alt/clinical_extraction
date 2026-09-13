@@ -1,0 +1,1738 @@
+{
+  "program_version": "longitudinal-prototype-0.1",
+  "status": "ready",
+  "provenance": {
+    "mode": "saved_model_extraction",
+    "new_model_calls": 0,
+    "query_context_visible_during_extraction": true,
+    "semantic_repair": false,
+    "attempt": {
+      "status": "parsed",
+      "input_sha256": "563a660a6f6aca9834d52149d25ba9d9f11dc5e9519f69dce7f1e9ccbc40461f",
+      "rendered_prompt_sha256": "f0f0ac96ea96dba931c926e2c90a1ba3978c7b69baccc3bd0103fcac7f16218e",
+      "model_requested": "gemini-3.8-flash-medium",
+      "effort": "medium",
+      "interface": "agy",
+      "executable_sha256": "2a63488c33221627f1798ff4ccb1d5131b6abe3160286c84b357a7456905f763",
+      "fresh_project": true,
+      "sandbox": true,
+      "tools_requested": false,
+      "started_at": "2026-09-09T22:55:30.590404+00:00",
+      "semantic_repair": false,
+      "provider_cost": null,
+      "human_annotation_minutes": null,
+      "exit_code": 0,
+      "ended_at": "2026-09-09T22:56:37.073690+00:00",
+      "wall_seconds": 66.48464116698597,
+      "telemetry": {
+        "conversation_id": "277b28a4-8cf6-4385-a890-d1036ed3e477",
+        "status": "SUCCESS",
+        "duration_seconds": 62.921934,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 25407,
+          "output_tokens": 27282,
+          "thinking_tokens": 23178,
+          "cache_read_tokens": 0,
+          "total_tokens": 52689
+        }
+      },
+      "observed_tool_steps": 0,
+      "tool_catalog_present": true,
+      "isolation_limit": "fresh temporary project; no observed tool steps required; tool catalog remains present and plan mode is ignored by CLI with slash expansion disabled"
+    },
+    "input_sha256": "563a660a6f6aca9834d52149d25ba9d9f11dc5e9519f69dce7f1e9ccbc40461f",
+    "attempt_sha256": "c176dac4538e2c5c81a8a266c694db755301a7231745ebee41d9ccf5957ef798",
+    "raw_parsed_sha256": "48572591e871d63cbd532f1b574743f579bcab20f9f8f7c1e11d3c94fe8a0c79",
+    "raw_stdout_sha256": "cd0547773f9f3ab94e192625073c6921df7c3d653b2b8b35266a1f7039acdade"
+  },
+  "documents": [
+    {
+      "letter_id": "L1",
+      "version": 1,
+      "visit_date": "2025-02-15",
+      "available_date": "2025-02-15",
+      "path": "letters/L1.txt",
+      "sha256": "e7d4bc51d9ce381cde70110f4a509e44a158c6e905ecab28787d78e3cc4affed",
+      "text": "Epilepsy clinic letter\nConsultation: 15 February 2025\nPatient: Fatima Patel, aged 24\n\nDear colleague,\n\nFatima attended clinic with her partner. She has a known diagnosis of focal epilepsy.\n\nThere is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily.\n\nWe agreed to maintain her lamotrigine dose while her partner attempts home video recording. No EEG requested. Review in four months.\n"
+    },
+    {
+      "letter_id": "L2",
+      "version": 1,
+      "visit_date": "2025-06-25",
+      "available_date": "2025-06-25",
+      "path": "letters/L2.txt",
+      "sha256": "cfafad98224aec158f01357a1153acc7cd038c0a06838b02b6a00102293ff1b0",
+      "text": "Epilepsy clinic letter\nConsultation: 25 June 2025\nPatient: Fatima Patel\n\nDear colleague,\n\nI reviewed Fatima and her partner today. Her diagnosis remains focal epilepsy.\n\nHer partner captured a clear home video on 10 June 2025 showing nocturnal hypermotor tonic activity lasting 45 seconds. Having viewed the video, Fatima now acknowledges that nocturnal seizures are indeed taking place despite her lack of subjective awareness. The partner reports similar nocturnal seizures continued weekly until mid-June.\n\nIn light of this verified active seizure frequency, we agreed to increase lamotrigine to 150 mg twice daily. No EEG requested. Review in three months.\n"
+    }
+  ],
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "L1_diag_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 144,
+            "end": 188,
+            "text": "She has a known diagnosis of focal epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L1_seiz_pattern_caregiver",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 253,
+            "end": 437,
+            "text": "Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing."
+          }
+        ],
+        "reporter": "caregiver",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal seizures"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "roughly two to three times a week",
+            "count": {
+              "lower": 2.0,
+              "upper": 3.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "L1_seiz_occ_caregiver",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 438,
+            "end": 515,
+            "text": "The partner states the most recent nocturnal seizure was on 12 February 2025."
+          }
+        ],
+        "reporter": "caregiver",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "12 February 2025",
+          "start": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal seizure"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_seiz_denial_patient",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 516,
+            "end": 682,
+            "text": "Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal events"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_med_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 771,
+            "end": 816,
+            "text": "She continues lamotrigine 100 mg twice daily."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L1_inv_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 910,
+            "end": 927,
+            "text": "No EEG requested."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L2_diag_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 131,
+            "end": 168,
+            "text": "Her diagnosis remains focal epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L2_seiz_occ_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 170,
+            "end": 289,
+            "text": "Her partner captured a clear home video on 10 June 2025 showing nocturnal hypermotor tonic activity lasting 45 seconds."
+          }
+        ],
+        "reporter": "caregiver",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "10 June 2025",
+          "start": {
+            "earliest": "2025-06-10",
+            "latest": "2025-06-10"
+          },
+          "end": {
+            "earliest": "2025-06-10",
+            "latest": "2025-06-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal hypermotor tonic activity"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L2_seiz_pattern_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 429,
+            "end": 508,
+            "text": "The partner reports similar nocturnal seizures continued weekly until mid-June."
+          }
+        ],
+        "reporter": "caregiver",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "weekly until mid-June",
+          "start": null,
+          "end": {
+            "earliest": "2025-06-11",
+            "latest": "2025-06-20"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal seizures"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "weekly",
+            "count": {
+              "lower": 1.0,
+              "upper": 1.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "L2_med_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 510,
+            "end": 618,
+            "text": "In light of this verified active seizure frequency, we agreed to increase lamotrigine to 150 mg twice daily."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "decision",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "proposed",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L2_inv_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 619,
+            "end": 636,
+            "text": "No EEG requested."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "L1_diag_1__L2_diag_1__updates",
+        "earlier_assertion": "L1_diag_1",
+        "later_assertion": "L2_diag_1",
+        "relation": "updates",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 144,
+            "end": 188,
+            "text": "She has a known diagnosis of focal epilepsy."
+          },
+          {
+            "letter_id": "L2",
+            "start": 131,
+            "end": 168,
+            "text": "Her diagnosis remains focal epilepsy."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-updates"
+      },
+      {
+        "link_id": "L1_seiz_pattern_caregiver__L1_seiz_denial_patient__contradicts",
+        "earlier_assertion": "L1_seiz_pattern_caregiver",
+        "later_assertion": "L1_seiz_denial_patient",
+        "relation": "contradicts",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 253,
+            "end": 437,
+            "text": "Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing."
+          },
+          {
+            "letter_id": "L1",
+            "start": 516,
+            "end": 682,
+            "text": "Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well."
+          },
+          {
+            "letter_id": "L1",
+            "start": 190,
+            "end": 816,
+            "text": "There is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-contradicts"
+      },
+      {
+        "link_id": "L1_seiz_occ_caregiver__L1_seiz_denial_patient__contradicts",
+        "earlier_assertion": "L1_seiz_occ_caregiver",
+        "later_assertion": "L1_seiz_denial_patient",
+        "relation": "contradicts",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 438,
+            "end": 515,
+            "text": "The partner states the most recent nocturnal seizure was on 12 February 2025."
+          },
+          {
+            "letter_id": "L1",
+            "start": 516,
+            "end": 682,
+            "text": "Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well."
+          },
+          {
+            "letter_id": "L1",
+            "start": 190,
+            "end": 816,
+            "text": "There is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-contradicts"
+      }
+    ]
+  },
+  "history": [
+    {
+      "assertion_ids": [
+        "L1_seiz_pattern_caregiver"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1_seiz_pattern_caregiver",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 253,
+              "end": 437,
+              "text": "Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing."
+            }
+          ],
+          "reporter": "caregiver",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "nocturnal seizures"
+            ],
+            "kind": "pattern",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": {
+              "kind": "rate",
+              "text": "roughly two to three times a week",
+              "count": {
+                "lower": 2.0,
+                "upper": 3.0
+              },
+              "period": {
+                "amount": {
+                  "lower": 1.0,
+                  "upper": 1.0
+                },
+                "unit": "week"
+              },
+              "events_per_cluster": null,
+              "approximate": true
+            }
+          }
+        }
+      ],
+      "links": [
+        {
+          "link_id": "L1_seiz_pattern_caregiver__L1_seiz_denial_patient__contradicts",
+          "earlier_assertion": "L1_seiz_pattern_caregiver",
+          "later_assertion": "L1_seiz_denial_patient",
+          "relation": "contradicts",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 253,
+              "end": 437,
+              "text": "Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing."
+            },
+            {
+              "letter_id": "L1",
+              "start": 516,
+              "end": 682,
+              "text": "Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well."
+            },
+            {
+              "letter_id": "L1",
+              "start": 190,
+              "end": 816,
+              "text": "There is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-contradicts"
+        }
+      ]
+    },
+    {
+      "assertion_ids": [
+        "L1_seiz_occ_caregiver"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1_seiz_occ_caregiver",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 438,
+              "end": 515,
+              "text": "The partner states the most recent nocturnal seizure was on 12 February 2025."
+            }
+          ],
+          "reporter": "caregiver",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": "12 February 2025",
+            "start": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "end": {
+              "earliest": "2025-02-12",
+              "latest": "2025-02-12"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "nocturnal seizure"
+            ],
+            "kind": "occurrence",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": [
+        {
+          "link_id": "L1_seiz_occ_caregiver__L1_seiz_denial_patient__contradicts",
+          "earlier_assertion": "L1_seiz_occ_caregiver",
+          "later_assertion": "L1_seiz_denial_patient",
+          "relation": "contradicts",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 438,
+              "end": 515,
+              "text": "The partner states the most recent nocturnal seizure was on 12 February 2025."
+            },
+            {
+              "letter_id": "L1",
+              "start": 516,
+              "end": 682,
+              "text": "Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well."
+            },
+            {
+              "letter_id": "L1",
+              "start": 190,
+              "end": 816,
+              "text": "There is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-contradicts"
+        }
+      ]
+    },
+    {
+      "assertion_ids": [
+        "L1_seiz_denial_patient"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1_seiz_denial_patient",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 516,
+              "end": 682,
+              "text": "Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "negated",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "nocturnal events"
+            ],
+            "kind": "absence",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": [
+        {
+          "link_id": "L1_seiz_pattern_caregiver__L1_seiz_denial_patient__contradicts",
+          "earlier_assertion": "L1_seiz_pattern_caregiver",
+          "later_assertion": "L1_seiz_denial_patient",
+          "relation": "contradicts",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 253,
+              "end": 437,
+              "text": "Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing."
+            },
+            {
+              "letter_id": "L1",
+              "start": 516,
+              "end": 682,
+              "text": "Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well."
+            },
+            {
+              "letter_id": "L1",
+              "start": 190,
+              "end": 816,
+              "text": "There is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-contradicts"
+        },
+        {
+          "link_id": "L1_seiz_occ_caregiver__L1_seiz_denial_patient__contradicts",
+          "earlier_assertion": "L1_seiz_occ_caregiver",
+          "later_assertion": "L1_seiz_denial_patient",
+          "relation": "contradicts",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 438,
+              "end": 515,
+              "text": "The partner states the most recent nocturnal seizure was on 12 February 2025."
+            },
+            {
+              "letter_id": "L1",
+              "start": 516,
+              "end": 682,
+              "text": "Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well."
+            },
+            {
+              "letter_id": "L1",
+              "start": 190,
+              "end": 816,
+              "text": "There is a striking discrepancy in the history provided today. Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing. The partner states the most recent nocturnal seizure was on 12 February 2025. Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well. Because of this direct informant discordance, I have recorded both accounts separately. She continues lamotrigine 100 mg twice daily."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-contradicts"
+        }
+      ]
+    },
+    {
+      "assertion_ids": [
+        "L1_med_1"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1_med_1",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 771,
+              "end": 816,
+              "text": "She continues lamotrigine 100 mg twice daily."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "medication",
+            "name": "lamotrigine",
+            "status": "taking",
+            "condition": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1_inv_1"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1_inv_1",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 910,
+              "end": 927,
+              "text": "No EEG requested."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "negated",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "EEG",
+            "status": "requested",
+            "result": null,
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L2_seiz_occ_1"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L2_seiz_occ_1",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 170,
+              "end": 289,
+              "text": "Her partner captured a clear home video on 10 June 2025 showing nocturnal hypermotor tonic activity lasting 45 seconds."
+            }
+          ],
+          "reporter": "caregiver",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": "10 June 2025",
+            "start": {
+              "earliest": "2025-06-10",
+              "latest": "2025-06-10"
+            },
+            "end": {
+              "earliest": "2025-06-10",
+              "latest": "2025-06-10"
+            },
+            "kind": "occurrence",
+            "anchor_letter_id": null
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "nocturnal hypermotor tonic activity"
+            ],
+            "kind": "occurrence",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L2_seiz_pattern_1"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L2_seiz_pattern_1",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 429,
+              "end": 508,
+              "text": "The partner reports similar nocturnal seizures continued weekly until mid-June."
+            }
+          ],
+          "reporter": "caregiver",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": "weekly until mid-June",
+            "start": null,
+            "end": {
+              "earliest": "2025-06-11",
+              "latest": "2025-06-20"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "nocturnal seizures"
+            ],
+            "kind": "pattern",
+            "interpretation": "epileptic",
+            "scope": "named_pattern",
+            "burden": {
+              "kind": "rate",
+              "text": "weekly",
+              "count": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "period": {
+                "amount": {
+                  "lower": 1.0,
+                  "upper": 1.0
+                },
+                "unit": "week"
+              },
+              "events_per_cluster": null,
+              "approximate": false
+            }
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L2_med_1"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L2_med_1",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 510,
+              "end": 618,
+              "text": "In light of this verified active seizure frequency, we agreed to increase lamotrigine to 150 mg twice daily."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "decision",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "medication",
+            "name": "lamotrigine",
+            "status": "proposed",
+            "condition": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L2_inv_1"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L2_inv_1",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 619,
+              "end": 636,
+              "text": "No EEG requested."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "negated",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "EEG",
+            "status": "requested",
+            "result": null,
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "L1_diag_1",
+        "L2_diag_1"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "L1_diag_1",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 144,
+              "end": 188,
+              "text": "She has a known diagnosis of focal epilepsy."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "diagnosis",
+            "name": "focal epilepsy",
+            "phase": "current"
+          }
+        },
+        {
+          "assertion_id": "L2_diag_1",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 131,
+              "end": 168,
+              "text": "Her diagnosis remains focal epilepsy."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": null,
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "diagnosis",
+            "name": "focal epilepsy",
+            "phase": "current"
+          }
+        }
+      ],
+      "links": [
+        {
+          "link_id": "L1_diag_1__L2_diag_1__updates",
+          "earlier_assertion": "L1_diag_1",
+          "later_assertion": "L2_diag_1",
+          "relation": "updates",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 144,
+              "end": 188,
+              "text": "She has a known diagnosis of focal epilepsy."
+            },
+            {
+              "letter_id": "L2",
+              "start": 131,
+              "end": 168,
+              "text": "Her diagnosis remains focal epilepsy."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-updates"
+        }
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "request_id": "T2_visit_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2025-08-14",
+      "view": "visit",
+      "information_cutoff": "2025-08-14",
+      "retrospective_cutoff": "2026-02-10",
+      "lookback_90_start": "2025-05-17",
+      "lookback_180_start": "2025-02-16",
+      "input_path": "inputs/T2_visit.json"
+    },
+    {
+      "request_id": "T2_visit_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2025-08-14",
+      "view": "visit",
+      "information_cutoff": "2025-08-14",
+      "retrospective_cutoff": "2026-02-10",
+      "lookback_90_start": "2025-05-17",
+      "lookback_180_start": "2025-02-16",
+      "input_path": "inputs/T2_visit.json"
+    },
+    {
+      "request_id": "T2_visit_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2025-08-14",
+      "view": "visit",
+      "information_cutoff": "2025-08-14",
+      "retrospective_cutoff": "2026-02-10",
+      "lookback_90_start": "2025-05-17",
+      "lookback_180_start": "2025-02-16",
+      "input_path": "inputs/T2_visit.json"
+    },
+    {
+      "request_id": "T2_visit_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2025-08-14",
+      "view": "visit",
+      "information_cutoff": "2025-08-14",
+      "retrospective_cutoff": "2026-02-10",
+      "lookback_90_start": "2025-05-17",
+      "lookback_180_start": "2025-02-16",
+      "input_path": "inputs/T2_visit.json"
+    },
+    {
+      "request_id": "T2_visit_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2025-08-14",
+      "view": "visit",
+      "information_cutoff": "2025-08-14",
+      "retrospective_cutoff": "2026-02-10",
+      "lookback_90_start": "2025-05-17",
+      "lookback_180_start": "2025-02-16",
+      "input_path": "inputs/T2_visit.json"
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T2_visit_Q1",
+      "query_id": "Q1",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": [
+        "L1_seiz_denial_patient",
+        "L1_seiz_occ_caregiver",
+        "L1_seiz_pattern_caregiver"
+      ]
+    },
+    {
+      "request_id": "T2_visit_Q2",
+      "query_id": "Q2",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": [
+        "L1_seiz_denial_patient",
+        "L1_seiz_occ_caregiver",
+        "L1_seiz_pattern_caregiver"
+      ]
+    },
+    {
+      "request_id": "T2_visit_Q3",
+      "query_id": "Q3",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": [
+        "L1_seiz_denial_patient",
+        "L1_seiz_occ_caregiver",
+        "L1_seiz_pattern_caregiver"
+      ]
+    },
+    {
+      "request_id": "T2_visit_Q4",
+      "query_id": "Q4",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": [
+        "L1_seiz_denial_patient",
+        "L1_seiz_occ_caregiver",
+        "L1_seiz_pattern_caregiver"
+      ]
+    },
+    {
+      "request_id": "T2_visit_Q5",
+      "query_id": "Q5",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": [
+        "L1_seiz_denial_patient",
+        "L1_seiz_occ_caregiver",
+        "L1_seiz_pattern_caregiver"
+      ]
+    }
+  ],
+  "offset_repairs": [
+    {
+      "path": "/assertions/3/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 516,
+        "end": 681,
+        "text": "Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 516,
+        "end": 682,
+        "text": "Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well."
+      }
+    },
+    {
+      "path": "/assertions/4/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 770,
+        "end": 815,
+        "text": "She continues lamotrigine 100 mg twice daily."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 771,
+        "end": 816,
+        "text": "She continues lamotrigine 100 mg twice daily."
+      }
+    },
+    {
+      "path": "/assertions/5/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 909,
+        "end": 926,
+        "text": "No EEG requested."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 910,
+        "end": 927,
+        "text": "No EEG requested."
+      }
+    }
+  ],
+  "raw_extraction": {
+    "assertions": [
+      {
+        "assertion_id": "L1_diag_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 144,
+            "end": 188,
+            "text": "She has a known diagnosis of focal epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L1_seiz_pattern_caregiver",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 253,
+            "end": 437,
+            "text": "Her partner reports that Fatima experiences recurring nocturnal seizures roughly two to three times a week, during which she exhibits tonic stiffening followed by stertorous breathing."
+          }
+        ],
+        "reporter": "caregiver",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal seizures"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "roughly two to three times a week",
+            "count": {
+              "lower": 2.0,
+              "upper": 3.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "L1_seiz_occ_caregiver",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 438,
+            "end": 515,
+            "text": "The partner states the most recent nocturnal seizure was on 12 February 2025."
+          }
+        ],
+        "reporter": "caregiver",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "12 February 2025",
+          "start": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "end": {
+            "earliest": "2025-02-12",
+            "latest": "2025-02-12"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal seizure"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_seiz_denial_patient",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 516,
+            "end": 681,
+            "text": "Fatima herself has total amnesia for these episodes, firmly denies that any nocturnal events occur, and insists she is entirely seizure-free and feels perfectly well."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal events"
+          ],
+          "kind": "absence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L1_med_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 770,
+            "end": 815,
+            "text": "She continues lamotrigine 100 mg twice daily."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "taking",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L1_inv_1",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 909,
+            "end": 926,
+            "text": "No EEG requested."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "L2_diag_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 131,
+            "end": 168,
+            "text": "Her diagnosis remains focal epilepsy."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "L2_seiz_occ_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 170,
+            "end": 289,
+            "text": "Her partner captured a clear home video on 10 June 2025 showing nocturnal hypermotor tonic activity lasting 45 seconds."
+          }
+        ],
+        "reporter": "caregiver",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "10 June 2025",
+          "start": {
+            "earliest": "2025-06-10",
+            "latest": "2025-06-10"
+          },
+          "end": {
+            "earliest": "2025-06-10",
+            "latest": "2025-06-10"
+          },
+          "kind": "occurrence",
+          "anchor_letter_id": null
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal hypermotor tonic activity"
+          ],
+          "kind": "occurrence",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": null
+        }
+      },
+      {
+        "assertion_id": "L2_seiz_pattern_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 429,
+            "end": 508,
+            "text": "The partner reports similar nocturnal seizures continued weekly until mid-June."
+          }
+        ],
+        "reporter": "caregiver",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "weekly until mid-June",
+          "start": null,
+          "end": {
+            "earliest": "2025-06-11",
+            "latest": "2025-06-20"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "nocturnal seizures"
+          ],
+          "kind": "pattern",
+          "interpretation": "epileptic",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "weekly",
+            "count": {
+              "lower": 1.0,
+              "upper": 1.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "L2_med_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 510,
+            "end": 618,
+            "text": "In light of this verified active seizure frequency, we agreed to increase lamotrigine to 150 mg twice daily."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "decision",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "medication",
+          "name": "lamotrigine",
+          "status": "proposed",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "L2_inv_1",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 619,
+            "end": 636,
+            "text": "No EEG requested."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": null,
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      }
+    ],
+    "links": []
+  }
+}

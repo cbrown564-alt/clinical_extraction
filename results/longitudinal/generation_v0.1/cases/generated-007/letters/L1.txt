@@ -1,0 +1,8 @@
+Fictional outpatient letter | generated-007 | age 47
+Consultation: 2025-02-01
+
+This outpatient review concerns the patient’s established focal epilepsy.
+
+The patient reports no epileptic seizures at all between 1 November 2024 and today, 1 February 2025. In particular, the patient disputes that the caregiver’s reported episode on 15 January occurred.
+
+The caregiver gives a different account, reporting a focal seizure on 15 January 2025. I cannot resolve whether that specific episode occurred or whether it was epileptic.

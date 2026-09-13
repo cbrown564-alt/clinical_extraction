@@ -305,10 +305,11 @@ Q4's clinical result availability and Q5's occurrence-based lookback membership;
 the example demonstrates each. These are pre-comparison task clarifications,
 not changes to Gan or ExECT scoring.
 
-Next: P2.2–P2.4 annotation guide and provisional schema, then pilot expansion and
-independent annotation. No extraction model comparison, outreach or public release
-occurred. The authored example is provisional development material, not a corpus
-freeze or expert reference.
+Phase 2 is complete for authored development under the v0.8 pilot review.
+Current work advances to the prepared Phase 3 seed-free probe.
+The pilot review owns current findings; the generation protocol owns the next
+seed-free batch procedure. No corpus freeze, expert reference or clinical release
+is established by these development checks.
 
 
 ## Pilot reference amendment: v0.4 (2026-09-09)
@@ -335,3 +336,34 @@ adherence. No exact holiday date or new date bound is imputed. The annotation
 guide owns these interpretation clarifications; the pilot review records each
 decision. This revises the previous overly strict date-bound/reference treatment,
 not the five predicates, supplied cutoffs or frozen model inputs.
+
+
+## Pilot annotation amendment: v0.7 (2026-09-10)
+
+The five predicates, fixed query dates and all reference statuses are unchanged.
+Four temporal annotation records were corrected and patient 011 gained existing
+patient-wide first-reinterpretation evidence under schema v0.2. The pilot review
+owns the before/after evidence and a full 240-request field-deletion diagnostic.
+Internal coverage minimums are accepted; incomplete negative-history representation,
+semantic link alignment and missing within-family/human timing prevent broad
+P2.6 closure. The generation protocol prepares a zero-additional-paid-call,
+seed-free one-patient probe before any 5/12-patient expansion.
+
+
+## Pilot annotation amendment and Phase 2 disposition: v0.8 (2026-09-10)
+
+Schema/guide v0.3 adds optional evidence for explicitly complete prior history,
+exercised on four non-use assertions in patients 001 and 005. A null onset alone
+still cannot establish that scope. The 36 source letters, fixed query dates and
+all 240 expected answers are unchanged. The five predicates and scoring policy
+are unchanged; this amendment adds representation rather than a new clinical rule.
+
+The pilot review records Phase 2 completion with explicit unresolved cases:
+144 temporal-pair and 89 unaligned-link dispositions, 18 measured independent AI
+calls by activity, paired schema/guide revision, accepted coverage and nine-variant
+query replay. The incomplete structured evaluator matches 229/240 authored answers;
+11 conservative gaps remain named implementation cases. Raw output QC errors and
+source-attribution alternatives remain visible. No clinical agreement or human
+effort is inferred from these measurements. The original completion criterion
+permits a provisional schema and unresolved cases; full execution and expert
+reference retain their own later-phase requirements.

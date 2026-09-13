@@ -1,0 +1,13 @@
+{
+  "scope": "Inspection-only authoring recipe and rendered source-only annotation example; no provider request dispatched",
+  "rendered_prompt_inspected": true,
+  "plain_language": true,
+  "research_metadata_separate": true,
+  "nonobvious_schema_fields_described": true,
+  "jargon_removed_or_defined": true,
+  "length_matches_purpose": true,
+  "controlled_experiment_deviations": null,
+  "rendered_example_sha256": "4fb4c804fa9e312b85a2d65608abc85933dcbbac59d56fb5ad0c4b6787202304",
+  "instructions_sha256": "1387d1a6e11281ba206ad312b9ac8202f48be824f814dc0faa6c65509df6a3b8",
+  "actual_execution": "Same Codex assistant authored and reviewed the batch in this task. Draft annotations were prepared alongside letters, then checked against finished text and physically filtered requests. No blinded or independent annotation pass is claimed."
+}

@@ -1,0 +1,4 @@
+Fictional outpatient letter | generated-007 | age 47
+Consultation: 2025-12-10
+
+The patient attended for administrative arrangements concerning the next appointment. No clinical information was recorded during this attendance.

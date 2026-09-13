@@ -1,0 +1,34 @@
+{
+  "version": "preparation-0.2",
+  "mode": "seed_free_authoring",
+  "execution_status": "prepared_not_run",
+  "source_conditioned_generation": false,
+  "source_records": [],
+  "inspection_policy": "development_only",
+  "stage_patient_counts": [
+    1,
+    5,
+    12
+  ],
+  "letters_per_patient": 3,
+  "query_indexes_apart_days": 180,
+  "retrospective_followup_days": 180,
+  "provider_enabled": false,
+  "model": null,
+  "additional_paid_call_cap_gbp": 0,
+  "per_patient_paid_call_cap_gbp": 0,
+  "automatic_retries": 0,
+  "schema_path": "docs/longitudinal/annotation.schema.json",
+  "guide_path": "docs/longitudinal/annotation_guide.md",
+  "protocol_path": "docs/longitudinal/generation_protocol.md",
+  "retain_failed_cases": true,
+  "reference_from_final_text_only": true,
+  "lineage_policy": "all shared authoring/history/template descendants form connected development families",
+  "style_assignment": "independent of scenario and reference status",
+  "next_stage_requires_recorded_internal_review": true,
+  "pinned_sha256": {
+    "docs/longitudinal/annotation.schema.json": "47167c0cd15cd588acde1bdce846273d7af500210f1898debccf344d1677b8b7",
+    "docs/longitudinal/annotation_guide.md": "392d36b668341f5e1ccbe8e7604787b181ee745a7cae0905073a1c7bca405a80",
+    "docs/longitudinal/generation_protocol.md": "4f6c50b19f1caccc6cc877ea7c93d0f3b27e4ca86dfe2848e043bd26410888d4"
+  }
+}

@@ -1,0 +1,209 @@
+{
+  "evidence": [
+    {
+      "evidence_id": "L1.diagnosis",
+      "letter_id": "L1",
+      "text": "This outpatient review concerns the patient’s established focal epilepsy.",
+      "start": 79,
+      "end": 152
+    },
+    {
+      "evidence_id": "L1.absence",
+      "letter_id": "L1",
+      "text": "The patient reports no epileptic seizures at all between 1 November 2024 and today, 1 February 2025. In particular, the patient disputes that the caregiver’s reported episode on 15 January occurred.",
+      "start": 154,
+      "end": 352
+    },
+    {
+      "evidence_id": "L1.caregiver",
+      "letter_id": "L1",
+      "text": "The caregiver gives a different account, reporting a focal seizure on 15 January 2025. I cannot resolve whether that specific episode occurred or whether it was epileptic.",
+      "start": 354,
+      "end": 525
+    },
+    {
+      "evidence_id": "L2.undated",
+      "letter_id": "L2",
+      "text": "At this delayed follow-up there is no reliable diary. The patient recalls some spells since February but cannot give their dates or characterize the events. Their epileptic nature remains uncertain, and nothing obtained today resolves the disputed January episode.",
+      "start": 79,
+      "end": 343
+    },
+    {
+      "evidence_id": "L3.admin",
+      "letter_id": "L3",
+      "text": "The patient attended for administrative arrangements concerning the next appointment. No clinical information was recorded during this attendance.",
+      "start": 79,
+      "end": 225
+    }
+  ],
+  "links": [
+    {
+      "link_id": "reporter-disagreement",
+      "earlier_evidence": "L1.absence",
+      "later_evidence": "L1.caregiver",
+      "supporting_evidence": [],
+      "relation": "contradicts"
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T1_visit_Q1",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.absence",
+        "L1.caregiver"
+      ],
+      "reason": "The patient’s whole-interval denial and caregiver’s dated epileptic-event account conflict; the clinician cannot resolve them.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.absence",
+        "L1.caregiver"
+      ],
+      "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q1",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.absence",
+        "L1.caregiver"
+      ],
+      "reason": "The patient’s whole-interval denial and caregiver’s dated epileptic-event account conflict; the clinician cannot resolve them.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L1.absence",
+        "L1.caregiver"
+      ],
+      "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T1_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q1",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The permitted letters do not settle whether an epileptic seizure occurred in this 90-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_visit_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q1",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L2.undated"
+      ],
+      "reason": "The permitted letters do not settle whether an epileptic seizure occurred in this 90-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "status": "indeterminate",
+      "evidence_ids": [
+        "L2.undated"
+      ],
+      "reason": "The permitted letters do not establish two distinct overlapping epileptic patterns or a complete negative inventory for this 90-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish an actual lamotrigine start or complete non-initiation history for this 180-day interval.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a matching EEG request in this 180-day interval with a result available to the team by the index date, or a complete negative request/result history.",
+      "link_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "status": "indeterminate",
+      "evidence_ids": [],
+      "reason": "The letters do not establish a qualifying dated reinterpretation or exhaust the reinterpretation history for this interval.",
+      "link_ids": []
+    }
+  ],
+  "case_id": "generated-007",
+  "version": "1",
+  "reference_kind": "provisional same-assistant text review; not expert gold"
+}

@@ -1,0 +1,139 @@
+{
+  "date": "2026-09-11",
+  "method": "Direct local browser inspection and keyboard interaction through CUA",
+  "url": "http://localhost:3000/longitudinal",
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "checks": [
+    {
+      "name": "Visit / retrospective / visit reproducibility",
+      "patient": "authored_patient_001",
+      "query": "Q2",
+      "index": "2025-01-15",
+      "sequence": [
+        "eligible, L1 only, cutoff 2025-01-15",
+        "ineligible, L1 + L2, cutoff 2025-07-14",
+        "eligible, L1 only"
+      ],
+      "result": "pass"
+    },
+    {
+      "name": "Keyboard radio navigation",
+      "action": "ArrowRight then ArrowLeft on native radio group",
+      "result": "pass"
+    },
+    {
+      "name": "Keyboard evidence navigation",
+      "action": "Enter on L2 answer evidence; exact quote highlighted and mark receives focus",
+      "quote": "After reviewing the home videos and the detailed history today, I now diagnose these as functional non-epileptic spells. This reinterpretation applies to the same staring spells from their onset in November, including those described in the January letter.",
+      "result": "pass"
+    },
+    {
+      "name": "All five questions",
+      "patient": "authored_patient_001",
+      "view": "T1_visit",
+      "statuses": {
+        "Q1": "eligible",
+        "Q2": "eligible",
+        "Q3": "indeterminate",
+        "Q4": "ineligible",
+        "Q5": "indeterminate"
+      },
+      "result": "pass"
+    },
+    {
+      "name": "Second index",
+      "patient": "authored_patient_001",
+      "view": "T2_visit",
+      "query": "Q5",
+      "status": "eligible",
+      "window": [
+        "2025-01-16",
+        "2025-07-14"
+      ],
+      "result": "pass"
+    },
+    {
+      "name": "Original extraction failure and explicit recovery",
+      "patient": "authored_patient_005",
+      "view": "T1_visit",
+      "actions": [
+        "select predicted mode",
+        "observe capture failure and permitted letter",
+        "retry retains failure",
+        "select provisional reference facts explicitly",
+        "observe reference-based ineligible Q2"
+      ],
+      "result": "pass"
+    },
+    {
+      "name": "Empty cohort",
+      "actions": [
+        "filter reference mode to extraction unavailable",
+        "observe no matching patients and Show all patients action"
+      ],
+      "result": "pass"
+    },
+    {
+      "name": "Data failure and retry",
+      "actions": [
+        "temporarily rename new artifact catalog locally",
+        "change query",
+        "observe HTTP 503 error UI",
+        "restore catalog",
+        "activate Retry loading with Enter",
+        "observe recovered patient history"
+      ],
+      "restored": true,
+      "result": "pass"
+    },
+    {
+      "name": "Loading",
+      "observation": "Role=status and no previous patient content while query data loads",
+      "result": "pass"
+    },
+    {
+      "name": "Mobile",
+      "observations": [
+        "390px document and viewport widths; no horizontal page overflow",
+        "full fact-source label after layout correction",
+        "same visual and DOM section order",
+        "section anchors and horizontal patient list",
+        "evidence activation focuses and scrolls to exact source text"
+      ],
+      "result": "pass"
+    },
+    {
+      "name": "Console review",
+      "finding": "Two duplicate React-key warnings during initial retrospective inspection; fixed by including evidence end offset in key. No recurrence on subsequent reload/interactions.",
+      "result": "pass"
+    },
+    {
+      "name": "Nullable date bounds",
+      "finding": "A predicted history crashed when an end-bound object contained null dates. Fixed date formatting to preserve unknown and one-sided bounds; added regression cases and all-frame formatting test.",
+      "result": "pass"
+    },
+    {
+      "name": "Complete view matrix",
+      "actions": "Selected both sources, both index schedules, both views and all twelve patients through the browser UI; inspected the rendered Q2 answer in each state.",
+      "rendered_views": 96,
+      "original_failure_views": 4,
+      "new_console_errors": 0,
+      "result": "pass"
+    }
+  ],
+  "limits": [
+    "No representative-user or clinical validation",
+    "No deployment",
+    "One remaining unsupported predicted cohort answer remains visible",
+    "Fresh model execution is not part of the saved-output interface"
+  ]
+}

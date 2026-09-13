@@ -1,0 +1,2119 @@
+{
+  "program_version": "longitudinal-prototype-0.1",
+  "status": "ready",
+  "provenance": {
+    "mode": "saved_model_extraction",
+    "new_model_calls": 0,
+    "query_context_visible_during_extraction": true,
+    "semantic_repair": false,
+    "attempt": {
+      "status": "parsed",
+      "input_sha256": "f186d6785cd43805a8eb4d8d76ee0c75fc2d98a9d76357dfa0e753e4e15f47a8",
+      "rendered_prompt_sha256": "7c4096692f5d324139876d68746663ee8ae2ffcba08a02f8a2d1e5b006bab81e",
+      "model_requested": "gemini-3.8-flash-medium",
+      "effort": "medium",
+      "interface": "agy",
+      "executable_sha256": "2a63488c33221627f1798ff4ccb1d5131b6abe3160286c84b357a7456905f763",
+      "fresh_project": true,
+      "sandbox": true,
+      "tools_requested": false,
+      "started_at": "2026-09-09T23:02:36.261645+00:00",
+      "semantic_repair": false,
+      "provider_cost": null,
+      "human_annotation_minutes": null,
+      "exit_code": 0,
+      "ended_at": "2026-09-09T23:03:32.203848+00:00",
+      "wall_seconds": 55.94332762499107,
+      "telemetry": {
+        "conversation_id": "4e71f61f-e193-4647-a05e-ab79eee85c31",
+        "status": "SUCCESS",
+        "duration_seconds": 53.208725,
+        "num_turns": 1,
+        "usage": {
+          "input_tokens": 25584,
+          "output_tokens": 23418,
+          "thinking_tokens": 17724,
+          "cache_read_tokens": 0,
+          "total_tokens": 49002
+        }
+      },
+      "observed_tool_steps": 0,
+      "tool_catalog_present": true,
+      "isolation_limit": "fresh temporary project; no observed tool steps required; tool catalog remains present and plan mode is ignored by CLI with slash expansion disabled"
+    },
+    "input_sha256": "f186d6785cd43805a8eb4d8d76ee0c75fc2d98a9d76357dfa0e753e4e15f47a8",
+    "attempt_sha256": "cdb5169d5b2f0427ae9c6e7afd58cec608cd9c0a4ec88d80bb4c7a56246f8f3c",
+    "raw_parsed_sha256": "e2d8c5f61e253e97da84436db1c273b62a69c8f7ede8a3c3a65796bc1c2602dc",
+    "raw_stdout_sha256": "1481ae8551a912fca9c56c9c6a6e23002765098782240320598558310aefb87b"
+  },
+  "documents": [
+    {
+      "letter_id": "L1",
+      "version": 2,
+      "visit_date": "2025-03-05",
+      "available_date": "2025-03-05",
+      "path": "letters/L1.txt",
+      "sha256": "fc0d3bf80dbd46071f8e2ed2c102aa63afe9bf5ed715fc16003a578cb45ae855",
+      "text": "Epilepsy clinic letter\nConsultation: 05 March 2025\nPatient: Laura Chen, aged 28\n\nDear colleague,\n\nLaura attended our clinic following referral for episodic paroxysmal sensory symptoms.\n\nShe describes episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025. Her clinical assessment is challenging. The differential diagnosis includes focal sensory epilepsy, migraine aura without headache, or vestibular events. I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate. She takes no anti-seizure medications.\n\nWe arranged brain MRI and routine outpatient EEG. Follow-up in four months.\n\nLaura says she has never lost awareness during her sensory episodes. Her mother reports that Laura did not respond to her voice during the episode on 28 February and believes awareness was lost. Laura disputes this account. I have not resolved this reporter disagreement; neither report settles the epilepsy versus migraine differential.\n"
+    },
+    {
+      "letter_id": "L2",
+      "version": 1,
+      "visit_date": "2025-07-16",
+      "available_date": "2025-07-16",
+      "path": "letters/L2.txt",
+      "sha256": "3b07469ecbf4443e6f7d3c3a5d33f9f6b8bf47d91f5a0fee4c7d861b59b4a28b",
+      "text": "Epilepsy clinic letter\nConsultation: 16 July 2025\nPatient: Laura Chen\n\nDear colleague,\n\nI reviewed Laura today. Her brain MRI was completely normal.\n\nShe continues to experience weekly sensory episodes, with the latest on 10 July 2025. Routine EEG showed non-specific theta slowing without epileptiform discharges. Having reviewed detailed symptom logs, focal aware sensory seizures remain a leading possibility, but migraine aura without headache remains an equally plausible differential. The diagnostic categorization remains uncertain and unresolved.\n\nNo anti-seizure medication commenced. We agreed to arrange prolonged ambulatory EEG monitoring. Follow-up in four months.\n"
+    },
+    {
+      "letter_id": "L3",
+      "version": 1,
+      "visit_date": "2025-11-14",
+      "available_date": "2025-11-14",
+      "path": "letters/L3.txt",
+      "sha256": "b2dca410b6205702e2de4a55a4f7ec7cdaeeb627e13d90affb49044165bf6a84",
+      "text": "Epilepsy clinic letter\nConsultation: 14 November 2025\nPatient: Laura Chen\n\nDear colleague,\n\nLaura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate. Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura.\n\nNo medication changes. Review in six months.\n"
+    }
+  ],
+  "annotations": {
+    "assertions": [
+      {
+        "assertion_id": "A1_L1_seizure_pattern",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 200,
+            "end": 392,
+            "text": "episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "roughly weekly",
+          "start": null,
+          "end": {
+            "earliest": "2025-02-28",
+            "latest": "2025-03-05"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "sensory episodes"
+          ],
+          "kind": "pattern",
+          "interpretation": "uncertain",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "roughly weekly",
+            "count": {
+              "lower": 1.0,
+              "upper": 1.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "A2_L1_diagnosis_uncertain",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 547,
+            "end": 655,
+            "text": "I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "uncertain",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A3_L1_medication_none",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 656,
+            "end": 694,
+            "text": "She takes no anti-seizure medications."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "anti-seizure medications",
+          "status": "not_started",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A4_L1_mri_request",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 696,
+            "end": 745,
+            "text": "We arranged brain MRI and routine outpatient EEG."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "brain MRI",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A5_L1_eeg_request",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 696,
+            "end": 745,
+            "text": "We arranged brain MRI and routine outpatient EEG."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "routine outpatient EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A6_L2_mri_result",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 112,
+            "end": 148,
+            "text": "Her brain MRI was completely normal."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": null,
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "result_available",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "brain MRI",
+          "status": "result",
+          "result": "completely normal",
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A7_L2_seizure_pattern",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 235,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "weekly",
+          "start": null,
+          "end": {
+            "earliest": "2025-07-10",
+            "latest": "2025-07-16"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "sensory episodes"
+          ],
+          "kind": "pattern",
+          "interpretation": "uncertain",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "weekly",
+            "count": {
+              "lower": 1.0,
+              "upper": 1.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A8_L2_eeg_result",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 236,
+            "end": 314,
+            "text": "Routine EEG showed non-specific theta slowing without epileptiform discharges."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "result_available",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "Routine EEG",
+          "status": "result",
+          "result": "non-specific theta slowing without epileptiform discharges",
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A9_L2_diagnosis_uncertain",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 491,
+            "end": 554,
+            "text": "The diagnostic categorization remains uncertain and unresolved."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "uncertain",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A10_L2_medication_none",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 556,
+            "end": 593,
+            "text": "No anti-seizure medication commenced."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "medication",
+          "name": "anti-seizure medication",
+          "status": "not_started",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A11_L2_ambulatory_eeg_request",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 594,
+            "end": 651,
+            "text": "We agreed to arrange prolonged ambulatory EEG monitoring."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "prolonged ambulatory EEG monitoring",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A12_L3_ambulatory_eeg_result",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 92,
+            "end": 230,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-11-14",
+            "latest": "2025-11-14"
+          },
+          "kind": "result_available",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "48-hour ambulatory EEG",
+          "status": "result",
+          "result": "one typical sensory episode occurred without clear electrographic correlate",
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A13_L3_diagnosis_uncertain",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 231,
+            "end": 337,
+            "text": "Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "uncertain",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-11-14",
+            "latest": "2025-11-14"
+          },
+          "end": {
+            "earliest": "2025-11-14",
+            "latest": "2025-11-14"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal sensory seizures",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A14_L3_medication_none",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 339,
+            "end": 361,
+            "text": "No medication changes."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-11-14",
+            "latest": "2025-11-14"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "medication",
+          "name": "anti-seizure medication",
+          "status": "not_started",
+          "condition": null
+        }
+      }
+    ],
+    "links": [
+      {
+        "link_id": "A1_L1_seizure_pattern__A7_L2_seizure_pattern__same_pattern",
+        "earlier_assertion": "A1_L1_seizure_pattern",
+        "later_assertion": "A7_L2_seizure_pattern",
+        "relation": "same_pattern",
+        "certainty": "asserted",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 200,
+            "end": 392,
+            "text": "episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025."
+          },
+          {
+            "letter_id": "L2",
+            "start": 150,
+            "end": 235,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025."
+          }
+        ],
+        "decision_time": null,
+        "rule_id": "link-same-pattern"
+      }
+    ]
+  },
+  "history": [
+    {
+      "assertion_ids": [
+        "A2_L1_diagnosis_uncertain"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A2_L1_diagnosis_uncertain",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 547,
+              "end": 655,
+              "text": "I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "uncertain",
+          "polarity": "negated",
+          "coverage": "not_stated",
+          "time": {
+            "text": "today",
+            "start": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "end": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "diagnosis",
+            "name": "epilepsy",
+            "phase": "current"
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A3_L1_medication_none"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A3_L1_medication_none",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 656,
+              "end": 694,
+              "text": "She takes no anti-seizure medications."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "complete",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "medication",
+            "name": "anti-seizure medications",
+            "status": "not_started",
+            "condition": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A4_L1_mri_request"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A4_L1_mri_request",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 696,
+              "end": 745,
+              "text": "We arranged brain MRI and routine outpatient EEG."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "end": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "kind": "decision",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "brain MRI",
+            "status": "requested",
+            "result": null,
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A5_L1_eeg_request"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A5_L1_eeg_request",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 696,
+              "end": 745,
+              "text": "We arranged brain MRI and routine outpatient EEG."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "end": {
+              "earliest": "2025-03-05",
+              "latest": "2025-03-05"
+            },
+            "kind": "decision",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "routine outpatient EEG",
+            "status": "requested",
+            "result": null,
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A6_L2_mri_result"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A6_L2_mri_result",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 112,
+              "end": 148,
+              "text": "Her brain MRI was completely normal."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": "today",
+            "start": null,
+            "end": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "kind": "result_available",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "brain MRI",
+            "status": "result",
+            "result": "completely normal",
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A8_L2_eeg_result"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A8_L2_eeg_result",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 236,
+              "end": 314,
+              "text": "Routine EEG showed non-specific theta slowing without epileptiform discharges."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "kind": "result_available",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "Routine EEG",
+            "status": "result",
+            "result": "non-specific theta slowing without epileptiform discharges",
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A9_L2_diagnosis_uncertain"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A9_L2_diagnosis_uncertain",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 491,
+              "end": 554,
+              "text": "The diagnostic categorization remains uncertain and unresolved."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "uncertain",
+          "polarity": "negated",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "end": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "diagnosis",
+            "name": "epilepsy",
+            "phase": "current"
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A10_L2_medication_none"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A10_L2_medication_none",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 556,
+              "end": 593,
+              "text": "No anti-seizure medication commenced."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "complete",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "medication",
+            "name": "anti-seizure medication",
+            "status": "not_started",
+            "condition": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A11_L2_ambulatory_eeg_request"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A11_L2_ambulatory_eeg_request",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 594,
+              "end": 651,
+              "text": "We agreed to arrange prolonged ambulatory EEG monitoring."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "end": {
+              "earliest": "2025-07-16",
+              "latest": "2025-07-16"
+            },
+            "kind": "decision",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "prolonged ambulatory EEG monitoring",
+            "status": "requested",
+            "result": null,
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A12_L3_ambulatory_eeg_result"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A12_L3_ambulatory_eeg_result",
+          "letter_id": "L3",
+          "evidence": [
+            {
+              "letter_id": "L3",
+              "start": 92,
+              "end": 230,
+              "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-11-14",
+              "latest": "2025-11-14"
+            },
+            "kind": "result_available",
+            "anchor_letter_id": "L3"
+          },
+          "content": {
+            "family": "investigation",
+            "modality": "48-hour ambulatory EEG",
+            "status": "result",
+            "result": "one typical sensory episode occurred without clear electrographic correlate",
+            "request_count": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A13_L3_diagnosis_uncertain"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A13_L3_diagnosis_uncertain",
+          "letter_id": "L3",
+          "evidence": [
+            {
+              "letter_id": "L3",
+              "start": 231,
+              "end": 337,
+              "text": "Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "uncertain",
+          "polarity": "negated",
+          "coverage": "not_stated",
+          "time": {
+            "text": null,
+            "start": {
+              "earliest": "2025-11-14",
+              "latest": "2025-11-14"
+            },
+            "end": {
+              "earliest": "2025-11-14",
+              "latest": "2025-11-14"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L3"
+          },
+          "content": {
+            "family": "diagnosis",
+            "name": "focal sensory seizures",
+            "phase": "current"
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A14_L3_medication_none"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A14_L3_medication_none",
+          "letter_id": "L3",
+          "evidence": [
+            {
+              "letter_id": "L3",
+              "start": 339,
+              "end": 361,
+              "text": "No medication changes."
+            }
+          ],
+          "reporter": "clinician",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "complete",
+          "time": {
+            "text": null,
+            "start": null,
+            "end": {
+              "earliest": "2025-11-14",
+              "latest": "2025-11-14"
+            },
+            "kind": "as_of",
+            "anchor_letter_id": "L3"
+          },
+          "content": {
+            "family": "medication",
+            "name": "anti-seizure medication",
+            "status": "not_started",
+            "condition": null
+          }
+        }
+      ],
+      "links": []
+    },
+    {
+      "assertion_ids": [
+        "A1_L1_seizure_pattern",
+        "A7_L2_seizure_pattern"
+      ],
+      "accounts": [
+        {
+          "assertion_id": "A1_L1_seizure_pattern",
+          "letter_id": "L1",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 200,
+              "end": 392,
+              "text": "episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": "roughly weekly",
+            "start": null,
+            "end": {
+              "earliest": "2025-02-28",
+              "latest": "2025-03-05"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L1"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "sensory episodes"
+            ],
+            "kind": "pattern",
+            "interpretation": "uncertain",
+            "scope": "named_pattern",
+            "burden": {
+              "kind": "rate",
+              "text": "roughly weekly",
+              "count": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "period": {
+                "amount": {
+                  "lower": 1.0,
+                  "upper": 1.0
+                },
+                "unit": "week"
+              },
+              "events_per_cluster": null,
+              "approximate": true
+            }
+          }
+        },
+        {
+          "assertion_id": "A7_L2_seizure_pattern",
+          "letter_id": "L2",
+          "evidence": [
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 235,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025."
+            }
+          ],
+          "reporter": "patient",
+          "certainty": "asserted",
+          "polarity": "affirmed",
+          "coverage": "not_stated",
+          "time": {
+            "text": "weekly",
+            "start": null,
+            "end": {
+              "earliest": "2025-07-10",
+              "latest": "2025-07-16"
+            },
+            "kind": "active_interval",
+            "anchor_letter_id": "L2"
+          },
+          "content": {
+            "family": "seizure",
+            "names": [
+              "sensory episodes"
+            ],
+            "kind": "pattern",
+            "interpretation": "uncertain",
+            "scope": "named_pattern",
+            "burden": {
+              "kind": "rate",
+              "text": "weekly",
+              "count": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "period": {
+                "amount": {
+                  "lower": 1.0,
+                  "upper": 1.0
+                },
+                "unit": "week"
+              },
+              "events_per_cluster": null,
+              "approximate": false
+            }
+          }
+        }
+      ],
+      "links": [
+        {
+          "link_id": "A1_L1_seizure_pattern__A7_L2_seizure_pattern__same_pattern",
+          "earlier_assertion": "A1_L1_seizure_pattern",
+          "later_assertion": "A7_L2_seizure_pattern",
+          "relation": "same_pattern",
+          "certainty": "asserted",
+          "evidence": [
+            {
+              "letter_id": "L1",
+              "start": 200,
+              "end": 392,
+              "text": "episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025."
+            },
+            {
+              "letter_id": "L2",
+              "start": 150,
+              "end": 235,
+              "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025."
+            }
+          ],
+          "decision_time": null,
+          "rule_id": "link-same-pattern"
+        }
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "request_id": "T2_retrospective_Q1",
+      "query_id": "Q1",
+      "parameters": {},
+      "index_date": "2025-09-01",
+      "view": "retrospective",
+      "information_cutoff": "2026-02-28",
+      "retrospective_cutoff": "2026-02-28",
+      "lookback_90_start": "2025-06-04",
+      "lookback_180_start": "2025-03-06",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "query_id": "Q2",
+      "parameters": {},
+      "index_date": "2025-09-01",
+      "view": "retrospective",
+      "information_cutoff": "2026-02-28",
+      "retrospective_cutoff": "2026-02-28",
+      "lookback_90_start": "2025-06-04",
+      "lookback_180_start": "2025-03-06",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "query_id": "Q3",
+      "parameters": {
+        "medication": "lamotrigine"
+      },
+      "index_date": "2025-09-01",
+      "view": "retrospective",
+      "information_cutoff": "2026-02-28",
+      "retrospective_cutoff": "2026-02-28",
+      "lookback_90_start": "2025-06-04",
+      "lookback_180_start": "2025-03-06",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "query_id": "Q4",
+      "parameters": {
+        "modality": "EEG"
+      },
+      "index_date": "2025-09-01",
+      "view": "retrospective",
+      "information_cutoff": "2026-02-28",
+      "retrospective_cutoff": "2026-02-28",
+      "lookback_90_start": "2025-06-04",
+      "lookback_180_start": "2025-03-06",
+      "input_path": "inputs/T2_retrospective.json"
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "query_id": "Q5",
+      "parameters": {},
+      "index_date": "2025-09-01",
+      "view": "retrospective",
+      "information_cutoff": "2026-02-28",
+      "retrospective_cutoff": "2026-02-28",
+      "lookback_90_start": "2025-06-04",
+      "lookback_180_start": "2025-03-06",
+      "input_path": "inputs/T2_retrospective.json"
+    }
+  ],
+  "answers": [
+    {
+      "request_id": "T2_retrospective_Q1",
+      "query_id": "Q1",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q2",
+      "query_id": "Q2",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q3",
+      "query_id": "Q3",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q4",
+      "query_id": "Q4",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    },
+    {
+      "request_id": "T2_retrospective_Q5",
+      "query_id": "Q5",
+      "status": "indeterminate",
+      "reason": "The available evidence does not establish eligibility or a complete exclusion.",
+      "witnesses": [],
+      "negative_witnesses": [],
+      "evidence": [],
+      "rule_ids": [],
+      "conflicted_assertion_ids": []
+    }
+  ],
+  "offset_repairs": [
+    {
+      "path": "/assertions/0/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 199,
+        "end": 392,
+        "text": "episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 200,
+        "end": 392,
+        "text": "episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025."
+      }
+    },
+    {
+      "path": "/assertions/1/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 546,
+        "end": 654,
+        "text": "I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 547,
+        "end": 655,
+        "text": "I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate."
+      }
+    },
+    {
+      "path": "/assertions/2/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 655,
+        "end": 693,
+        "text": "She takes no anti-seizure medications."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 656,
+        "end": 694,
+        "text": "She takes no anti-seizure medications."
+      }
+    },
+    {
+      "path": "/assertions/3/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 695,
+        "end": 744,
+        "text": "We arranged brain MRI and routine outpatient EEG."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 696,
+        "end": 745,
+        "text": "We arranged brain MRI and routine outpatient EEG."
+      }
+    },
+    {
+      "path": "/assertions/4/evidence/0",
+      "before": {
+        "letter_id": "L1",
+        "start": 695,
+        "end": 744,
+        "text": "We arranged brain MRI and routine outpatient EEG."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L1",
+        "start": 696,
+        "end": 745,
+        "text": "We arranged brain MRI and routine outpatient EEG."
+      }
+    },
+    {
+      "path": "/assertions/5/evidence/0",
+      "before": {
+        "letter_id": "L2",
+        "start": 113,
+        "end": 149,
+        "text": "Her brain MRI was completely normal."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L2",
+        "start": 112,
+        "end": 148,
+        "text": "Her brain MRI was completely normal."
+      }
+    },
+    {
+      "path": "/assertions/6/evidence/0",
+      "before": {
+        "letter_id": "L2",
+        "start": 151,
+        "end": 236,
+        "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L2",
+        "start": 150,
+        "end": 235,
+        "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025."
+      }
+    },
+    {
+      "path": "/assertions/7/evidence/0",
+      "before": {
+        "letter_id": "L2",
+        "start": 237,
+        "end": 315,
+        "text": "Routine EEG showed non-specific theta slowing without epileptiform discharges."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L2",
+        "start": 236,
+        "end": 314,
+        "text": "Routine EEG showed non-specific theta slowing without epileptiform discharges."
+      }
+    },
+    {
+      "path": "/assertions/8/evidence/0",
+      "before": {
+        "letter_id": "L2",
+        "start": 498,
+        "end": 561,
+        "text": "The diagnostic categorization remains uncertain and unresolved."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L2",
+        "start": 491,
+        "end": 554,
+        "text": "The diagnostic categorization remains uncertain and unresolved."
+      }
+    },
+    {
+      "path": "/assertions/9/evidence/0",
+      "before": {
+        "letter_id": "L2",
+        "start": 563,
+        "end": 600,
+        "text": "No anti-seizure medication commenced."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L2",
+        "start": 556,
+        "end": 593,
+        "text": "No anti-seizure medication commenced."
+      }
+    },
+    {
+      "path": "/assertions/10/evidence/0",
+      "before": {
+        "letter_id": "L2",
+        "start": 601,
+        "end": 658,
+        "text": "We agreed to arrange prolonged ambulatory EEG monitoring."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L2",
+        "start": 594,
+        "end": 651,
+        "text": "We agreed to arrange prolonged ambulatory EEG monitoring."
+      }
+    },
+    {
+      "path": "/assertions/11/evidence/0",
+      "before": {
+        "letter_id": "L3",
+        "start": 93,
+        "end": 231,
+        "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L3",
+        "start": 92,
+        "end": 230,
+        "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate."
+      }
+    },
+    {
+      "path": "/assertions/12/evidence/0",
+      "before": {
+        "letter_id": "L3",
+        "start": 232,
+        "end": 338,
+        "text": "Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L3",
+        "start": 231,
+        "end": 337,
+        "text": "Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+      }
+    },
+    {
+      "path": "/assertions/13/evidence/0",
+      "before": {
+        "letter_id": "L3",
+        "start": 340,
+        "end": 362,
+        "text": "No medication changes."
+      },
+      "rule": "exact-offset",
+      "after": {
+        "letter_id": "L3",
+        "start": 339,
+        "end": 361,
+        "text": "No medication changes."
+      }
+    }
+  ],
+  "raw_extraction": {
+    "assertions": [
+      {
+        "assertion_id": "A1_L1_seizure_pattern",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 199,
+            "end": 392,
+            "text": "episodes of sudden visual scintillations followed by dizziness and paresthesia in the left hand lasting 10 to 15 minutes, occurring roughly weekly, with the latest episode on 28 February 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "roughly weekly",
+          "start": null,
+          "end": {
+            "earliest": "2025-02-28",
+            "latest": "2025-03-05"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "sensory episodes"
+          ],
+          "kind": "pattern",
+          "interpretation": "uncertain",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "roughly weekly",
+            "count": {
+              "lower": 1.0,
+              "upper": 1.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": true
+          }
+        }
+      },
+      {
+        "assertion_id": "A2_L1_diagnosis_uncertain",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 546,
+            "end": 654,
+            "text": "I cannot establish a definitive diagnosis of epilepsy today, and the clinical picture remains indeterminate."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "uncertain",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A3_L1_medication_none",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 655,
+            "end": 693,
+            "text": "She takes no anti-seizure medications."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "medication",
+          "name": "anti-seizure medications",
+          "status": "not_started",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A4_L1_mri_request",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 695,
+            "end": 744,
+            "text": "We arranged brain MRI and routine outpatient EEG."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "brain MRI",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A5_L1_eeg_request",
+        "letter_id": "L1",
+        "evidence": [
+          {
+            "letter_id": "L1",
+            "start": 695,
+            "end": 744,
+            "text": "We arranged brain MRI and routine outpatient EEG."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "end": {
+            "earliest": "2025-03-05",
+            "latest": "2025-03-05"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L1"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "routine outpatient EEG",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A6_L2_mri_result",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 113,
+            "end": 149,
+            "text": "Her brain MRI was completely normal."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "today",
+          "start": null,
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "result_available",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "brain MRI",
+          "status": "result",
+          "result": "completely normal",
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A7_L2_seizure_pattern",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 151,
+            "end": 236,
+            "text": "She continues to experience weekly sensory episodes, with the latest on 10 July 2025."
+          }
+        ],
+        "reporter": "patient",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": "weekly",
+          "start": null,
+          "end": {
+            "earliest": "2025-07-10",
+            "latest": "2025-07-16"
+          },
+          "kind": "active_interval",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "seizure",
+          "names": [
+            "sensory episodes"
+          ],
+          "kind": "pattern",
+          "interpretation": "uncertain",
+          "scope": "named_pattern",
+          "burden": {
+            "kind": "rate",
+            "text": "weekly",
+            "count": {
+              "lower": 1.0,
+              "upper": 1.0
+            },
+            "period": {
+              "amount": {
+                "lower": 1.0,
+                "upper": 1.0
+              },
+              "unit": "week"
+            },
+            "events_per_cluster": null,
+            "approximate": false
+          }
+        }
+      },
+      {
+        "assertion_id": "A8_L2_eeg_result",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 237,
+            "end": 315,
+            "text": "Routine EEG showed non-specific theta slowing without epileptiform discharges."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "result_available",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "Routine EEG",
+          "status": "result",
+          "result": "non-specific theta slowing without epileptiform discharges",
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A9_L2_diagnosis_uncertain",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 498,
+            "end": 561,
+            "text": "The diagnostic categorization remains uncertain and unresolved."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "uncertain",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "epilepsy",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A10_L2_medication_none",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 563,
+            "end": 600,
+            "text": "No anti-seizure medication commenced."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "medication",
+          "name": "anti-seizure medication",
+          "status": "not_started",
+          "condition": null
+        }
+      },
+      {
+        "assertion_id": "A11_L2_ambulatory_eeg_request",
+        "letter_id": "L2",
+        "evidence": [
+          {
+            "letter_id": "L2",
+            "start": 601,
+            "end": 658,
+            "text": "We agreed to arrange prolonged ambulatory EEG monitoring."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "end": {
+            "earliest": "2025-07-16",
+            "latest": "2025-07-16"
+          },
+          "kind": "decision",
+          "anchor_letter_id": "L2"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "prolonged ambulatory EEG monitoring",
+          "status": "requested",
+          "result": null,
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A12_L3_ambulatory_eeg_result",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 93,
+            "end": 231,
+            "text": "Laura was seen following 48-hour ambulatory EEG, during which one typical sensory episode occurred without clear electrographic correlate."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-11-14",
+            "latest": "2025-11-14"
+          },
+          "kind": "result_available",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "investigation",
+          "modality": "48-hour ambulatory EEG",
+          "status": "result",
+          "result": "one typical sensory episode occurred without clear electrographic correlate",
+          "request_count": null
+        }
+      },
+      {
+        "assertion_id": "A13_L3_diagnosis_uncertain",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 232,
+            "end": 338,
+            "text": "Diagnostic classification remains formally indeterminate between focal sensory seizures and migraine aura."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "uncertain",
+        "polarity": "negated",
+        "coverage": "not_stated",
+        "time": {
+          "text": null,
+          "start": {
+            "earliest": "2025-11-14",
+            "latest": "2025-11-14"
+          },
+          "end": {
+            "earliest": "2025-11-14",
+            "latest": "2025-11-14"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "diagnosis",
+          "name": "focal sensory seizures",
+          "phase": "current"
+        }
+      },
+      {
+        "assertion_id": "A14_L3_medication_none",
+        "letter_id": "L3",
+        "evidence": [
+          {
+            "letter_id": "L3",
+            "start": 340,
+            "end": 362,
+            "text": "No medication changes."
+          }
+        ],
+        "reporter": "clinician",
+        "certainty": "asserted",
+        "polarity": "affirmed",
+        "coverage": "complete",
+        "time": {
+          "text": null,
+          "start": null,
+          "end": {
+            "earliest": "2025-11-14",
+            "latest": "2025-11-14"
+          },
+          "kind": "as_of",
+          "anchor_letter_id": "L3"
+        },
+        "content": {
+          "family": "medication",
+          "name": "anti-seizure medication",
+          "status": "not_started",
+          "condition": null
+        }
+      }
+    ],
+    "links": []
+  }
+}

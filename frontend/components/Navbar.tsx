@@ -51,6 +51,8 @@ export default function Navbar() {
         >
           <Link href="/demo" className="inline-flex min-h-7 shrink-0 items-center rounded-md px-2.5 py-1 text-xs font-medium text-deterministic hover:bg-deterministic/10">Demo</Link>
           <Link href="/demo#introduction" className="inline-flex min-h-7 shrink-0 items-center rounded-md px-2.5 py-1 text-xs text-muted hover:bg-surface-raised">About the research</Link>
+          <Link href="/longitudinal" aria-current={pathname.startsWith("/longitudinal") ? "page" : undefined}
+            className={`inline-flex min-h-7 shrink-0 items-center rounded-md px-2.5 py-1 text-xs font-medium ${pathname.startsWith("/longitudinal") ? "bg-deterministic/10 text-deterministic" : "text-muted hover:bg-surface-raised"}`}>Longitudinal</Link>
           {APP_DESTINATIONS.map((destination) => {
             const active = pathname === destination.href || activeDestination?.href === destination.href;
             const Icon = destination.Icon;
@@ -73,7 +75,9 @@ export default function Navbar() {
         </nav>
 
         <div className="shrink-0 border-l border-border pl-2">
-          {activeDestination?.scope === "exectv2" ? (
+          {pathname.startsWith("/longitudinal") ? (
+            <ScopeBadge label="Synthetic longitudinal" />
+          ) : activeDestination?.scope === "exectv2" ? (
             <ScopeBadge label="ExECTv2" />
           ) : (
             <DatasetSwitcher />
