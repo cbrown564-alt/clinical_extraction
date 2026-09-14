@@ -1,0 +1,7 @@
+{
+  "current_sha256": "cc3bdf5df6680ae964995a0a072c5c3b135789d952a84347b5eff39fba0e3799",
+  "pre_migration_sha256": "cc3bdf5df6680ae964995a0a072c5c3b135789d952a84347b5eff39fba0e3799",
+  "byte_identical": true,
+  "pre_migration_source": "scratch/reconstruction-2026-09-13/before/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/prompt_llm_extract_encode_select.py",
+  "historical_protocol": "scratch/reconstruction-2026-09-13/before/docs/research/gan2026/gan_extract_encode_select_deepseek_v41_test450_protocol_2026-09-10.md"
+}
