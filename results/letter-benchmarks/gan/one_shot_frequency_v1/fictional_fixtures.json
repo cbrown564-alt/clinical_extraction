@@ -1,0 +1,155 @@
+[
+  {
+    "name": "numeric",
+    "note_text": "She currently has two seizures per month.",
+    "output": {
+      "answer": {
+        "label": "2 per month",
+        "evidence": "She currently has two seizures per month."
+      },
+      "findings": [
+        {
+          "finding_id": "f1",
+          "kind": "frequency_rate",
+          "raw_value": "She currently has two seizures per month.",
+          "seizure_type": "seizures",
+          "time_window": null,
+          "temporality": "current",
+          "certainty": "asserted",
+          "negated": false,
+          "evidence": "She currently has two seizures per month."
+        }
+      ],
+      "selected_finding_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "uncertain",
+    "note_text": "Possible seizures continue, but their frequency is unclear.",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Possible seizures continue, but their frequency is unclear."
+      },
+      "findings": [
+        {
+          "finding_id": "f1",
+          "kind": "unknown_frequency",
+          "raw_value": "Possible seizures continue, but their frequency is unclear.",
+          "seizure_type": "seizures",
+          "time_window": null,
+          "temporality": "current",
+          "certainty": "uncertain",
+          "negated": false,
+          "evidence": "Possible seizures continue, but their frequency is unclear."
+        }
+      ],
+      "selected_finding_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "seizure_free",
+    "note_text": "She has had no seizures for six months.",
+    "output": {
+      "answer": {
+        "label": "seizure free for 6 months",
+        "evidence": "She has had no seizures for six months."
+      },
+      "findings": [
+        {
+          "finding_id": "f1",
+          "kind": "seizure_free",
+          "raw_value": "She has had no seizures for six months.",
+          "seizure_type": "seizures",
+          "time_window": null,
+          "temporality": "current",
+          "certainty": "asserted",
+          "negated": true,
+          "evidence": "She has had no seizures for six months."
+        }
+      ],
+      "selected_finding_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "cluster",
+    "note_text": "She has one cluster per week, with three seizures per cluster.",
+    "output": {
+      "answer": {
+        "label": "1 cluster per week, 3 per cluster",
+        "evidence": "She has one cluster per week, with three seizures per cluster."
+      },
+      "findings": [
+        {
+          "finding_id": "f1",
+          "kind": "cluster_frequency",
+          "raw_value": "She has one cluster per week, with three seizures per cluster.",
+          "seizure_type": "seizures",
+          "time_window": null,
+          "temporality": "current",
+          "certainty": "asserted",
+          "negated": false,
+          "evidence": "She has one cluster per week, with three seizures per cluster."
+        }
+      ],
+      "selected_finding_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "multiple_statements",
+    "note_text": "Previously she had one seizure per day. Now she has two seizures per month.",
+    "output": {
+      "answer": {
+        "label": "2 per month",
+        "evidence": "Now she has two seizures per month."
+      },
+      "findings": [
+        {
+          "finding_id": "f1",
+          "kind": "frequency_rate",
+          "raw_value": "one seizure per day",
+          "seizure_type": "seizures",
+          "time_window": null,
+          "temporality": "historical",
+          "certainty": "asserted",
+          "negated": false,
+          "evidence": "Previously she had one seizure per day."
+        },
+        {
+          "finding_id": "f2",
+          "kind": "frequency_rate",
+          "raw_value": "two seizures per month",
+          "seizure_type": "seizures",
+          "time_window": null,
+          "temporality": "current",
+          "certainty": "asserted",
+          "negated": false,
+          "evidence": "Now she has two seizures per month."
+        }
+      ],
+      "selected_finding_ids": [
+        "f2"
+      ]
+    }
+  },
+  {
+    "name": "no_reference",
+    "note_text": "Blood pressure was checked today.",
+    "output": {
+      "answer": {
+        "label": "no seizure frequency reference",
+        "evidence": null
+      },
+      "findings": [],
+      "selected_finding_ids": []
+    }
+  }
+]

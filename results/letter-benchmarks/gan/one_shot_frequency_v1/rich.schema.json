@@ -1,0 +1,143 @@
+{
+  "$defs": {
+    "Answer": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Evidence"
+        }
+      },
+      "required": [
+        "label",
+        "evidence"
+      ],
+      "title": "Answer",
+      "type": "object"
+    },
+    "Finding": {
+      "additionalProperties": false,
+      "properties": {
+        "finding_id": {
+          "title": "Finding Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "frequency_rate",
+            "cluster_frequency",
+            "seizure_free",
+            "last_event_only",
+            "unknown_frequency"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "raw_value": {
+          "title": "Raw Value",
+          "type": "string"
+        },
+        "seizure_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Seizure Type"
+        },
+        "time_window": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Time Window"
+        },
+        "temporality": {
+          "enum": [
+            "current",
+            "recent",
+            "historical",
+            "future",
+            "unclear"
+          ],
+          "title": "Temporality",
+          "type": "string"
+        },
+        "certainty": {
+          "enum": [
+            "asserted",
+            "uncertain"
+          ],
+          "title": "Certainty",
+          "type": "string"
+        },
+        "negated": {
+          "title": "Negated",
+          "type": "boolean"
+        },
+        "evidence": {
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "finding_id",
+        "kind",
+        "raw_value",
+        "seizure_type",
+        "time_window",
+        "temporality",
+        "certainty",
+        "negated",
+        "evidence"
+      ],
+      "title": "Finding",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "answer": {
+      "$ref": "#/$defs/Answer"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/Finding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "selected_finding_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Selected Finding Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "answer",
+    "findings",
+    "selected_finding_ids"
+  ],
+  "title": "Rich",
+  "type": "object"
+}

@@ -1,0 +1,10 @@
+{
+  "offline_replay_identical": true,
+  "attempt_ledger_unchanged": true,
+  "aggregate_sha256": "7d41759167ec32631a05c753b80f988821cad377d2790c1f859e2c6bf19bf43f",
+  "attempt_ledger_sha256": "0f27d9eb3a8d0967a57c69d598cf87b523ec8a5cb7a815fc3475c21433492caa",
+  "always_on_pytest_passed": 828,
+  "ruff_src_tests": "passed",
+  "mypy_src": "passed (413 source files)",
+  "local_cli_loopback": "passed; fictional stub only"
+}

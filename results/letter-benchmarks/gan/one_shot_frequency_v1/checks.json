@@ -1,0 +1,299 @@
+[
+  {
+    "case": "numeric",
+    "condition": "rich",
+    "result": {
+      "received": true,
+      "schema_valid": true,
+      "failure": null,
+      "label": "2 per month",
+      "categories": {
+        "purist": "seizure_freq_more1mon_less1week",
+        "pragmatic": "seizure_frequent"
+      },
+      "quote_slots": 2,
+      "exact_quotes": 2,
+      "all_quotes_exact": true,
+      "no_evidence_state": false,
+      "finding_count": 1,
+      "finding_types": [
+        "frequency_rate"
+      ],
+      "finding_certainties": [
+        "asserted"
+      ],
+      "finding_temporalities": [
+        "current"
+      ]
+    }
+  },
+  {
+    "case": "numeric",
+    "condition": "simple",
+    "result": {
+      "received": true,
+      "schema_valid": true,
+      "failure": null,
+      "label": "2 per month",
+      "categories": {
+        "purist": "seizure_freq_more1mon_less1week",
+        "pragmatic": "seizure_frequent"
+      },
+      "quote_slots": 1,
+      "exact_quotes": 1,
+      "all_quotes_exact": true,
+      "no_evidence_state": false,
+      "finding_count": null,
+      "finding_types": [],
+      "finding_certainties": [],
+      "finding_temporalities": []
+    }
+  },
+  {
+    "case": "uncertain",
+    "condition": "rich",
+    "result": {
+      "received": true,
+      "schema_valid": true,
+      "failure": null,
+      "label": "unknown",
+      "categories": {
+        "purist": "seizure_freq_unknown",
+        "pragmatic": "seizure_freq_unknown"
+      },
+      "quote_slots": 2,
+      "exact_quotes": 2,
+      "all_quotes_exact": true,
+      "no_evidence_state": false,
+      "finding_count": 1,
+      "finding_types": [
+        "unknown_frequency"
+      ],
+      "finding_certainties": [
+        "uncertain"
+      ],
+      "finding_temporalities": [
+        "current"
+      ]
+    }
+  },
+  {
+    "case": "uncertain",
+    "condition": "simple",
+    "result": {
+      "received": true,
+      "schema_valid": true,
+      "failure": null,
+      "label": "unknown",
+      "categories": {
+        "purist": "seizure_freq_unknown",
+        "pragmatic": "seizure_freq_unknown"
+      },
+      "quote_slots": 1,
+      "exact_quotes": 1,
+      "all_quotes_exact": true,
+      "no_evidence_state": false,
+      "finding_count": null,
+      "finding_types": [],
+      "finding_certainties": [],
+      "finding_temporalities": []
+    }
+  },
+  {
+    "case": "seizure_free",
+    "condition": "rich",
+    "result": {
+      "received": true,
+      "schema_valid": true,
+      "failure": null,
+      "label": "seizure free for 6 months",
+      "categories": {
+        "purist": "currently_no_seizure",
+        "pragmatic": "currently_no_seizure"
+      },
+      "quote_slots": 2,
+      "exact_quotes": 2,
+      "all_quotes_exact": true,
+      "no_evidence_state": false,
+      "finding_count": 1,
+      "finding_types": [
+        "seizure_free"
+      ],
+      "finding_certainties": [
+        "asserted"
+      ],
+      "finding_temporalities": [
+        "current"
+      ]
+    }
+  },
+  {
+    "case": "seizure_free",
+    "condition": "simple",
+    "result": {
+      "received": true,
+      "schema_valid": true,
+      "failure": null,
+      "label": "seizure free for 6 months",
+      "categories": {
+        "purist": "currently_no_seizure",
+        "pragmatic": "currently_no_seizure"
+      },
+      "quote_slots": 1,
+      "exact_quotes": 1,
+      "all_quotes_exact": true,
+      "no_evidence_state": false,
+      "finding_count": null,
+      "finding_types": [],
+      "finding_certainties": [],
+      "finding_temporalities": []
+    }
+  },
+  {
+    "case": "cluster",
+    "condition": "rich",
+    "result": {
+      "received": true,
+      "schema_valid": true,
+      "failure": null,
+      "label": "1 cluster per week, 3 per cluster",
+      "categories": {
+        "purist": "seizure_freq_more1week_less1day",
+        "pragmatic": "seizure_frequent"
+      },
+      "quote_slots": 2,
+      "exact_quotes": 2,
+      "all_quotes_exact": true,
+      "no_evidence_state": false,
+      "finding_count": 1,
+      "finding_types": [
+        "cluster_frequency"
+      ],
+      "finding_certainties": [
+        "asserted"
+      ],
+      "finding_temporalities": [
+        "current"
+      ]
+    }
+  },
+  {
+    "case": "cluster",
+    "condition": "simple",
+    "result": {
+      "received": true,
+      "schema_valid": true,
+      "failure": null,
+      "label": "1 cluster per week, 3 per cluster",
+      "categories": {
+        "purist": "seizure_freq_more1week_less1day",
+        "pragmatic": "seizure_frequent"
+      },
+      "quote_slots": 1,
+      "exact_quotes": 1,
+      "all_quotes_exact": true,
+      "no_evidence_state": false,
+      "finding_count": null,
+      "finding_types": [],
+      "finding_certainties": [],
+      "finding_temporalities": []
+    }
+  },
+  {
+    "case": "multiple_statements",
+    "condition": "rich",
+    "result": {
+      "received": true,
+      "schema_valid": true,
+      "failure": null,
+      "label": "2 per month",
+      "categories": {
+        "purist": "seizure_freq_more1mon_less1week",
+        "pragmatic": "seizure_frequent"
+      },
+      "quote_slots": 3,
+      "exact_quotes": 3,
+      "all_quotes_exact": true,
+      "no_evidence_state": false,
+      "finding_count": 2,
+      "finding_types": [
+        "frequency_rate",
+        "frequency_rate"
+      ],
+      "finding_certainties": [
+        "asserted",
+        "asserted"
+      ],
+      "finding_temporalities": [
+        "historical",
+        "current"
+      ]
+    }
+  },
+  {
+    "case": "multiple_statements",
+    "condition": "simple",
+    "result": {
+      "received": true,
+      "schema_valid": true,
+      "failure": null,
+      "label": "2 per month",
+      "categories": {
+        "purist": "seizure_freq_more1mon_less1week",
+        "pragmatic": "seizure_frequent"
+      },
+      "quote_slots": 1,
+      "exact_quotes": 1,
+      "all_quotes_exact": true,
+      "no_evidence_state": false,
+      "finding_count": null,
+      "finding_types": [],
+      "finding_certainties": [],
+      "finding_temporalities": []
+    }
+  },
+  {
+    "case": "no_reference",
+    "condition": "rich",
+    "result": {
+      "received": true,
+      "schema_valid": true,
+      "failure": null,
+      "label": "no seizure frequency reference",
+      "categories": {
+        "purist": "seizure_freq_unknown",
+        "pragmatic": "seizure_freq_unknown"
+      },
+      "quote_slots": 0,
+      "exact_quotes": 0,
+      "all_quotes_exact": false,
+      "no_evidence_state": true,
+      "finding_count": 0,
+      "finding_types": [],
+      "finding_certainties": [],
+      "finding_temporalities": []
+    }
+  },
+  {
+    "case": "no_reference",
+    "condition": "simple",
+    "result": {
+      "received": true,
+      "schema_valid": true,
+      "failure": null,
+      "label": "no seizure frequency reference",
+      "categories": {
+        "purist": "seizure_freq_unknown",
+        "pragmatic": "seizure_freq_unknown"
+      },
+      "quote_slots": 0,
+      "exact_quotes": 0,
+      "all_quotes_exact": false,
+      "no_evidence_state": true,
+      "finding_count": null,
+      "finding_types": [],
+      "finding_certainties": [],
+      "finding_temporalities": []
+    }
+  }
+]
