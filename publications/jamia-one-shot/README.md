@@ -8,6 +8,40 @@ owns future comparison conditions, permissions, unresolved execution decisions,
 thresholds and safeguards. The completed two-stage dissertation remains separately
 owned under [dissertation materials](../dissertation/README.md).
 
+## Current annotation and scope decision (2026-09-14)
+
+The next major research step is to define and apply source-first seizure-finding
+annotation guidelines across dev750. Codex writes the guide, Conor obtains Gemini
+annotations, and Codex reviews them. This replaces the earlier plan to leave the
+richer inventory unevaluated: the intended outcomes now include finding correctness
+and completeness alongside the original selected-label task. Development annotation
+is not independent clinical validation; results remain pending until the reference
+and matching rules are reviewed.
+
+First complete the authorised 600-second reruns of r4/r5 timeouts, keeping the
+original conditions and first-attempt results intact. Make minimal demonstrated
+representation corrections in a separate candidate, then review disagreements.
+Measure time per letter; a separate completion-reliability programme is not a
+priority. If seizure annotation works well, extend to medications, diagnoses and
+investigations and test whether all-four-family extraction harms the original
+frequency-label endpoint. Conor then plans to share the reviewed materials with
+Yujian Gan and explore clinical annotation of real letters by the King's team.
+Participation, permissions and real finding references are not yet established.
+The evaluation protocol owns guidelines, matching, rerun accounting and freezes;
+the roadmap owns sequencing. This outline owns how those findings enter the paper.
+
+## Execution scope update (2026-09-13)
+
+Conor confirmed DeepSeek API evaluation on synthetic notes within a total US$10
+budget, supplementary Dell XPS 15 runs, and collaborator-managed local DeepSeek
+cluster execution on real patient data. Two patient runs are planned: the
+single-label frequency condition and a separate extension across several clinical
+families. The evaluation protocol owns the extension's pending field definitions,
+reference availability and analysis. The exhibits below describe the core frequency
+study; extend them only after that scope is fixed. The Gan single-label reference
+does not establish correctness of additional clinical-family outputs. Written
+real-data permission remains pending.
+
 ## Paper in one paragraph
 
 This paper tests whether a sufficiently capable current model can return, in one
@@ -53,11 +87,11 @@ evaluation if use is authorised under the protocol. Pragmatic scoring is a compa
 outcome.
 
 The reference does not gold-label a complete inventory of seizure-frequency facts.
-The additional findings and quotations therefore require no new full
-assertion-level annotation: report their exactness, schema validity, count and type
-as contract evidence or descriptive output, not as a new gold-scored fact benchmark.
-Do not infer clinical validity for every emitted finding from an exact substring
-match.
+The planned source-first dev750 annotation supplies a separate reference for
+finding correctness and completeness. Until reviewed annotation and matching are
+available, report exactness, schema validity, count and type descriptively. Real
+finding claims require the separately agreed clinical reference. An exact substring
+match does not establish clinical validity.
 
 The primary task result is all-note agreement with the existing real-letter expert
 label. Schema-invalid or otherwise unusable responses remain failures in that task
@@ -87,6 +121,8 @@ laptop results are optional execution context, not a clinical deployment result.
 | --- | --- | --- |
 | Can the rich one-call contract retain the established seizure-frequency task outcome on real letters? | All-note agreement with the existing expert-selected label on real Gan 300, scored natively with Purist; Pragmatic companion score; unusable responses included. | The primary clinical-task claim is limited to the authorised reference, cohort and stated exposure history. |
 | Does asking for a rich evidence record harm the established task outcome? | Matched rich-contract versus simple-label-with-evidence comparison on permitted Gan notes. | This changes the requested extraction scope and output together. It is not a pure schema-only ablation. |
+| Are the richer findings correct and complete? | Reviewed source-first seizure inventories on dev750; later four-family and real annotations if obtained; whole-finding and attribute-level analysis under the protocol. | Gemini/Codex-reviewed development annotations are not independent clinical validation; the selected-label reference cannot score the inventory. |
+| Does expanding extraction to four families harm the original frequency task? | Frozen paired seizure-only versus four-family comparison after the annotation approach is proved. | Additional-family accuracy requires the corresponding reviewed references; no broader-scope result is yet available. |
 | Is the contract reliably produced and visibly inspectable? | First-pass schema validity; exact-source evidence rate; separately reported format repair, unparsed and unusable failures; descriptive retained-finding counts and types. | Exact spans locate text but do not establish clinical correctness, inventory completeness or entailment. |
 | Can the method be configured without retraining or hyperparameter changes? | One compact worked configuration with explicit component edits and retained execution structure. | This demonstrates a technical property, not clinician usability, reduced expertise or predictable control. |
 | Does capability matter? | A prespecified model panel, if run under the protocol, with the same contract and visible failures. | Results distinguish the tested model/runtime condition from prompt or schema effects and do not generalise to LLMs as a class. |
@@ -153,6 +189,34 @@ outside the core paper.
 | Results: reliability and capability | Report first-pass schema validity, source-quote exactness, repair/unparsed failure paths, descriptive findings, runtime and any model panel. | Separate exact-span validity from clinical support; distinguish model capability from contract design. |
 | Results: configuration | Present one compact configuration map and descriptive native reference check. | Demonstrates editable task components without retraining; it does not establish clinician usability or reduced expertise. |
 | Discussion | Explain the contribution for evidence-grounded clinical extraction and bounded research/database use. | Discuss annotation limits, synthetic/real differences, prior exposure, local-execution limits, non-deployment and the need for future clinical or usability studies. |
+
+## Active schema revision (2026-09-14)
+
+Conor approved a v2 candidate that makes frequency measurements computable: typed
+rates, observed counts, cluster components, seizure-free intervals, last-seizure
+times and qualitative findings. It preserves event scope, measurement uncertainty,
+conditions and exact evidence without a universal raw-value/negation/confidence bag.
+The protocol owns the [agreed design](../../docs/research/gan2026/one_shot_paper_protocol.md#agreed-v2-measurement-design-2026-09-14).
+This candidate has fictional no-call checks and a permitted dev750 wording review,
+which removed the generic measurement-denial flag. No model-run performance
+evidence exists for this candidate. The synthetic results
+below evaluate v1 and must not be attributed to the revised schema.
+
+## Available synthetic result (v1)
+
+The frozen DeepSeek V4.1 Flash API comparison is complete on all 450 synthetic
+test notes, including 20 row_ok=False notes. Rich achieved 342/450 Purist agreement
+(76.0%) and simple 334/450 (74.2%); the paired difference was +1.78 percentage points
+(95% CI −0.44 to +4.00). This does not establish superiority or non-inferiority.
+Pragmatic agreement was 368/450 versus 360/450. Four rich and three simple outputs
+were unusable and counted as incorrect. These are reused-holdout synthetic results,
+not patient-data results or clinical validation of the full finding inventory.
+
+The [evaluation protocol](../../docs/research/gan2026/one_shot_paper_protocol.md#completed-synthetic-comparison-2026-09-13)
+owns detailed reliability/cost reporting and the
+[reviewed machine aggregate](../../results/letter-benchmarks/gan/one_shot_frequency_v1/test450.aggregate.json).
+Table 3 and the API portions of Table 4 can now be populated from those artifacts.
+Table 2, supplementary Dell results and multi-family patient results remain pending.
 
 ## Planned exhibits
 
