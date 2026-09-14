@@ -1,0 +1,56 @@
+{
+  "dataset": "Gan 2026 synthetic",
+  "split": "dev750",
+  "rows_screened": 750,
+  "row_policy": "all dev750, including row_ok=False; excluded splits not inspected",
+  "row_ok_false_included": 32,
+  "dataset_sha256": "cf13b498609079d37ba7ccd4cb9886b7d8a60a8bcd75e48ab5b4debb939b1c21",
+  "manifest_sha256": "c5f512d8744261916bd6d92562430489a3ba0494b0bf7c6575bfaa9e58680143",
+  "method": "sentence/line lexical screen then forward/backward rate-adjacent candidates",
+  "patterns": {
+    "markers": "\\b(?:no|not|never|neither|nor|none|without|den\\w*|absen\\w*|free|ceased|stopped|resolved|less|fewer|rare\\w*|infrequent\\w*)\\b|n['\u2019]t",
+    "negative": "\\b(?:no|not|never|neither|nor|without|denies|deny|denied)\\b|n['\u2019]t",
+    "strong": "\\b(?:not|never|neither|nor|denies|deny|denied)\\b|n['\u2019]t",
+    "rate": "\\b(?:daily|weekly|monthly|yearly|frequency|frequent|rate|count|cadence|cluster\\w*|per|times|twice|once|every|more|less|fewer)\\b"
+  },
+  "marker_sentence_hits": 5945,
+  "letters_with_markers": 748,
+  "forward_candidates": 192,
+  "additional_backward_candidates": 67,
+  "candidate_sentences": 259,
+  "examples": [
+    {
+      "source_row_index": 16961,
+      "quote": "no more than twice weekly",
+      "representation_without_negation_field": "upper_bound"
+    },
+    {
+      "source_row_index": 1772,
+      "quote": "These were not clustered",
+      "representation_without_negation_field": "qualitative_pattern"
+    },
+    {
+      "source_row_index": 6029,
+      "quote": "less frequent but not absent",
+      "representation_without_negation_field": "qualitative_frequency"
+    },
+    {
+      "source_row_index": 9496,
+      "quote": "No generalised tonic-clonic seizures since March 2018",
+      "representation_without_negation_field": "event_scoped_seizure_freedom"
+    },
+    {
+      "source_row_index": 763,
+      "quote": "no change in the weekly occurrence of events",
+      "representation_without_negation_field": "unchanged_frequency"
+    },
+    {
+      "source_row_index": 10003,
+      "quote": "number per cluster not documented",
+      "representation_without_negation_field": "missing_measurement"
+    }
+  ],
+  "limits": "Targeted lexical screen, not exhaustive linguistic or clinical annotation. Counts are retrieval counts, not prevalence estimates for negation.",
+  "scoring": "none; no gold labels, predictions or scorer used",
+  "model_calls": 0
+}

@@ -1,0 +1,41 @@
+{
+  "$defs": {
+    "Answer": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Evidence"
+        }
+      },
+      "required": [
+        "label",
+        "evidence"
+      ],
+      "title": "Answer",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "answer": {
+      "$ref": "#/$defs/Answer"
+    }
+  },
+  "required": [
+    "answer"
+  ],
+  "title": "Simple",
+  "type": "object"
+}

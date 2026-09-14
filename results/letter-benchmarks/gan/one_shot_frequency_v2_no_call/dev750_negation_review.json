@@ -1,0 +1,11 @@
+{
+  "review_date": "2026-09-14",
+  "screen_artifact": "dev750_negation_audit.json",
+  "candidate_contexts_reviewed": 259,
+  "review_type": "manual review of retrieved contexts; targeted lexical screen, not exhaustive annotation",
+  "finding": "No explicitly denied numeric seizure rate identified that warrants a generic measurement assertion field. Other negative wording expresses upper bounds, qualitative pattern/change, missing information or event-scoped seizure freedom.",
+  "decision": "Remove measurement_assertion and contrived denied-rate fixture; preserve original quotation and use existing measurement structures.",
+  "candidate_version": "one_shot_frequency_v2_measurements_r2",
+  "v1": "unchanged",
+  "model_calls": 0
+}
