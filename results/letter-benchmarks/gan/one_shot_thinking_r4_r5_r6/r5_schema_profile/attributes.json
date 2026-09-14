@@ -1,0 +1,9079 @@
+[
+  {
+    "group": "all_findings",
+    "path": "condition",
+    "eligible": 2355,
+    "populated": 264,
+    "null": 2091,
+    "distinct": 225,
+    "top": [
+      {
+        "value": "under stress",
+        "n": 4
+      },
+      {
+        "value": "around periods of marked sleep deprivation",
+        "n": 3
+      },
+      {
+        "value": "after nights of curtailed sleep",
+        "n": 3
+      },
+      {
+        "value": "in bad weeks",
+        "n": 3
+      },
+      {
+        "value": "after consecutive night shifts",
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "event",
+    "eligible": 2355,
+    "populated": 2355,
+    "null": 0,
+    "distinct": 813,
+    "object": true
+  },
+  {
+    "group": "all_findings",
+    "path": "event.description",
+    "eligible": 2355,
+    "populated": 2355,
+    "null": 0,
+    "distinct": 722,
+    "top": [
+      {
+        "value": "seizures",
+        "n": 519
+      },
+      {
+        "value": "events",
+        "n": 117
+      },
+      {
+        "value": "generalised tonic-clonic seizures",
+        "n": 76
+      },
+      {
+        "value": "generalised tonic–clonic seizures",
+        "n": 62
+      },
+      {
+        "value": "myoclonic jerks",
+        "n": 48
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "event.grouping",
+    "eligible": 2355,
+    "populated": 2355,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "one_type",
+        "n": 1279
+      },
+      {
+        "value": "unspecified",
+        "n": 997
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 79
+      }
+    ],
+    "levels": [
+      {
+        "value": "one_type",
+        "n": 1279
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 79
+      },
+      {
+        "value": "unspecified",
+        "n": 997
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "event.seizure_interpretation",
+    "eligible": 2355,
+    "populated": 2355,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "stated_seizure",
+        "n": 1949
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 337
+      },
+      {
+        "value": "not_specified",
+        "n": 54
+      },
+      {
+        "value": "explicitly_non_seizure",
+        "n": 15
+      }
+    ],
+    "levels": [
+      {
+        "value": "stated_seizure",
+        "n": 1949
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 337
+      },
+      {
+        "value": "explicitly_non_seizure",
+        "n": 15
+      },
+      {
+        "value": "not_specified",
+        "n": 54
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "evidence",
+    "eligible": 2355,
+    "populated": 2355,
+    "null": 0,
+    "distinct": 2156,
+    "top": [
+      {
+        "value": "daily drop attacks",
+        "n": 6
+      },
+      {
+        "value": "focal impaired-awareness seizures with disorientation are reported every four to six weeks",
+        "n": 6
+      },
+      {
+        "value": "drop attacks occurring in batches",
+        "n": 5
+      },
+      {
+        "value": "tonic-clonic seizures 2 times per month",
+        "n": 5
+      },
+      {
+        "value": "rarely achieving more than ten consecutive seizure-free days",
+        "n": 5
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "finding_id",
+    "eligible": 2355,
+    "populated": 2355,
+    "null": 0,
+    "distinct": 15,
+    "top": [
+      {
+        "value": "f1",
+        "n": 719
+      },
+      {
+        "value": "f2",
+        "n": 634
+      },
+      {
+        "value": "f3",
+        "n": 458
+      },
+      {
+        "value": "f4",
+        "n": 278
+      },
+      {
+        "value": "f5",
+        "n": 138
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period",
+    "eligible": 2355,
+    "populated": 972,
+    "null": 1383,
+    "distinct": 540,
+    "object": true
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration",
+    "eligible": 972,
+    "populated": 453,
+    "null": 519,
+    "distinct": 29,
+    "object": true
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity",
+    "eligible": 453,
+    "populated": 453,
+    "null": 0,
+    "distinct": 18,
+    "object": true
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<bound>",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "object": true
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<bound>.approximate",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": false,
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 1
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<bound>.kind",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "bound",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<bound>.relation",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "more_than",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 0
+      },
+      {
+        "value": "more_than",
+        "n": 1
+      },
+      {
+        "value": "at_most",
+        "n": 0
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<bound>.value",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": 1,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1
+    }
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<exact>",
+    "eligible": 452,
+    "populated": 452,
+    "null": 0,
+    "distinct": 17,
+    "object": true
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<exact>.approximate",
+    "eligible": 452,
+    "populated": 452,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 451
+      },
+      {
+        "value": true,
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 451
+      },
+      {
+        "value": true,
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<exact>.kind",
+    "eligible": 452,
+    "populated": 452,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 452
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 452
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<exact>.value",
+    "eligible": 452,
+    "populated": 452,
+    "null": 0,
+    "distinct": 16,
+    "top": [
+      {
+        "value": 1,
+        "n": 183
+      },
+      {
+        "value": 6,
+        "n": 85
+      },
+      {
+        "value": 3,
+        "n": 79
+      },
+      {
+        "value": 2,
+        "n": 46
+      },
+      {
+        "value": 4,
+        "n": 16
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 2.0,
+      "mean": 3.7013274336283186,
+      "max": 90
+    }
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<range>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<range>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<range>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "range",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<range>.lower",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.quantity<range>.upper",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.duration.unit",
+    "eligible": 453,
+    "populated": 453,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": "month",
+        "n": 305
+      },
+      {
+        "value": "week",
+        "n": 97
+      },
+      {
+        "value": "year",
+        "n": 40
+      },
+      {
+        "value": "day",
+        "n": 10
+      },
+      {
+        "value": "minute",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 1
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 10
+      },
+      {
+        "value": "week",
+        "n": 97
+      },
+      {
+        "value": "month",
+        "n": 305
+      },
+      {
+        "value": "year",
+        "n": 40
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.end",
+    "eligible": 972,
+    "populated": 52,
+    "null": 920,
+    "distinct": 44,
+    "object": true
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.end.form",
+    "eligible": 52,
+    "populated": 52,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "calendar",
+        "n": 48
+      },
+      {
+        "value": "relative",
+        "n": 4
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 48
+      },
+      {
+        "value": "relative",
+        "n": 4
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.end.precision",
+    "eligible": 52,
+    "populated": 52,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "month",
+        "n": 39
+      },
+      {
+        "value": "day",
+        "n": 9
+      },
+      {
+        "value": "year",
+        "n": 2
+      },
+      {
+        "value": "unspecified",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 9
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 39
+      },
+      {
+        "value": "year",
+        "n": 2
+      },
+      {
+        "value": "unspecified",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.end.wording",
+    "eligible": 52,
+    "populated": 52,
+    "null": 0,
+    "distinct": 44,
+    "top": [
+      {
+        "value": "30 September 2025",
+        "n": 3
+      },
+      {
+        "value": "August",
+        "n": 3
+      },
+      {
+        "value": "September",
+        "n": 2
+      },
+      {
+        "value": "May",
+        "n": 2
+      },
+      {
+        "value": "December",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.start",
+    "eligible": 972,
+    "populated": 321,
+    "null": 651,
+    "distinct": 147,
+    "object": true
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.start.form",
+    "eligible": 321,
+    "populated": 321,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "calendar",
+        "n": 282
+      },
+      {
+        "value": "relative",
+        "n": 39
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 282
+      },
+      {
+        "value": "relative",
+        "n": 39
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.start.precision",
+    "eligible": 321,
+    "populated": 321,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": "month",
+        "n": 257
+      },
+      {
+        "value": "unspecified",
+        "n": 28
+      },
+      {
+        "value": "day",
+        "n": 21
+      },
+      {
+        "value": "year",
+        "n": 14
+      },
+      {
+        "value": "week",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 21
+      },
+      {
+        "value": "week",
+        "n": 1
+      },
+      {
+        "value": "month",
+        "n": 257
+      },
+      {
+        "value": "year",
+        "n": 14
+      },
+      {
+        "value": "unspecified",
+        "n": 28
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.start.wording",
+    "eligible": 321,
+    "populated": 321,
+    "null": 0,
+    "distinct": 147,
+    "top": [
+      {
+        "value": "August",
+        "n": 14
+      },
+      {
+        "value": "May",
+        "n": 14
+      },
+      {
+        "value": "December",
+        "n": 13
+      },
+      {
+        "value": "June",
+        "n": 12
+      },
+      {
+        "value": "March",
+        "n": 11
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "observation_period.wording",
+    "eligible": 972,
+    "populated": 972,
+    "null": 0,
+    "distinct": 459,
+    "top": [
+      {
+        "value": "this month",
+        "n": 26
+      },
+      {
+        "value": "this year",
+        "n": 20
+      },
+      {
+        "value": "over the past three months",
+        "n": 18
+      },
+      {
+        "value": "over the past six months",
+        "n": 18
+      },
+      {
+        "value": "Over the past three months",
+        "n": 14
+      }
+    ]
+  },
+  {
+    "group": "all_findings",
+    "path": "temporal_status",
+    "eligible": 2355,
+    "populated": 2355,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": "current",
+        "n": 1791
+      },
+      {
+        "value": "recent",
+        "n": 324
+      },
+      {
+        "value": "historical",
+        "n": 232
+      },
+      {
+        "value": "future",
+        "n": 6
+      },
+      {
+        "value": "unclear",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "current",
+        "n": 1791
+      },
+      {
+        "value": "recent",
+        "n": 324
+      },
+      {
+        "value": "historical",
+        "n": 232
+      },
+      {
+        "value": "future",
+        "n": 6
+      },
+      {
+        "value": "unclear",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "condition",
+    "eligible": 277,
+    "populated": 72,
+    "null": 205,
+    "distinct": 69,
+    "top": [
+      {
+        "value": "after nights of curtailed sleep",
+        "n": 2
+      },
+      {
+        "value": "in bad weeks",
+        "n": 2
+      },
+      {
+        "value": "on workdays",
+        "n": 2
+      },
+      {
+        "value": "on stressful days",
+        "n": 1
+      },
+      {
+        "value": "around significant sleep disruption",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "event",
+    "eligible": 277,
+    "populated": 277,
+    "null": 0,
+    "distinct": 136,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "event.description",
+    "eligible": 277,
+    "populated": 277,
+    "null": 0,
+    "distinct": 118,
+    "top": [
+      {
+        "value": "seizures",
+        "n": 66
+      },
+      {
+        "value": "clusters",
+        "n": 22
+      },
+      {
+        "value": "events",
+        "n": 12
+      },
+      {
+        "value": "drop attacks",
+        "n": 8
+      },
+      {
+        "value": "episodes",
+        "n": 7
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "event.grouping",
+    "eligible": 277,
+    "populated": 277,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "unspecified",
+        "n": 139
+      },
+      {
+        "value": "one_type",
+        "n": 126
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 12
+      }
+    ],
+    "levels": [
+      {
+        "value": "one_type",
+        "n": 126
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 12
+      },
+      {
+        "value": "unspecified",
+        "n": 139
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "event.seizure_interpretation",
+    "eligible": 277,
+    "populated": 277,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "stated_seizure",
+        "n": 240
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 31
+      },
+      {
+        "value": "not_specified",
+        "n": 5
+      },
+      {
+        "value": "explicitly_non_seizure",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "stated_seizure",
+        "n": 240
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 31
+      },
+      {
+        "value": "explicitly_non_seizure",
+        "n": 1
+      },
+      {
+        "value": "not_specified",
+        "n": 5
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "evidence",
+    "eligible": 277,
+    "populated": 277,
+    "null": 0,
+    "distinct": 262,
+    "top": [
+      {
+        "value": "drop attacks occurring in batches",
+        "n": 5
+      },
+      {
+        "value": "myoclonic jerks in morning clusters",
+        "n": 4
+      },
+      {
+        "value": "device logs suggest short clusters without counts",
+        "n": 3
+      },
+      {
+        "value": "frequent clusters of myoclonic jerks, absence seizures",
+        "n": 3
+      },
+      {
+        "value": "Device metrics flag one cluster this week; duration 2 h.",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "finding_id",
+    "eligible": 277,
+    "populated": 277,
+    "null": 0,
+    "distinct": 10,
+    "top": [
+      {
+        "value": "f1",
+        "n": 95
+      },
+      {
+        "value": "f2",
+        "n": 80
+      },
+      {
+        "value": "f3",
+        "n": 48
+      },
+      {
+        "value": "f4",
+        "n": 32
+      },
+      {
+        "value": "f5",
+        "n": 9
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement",
+    "eligible": 277,
+    "populated": 277,
+    "null": 0,
+    "distinct": 101,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence",
+    "eligible": 277,
+    "populated": 88,
+    "null": 189,
+    "distinct": 44,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 16,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<bound>",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 2,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<bound>.approximate",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": false,
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 3
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<bound>.kind",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "bound",
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<bound>.relation",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "at_most",
+        "n": 2
+      },
+      {
+        "value": "less_than",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 0
+      },
+      {
+        "value": "more_than",
+        "n": 0
+      },
+      {
+        "value": "at_most",
+        "n": 2
+      },
+      {
+        "value": "less_than",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<bound>.value",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": 7,
+        "n": 2
+      },
+      {
+        "value": 5,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 5,
+      "median": 7,
+      "mean": 6.333333333333333,
+      "max": 7
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<exact>",
+    "eligible": 74,
+    "populated": 74,
+    "null": 0,
+    "distinct": 6,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<exact>.approximate",
+    "eligible": 74,
+    "populated": 74,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 63
+      },
+      {
+        "value": true,
+        "n": 11
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 63
+      },
+      {
+        "value": true,
+        "n": 11
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<exact>.kind",
+    "eligible": 74,
+    "populated": 74,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 74
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 74
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<exact>.value",
+    "eligible": 74,
+    "populated": 74,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": 1,
+        "n": 50
+      },
+      {
+        "value": 2,
+        "n": 14
+      },
+      {
+        "value": 3,
+        "n": 7
+      },
+      {
+        "value": 4,
+        "n": 2
+      },
+      {
+        "value": 5,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 1.0,
+      "mean": 1.5135135135135136,
+      "max": 5
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<qualitative>",
+    "eligible": 5,
+    "populated": 5,
+    "null": 0,
+    "distinct": 3,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<qualitative>.kind",
+    "eligible": 5,
+    "populated": 5,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "qualitative",
+        "n": 5
+      }
+    ],
+    "levels": [
+      {
+        "value": "qualitative",
+        "n": 5
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<qualitative>.wording",
+    "eligible": 5,
+    "populated": 5,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "multiple",
+        "n": 2
+      },
+      {
+        "value": "several",
+        "n": 2
+      },
+      {
+        "value": "several evenings",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<range>",
+    "eligible": 6,
+    "populated": 6,
+    "null": 0,
+    "distinct": 5,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<range>.approximate",
+    "eligible": 6,
+    "populated": 6,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": false,
+        "n": 6
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 6
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<range>.kind",
+    "eligible": 6,
+    "populated": 6,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "range",
+        "n": 6
+      }
+    ],
+    "levels": [
+      {
+        "value": "range",
+        "n": 6
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<range>.lower",
+    "eligible": 6,
+    "populated": 6,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": 2,
+        "n": 2
+      },
+      {
+        "value": 1,
+        "n": 2
+      },
+      {
+        "value": 3,
+        "n": 1
+      },
+      {
+        "value": 4,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 2.0,
+      "mean": 2.1666666666666665,
+      "max": 4
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.count<range>.upper",
+    "eligible": 6,
+    "populated": 6,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": 4,
+        "n": 2
+      },
+      {
+        "value": 2,
+        "n": 2
+      },
+      {
+        "value": 3,
+        "n": 1
+      },
+      {
+        "value": 5,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 2,
+      "median": 3.5,
+      "mean": 3.3333333333333335,
+      "max": 5
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 23,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 16,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<bound>",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 2,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<bound>.approximate",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": false,
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 3
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<bound>.kind",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "bound",
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<bound>.relation",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "at_most",
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 0
+      },
+      {
+        "value": "more_than",
+        "n": 0
+      },
+      {
+        "value": "at_most",
+        "n": 3
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<bound>.value",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": 4,
+        "n": 2
+      },
+      {
+        "value": 2,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 2,
+      "median": 4,
+      "mean": 3.3333333333333335,
+      "max": 4
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<exact>",
+    "eligible": 75,
+    "populated": 75,
+    "null": 0,
+    "distinct": 9,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<exact>.approximate",
+    "eligible": 75,
+    "populated": 75,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 72
+      },
+      {
+        "value": true,
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 72
+      },
+      {
+        "value": true,
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<exact>.kind",
+    "eligible": 75,
+    "populated": 75,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 75
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 75
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<exact>.value",
+    "eligible": 75,
+    "populated": 75,
+    "null": 0,
+    "distinct": 6,
+    "top": [
+      {
+        "value": 1,
+        "n": 58
+      },
+      {
+        "value": 3,
+        "n": 5
+      },
+      {
+        "value": 4,
+        "n": 3
+      },
+      {
+        "value": 6,
+        "n": 3
+      },
+      {
+        "value": 5,
+        "n": 3
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 1,
+      "mean": 1.6533333333333333,
+      "max": 6
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<range>",
+    "eligible": 10,
+    "populated": 10,
+    "null": 0,
+    "distinct": 5,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<range>.approximate",
+    "eligible": 10,
+    "populated": 10,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 7
+      },
+      {
+        "value": true,
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 7
+      },
+      {
+        "value": true,
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<range>.kind",
+    "eligible": 10,
+    "populated": 10,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "range",
+        "n": 10
+      }
+    ],
+    "levels": [
+      {
+        "value": "range",
+        "n": 10
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<range>.lower",
+    "eligible": 10,
+    "populated": 10,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": 4,
+        "n": 7
+      },
+      {
+        "value": 2,
+        "n": 2
+      },
+      {
+        "value": 7,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 2,
+      "median": 4.0,
+      "mean": 3.9,
+      "max": 7
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.quantity<range>.upper",
+    "eligible": 10,
+    "populated": 10,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": 5,
+        "n": 7
+      },
+      {
+        "value": 9,
+        "n": 1
+      },
+      {
+        "value": 4,
+        "n": 1
+      },
+      {
+        "value": 3,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 3,
+      "median": 5.0,
+      "mean": 5.1,
+      "max": 9
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.denominator.unit",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "month",
+        "n": 41
+      },
+      {
+        "value": "week",
+        "n": 28
+      },
+      {
+        "value": "day",
+        "n": 18
+      },
+      {
+        "value": "year",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 18
+      },
+      {
+        "value": "week",
+        "n": 28
+      },
+      {
+        "value": "month",
+        "n": 41
+      },
+      {
+        "value": "year",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.cadence.kind",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "recurring_rate",
+        "n": 88
+      }
+    ],
+    "levels": [
+      {
+        "value": "recurring_rate",
+        "n": 88
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.kind",
+    "eligible": 277,
+    "populated": 277,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "cluster_pattern",
+        "n": 277
+      }
+    ],
+    "levels": [
+      {
+        "value": "cluster_pattern",
+        "n": 277
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster",
+    "eligible": 277,
+    "populated": 133,
+    "null": 144,
+    "distinct": 42,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<bound>",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 3,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<bound>.approximate",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": true,
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<bound>.kind",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "bound",
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<bound>.relation",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "at_least",
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 3
+      },
+      {
+        "value": "more_than",
+        "n": 0
+      },
+      {
+        "value": "at_most",
+        "n": 0
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<bound>.value",
+    "eligible": 3,
+    "populated": 3,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": 6,
+        "n": 1
+      },
+      {
+        "value": 4,
+        "n": 1
+      },
+      {
+        "value": 5,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 4,
+      "median": 5,
+      "mean": 5,
+      "max": 6
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<exact>",
+    "eligible": 35,
+    "populated": 35,
+    "null": 0,
+    "distinct": 10,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<exact>.approximate",
+    "eligible": 35,
+    "populated": 35,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 21
+      },
+      {
+        "value": true,
+        "n": 14
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 21
+      },
+      {
+        "value": true,
+        "n": 14
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<exact>.kind",
+    "eligible": 35,
+    "populated": 35,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 35
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 35
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<exact>.value",
+    "eligible": 35,
+    "populated": 35,
+    "null": 0,
+    "distinct": 6,
+    "top": [
+      {
+        "value": 5,
+        "n": 9
+      },
+      {
+        "value": 3,
+        "n": 8
+      },
+      {
+        "value": 4,
+        "n": 8
+      },
+      {
+        "value": 2,
+        "n": 5
+      },
+      {
+        "value": 6,
+        "n": 4
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 4,
+      "mean": 3.8857142857142857,
+      "max": 6
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<qualitative>",
+    "eligible": 68,
+    "populated": 68,
+    "null": 0,
+    "distinct": 17,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<qualitative>.kind",
+    "eligible": 68,
+    "populated": 68,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "qualitative",
+        "n": 68
+      }
+    ],
+    "levels": [
+      {
+        "value": "qualitative",
+        "n": 68
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<qualitative>.wording",
+    "eligible": 68,
+    "populated": 68,
+    "null": 0,
+    "distinct": 17,
+    "top": [
+      {
+        "value": "multiple",
+        "n": 38
+      },
+      {
+        "value": "clusters",
+        "n": 5
+      },
+      {
+        "value": "several",
+        "n": 5
+      },
+      {
+        "value": "short runs",
+        "n": 3
+      },
+      {
+        "value": "batches",
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<range>",
+    "eligible": 27,
+    "populated": 27,
+    "null": 0,
+    "distinct": 12,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<range>.approximate",
+    "eligible": 27,
+    "populated": 27,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 16
+      },
+      {
+        "value": true,
+        "n": 11
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 16
+      },
+      {
+        "value": true,
+        "n": 11
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<range>.kind",
+    "eligible": 27,
+    "populated": 27,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "range",
+        "n": 27
+      }
+    ],
+    "levels": [
+      {
+        "value": "range",
+        "n": 27
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<range>.lower",
+    "eligible": 27,
+    "populated": 27,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": 3,
+        "n": 9
+      },
+      {
+        "value": 2,
+        "n": 9
+      },
+      {
+        "value": 4,
+        "n": 6
+      },
+      {
+        "value": 6,
+        "n": 2
+      },
+      {
+        "value": 1,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 3,
+      "mean": 3.037037037037037,
+      "max": 6
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "measurement.seizures_per_cluster<range>.upper",
+    "eligible": 27,
+    "populated": 27,
+    "null": 0,
+    "distinct": 7,
+    "top": [
+      {
+        "value": 4,
+        "n": 12
+      },
+      {
+        "value": 3,
+        "n": 5
+      },
+      {
+        "value": 6,
+        "n": 4
+      },
+      {
+        "value": 8,
+        "n": 2
+      },
+      {
+        "value": 5,
+        "n": 2
+      }
+    ],
+    "numeric": {
+      "min": 2,
+      "median": 4,
+      "mean": 4.518518518518518,
+      "max": 8
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period",
+    "eligible": 277,
+    "populated": 78,
+    "null": 199,
+    "distinct": 58,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration",
+    "eligible": 78,
+    "populated": 42,
+    "null": 36,
+    "distinct": 13,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity",
+    "eligible": 42,
+    "populated": 42,
+    "null": 0,
+    "distinct": 7,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<bound>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<bound>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<bound>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<bound>.relation",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 0
+      },
+      {
+        "value": "more_than",
+        "n": 0
+      },
+      {
+        "value": "at_most",
+        "n": 0
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<bound>.value",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<exact>",
+    "eligible": 42,
+    "populated": 42,
+    "null": 0,
+    "distinct": 7,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<exact>.approximate",
+    "eligible": 42,
+    "populated": 42,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": false,
+        "n": 42
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 42
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<exact>.kind",
+    "eligible": 42,
+    "populated": 42,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 42
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 42
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<exact>.value",
+    "eligible": 42,
+    "populated": 42,
+    "null": 0,
+    "distinct": 7,
+    "top": [
+      {
+        "value": 1,
+        "n": 18
+      },
+      {
+        "value": 3,
+        "n": 11
+      },
+      {
+        "value": 6,
+        "n": 6
+      },
+      {
+        "value": 2,
+        "n": 3
+      },
+      {
+        "value": 4,
+        "n": 2
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 2.5,
+      "mean": 4.976190476190476,
+      "max": 90
+    }
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<range>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<range>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<range>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "range",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<range>.lower",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.quantity<range>.upper",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.duration.unit",
+    "eligible": 42,
+    "populated": 42,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": "month",
+        "n": 26
+      },
+      {
+        "value": "week",
+        "n": 11
+      },
+      {
+        "value": "day",
+        "n": 2
+      },
+      {
+        "value": "year",
+        "n": 2
+      },
+      {
+        "value": "minute",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 1
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 2
+      },
+      {
+        "value": "week",
+        "n": 11
+      },
+      {
+        "value": "month",
+        "n": 26
+      },
+      {
+        "value": "year",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.end",
+    "eligible": 78,
+    "populated": 2,
+    "null": 76,
+    "distinct": 2,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.end.form",
+    "eligible": 2,
+    "populated": 2,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "calendar",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 2
+      },
+      {
+        "value": "relative",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.end.precision",
+    "eligible": 2,
+    "populated": 2,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "day",
+        "n": 1
+      },
+      {
+        "value": "month",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 1
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 1
+      },
+      {
+        "value": "year",
+        "n": 0
+      },
+      {
+        "value": "unspecified",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.end.wording",
+    "eligible": 2,
+    "populated": 2,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "13-Nov-2015",
+        "n": 1
+      },
+      {
+        "value": "August",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.start",
+    "eligible": 78,
+    "populated": 15,
+    "null": 63,
+    "distinct": 15,
+    "object": true
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.start.form",
+    "eligible": 15,
+    "populated": 15,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "calendar",
+        "n": 13
+      },
+      {
+        "value": "relative",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 13
+      },
+      {
+        "value": "relative",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.start.precision",
+    "eligible": 15,
+    "populated": 15,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "month",
+        "n": 11
+      },
+      {
+        "value": "unspecified",
+        "n": 2
+      },
+      {
+        "value": "day",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 2
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 11
+      },
+      {
+        "value": "year",
+        "n": 0
+      },
+      {
+        "value": "unspecified",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.start.wording",
+    "eligible": 15,
+    "populated": 15,
+    "null": 0,
+    "distinct": 15,
+    "top": [
+      {
+        "value": "May 2025",
+        "n": 1
+      },
+      {
+        "value": "late August",
+        "n": 1
+      },
+      {
+        "value": "last review",
+        "n": 1
+      },
+      {
+        "value": "07/Dec/2023",
+        "n": 1
+      },
+      {
+        "value": "29 Jun 2022",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "observation_period.wording",
+    "eligible": 78,
+    "populated": 78,
+    "null": 0,
+    "distinct": 56,
+    "top": [
+      {
+        "value": "this month",
+        "n": 12
+      },
+      {
+        "value": "over the past three months",
+        "n": 4
+      },
+      {
+        "value": "Over the past month",
+        "n": 3
+      },
+      {
+        "value": "Since the last review",
+        "n": 2
+      },
+      {
+        "value": "over the past two months",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "cluster_pattern",
+    "path": "temporal_status",
+    "eligible": 277,
+    "populated": 277,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "current",
+        "n": 234
+      },
+      {
+        "value": "historical",
+        "n": 23
+      },
+      {
+        "value": "recent",
+        "n": 19
+      },
+      {
+        "value": "future",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "current",
+        "n": 234
+      },
+      {
+        "value": "recent",
+        "n": 19
+      },
+      {
+        "value": "historical",
+        "n": 23
+      },
+      {
+        "value": "future",
+        "n": 1
+      },
+      {
+        "value": "unclear",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "documents",
+    "path": "answer",
+    "eligible": 746,
+    "populated": 746,
+    "null": 0,
+    "distinct": 697,
+    "object": true
+  },
+  {
+    "group": "documents",
+    "path": "answer.evidence",
+    "eligible": 746,
+    "populated": 719,
+    "null": 27,
+    "distinct": 693,
+    "top": [
+      {
+        "value": "daily drop attacks",
+        "n": 6
+      },
+      {
+        "value": "He has daily absences.",
+        "n": 4
+      },
+      {
+        "value": "having been seizure free for years",
+        "n": 3
+      },
+      {
+        "value": "bimonthly seizures",
+        "n": 2
+      },
+      {
+        "value": "several times per week",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "documents",
+    "path": "answer.label",
+    "eligible": 746,
+    "populated": 746,
+    "null": 0,
+    "distinct": 291,
+    "top": [
+      {
+        "value": "unknown",
+        "n": 73
+      },
+      {
+        "value": "1 per day",
+        "n": 33
+      },
+      {
+        "value": "no seizure frequency reference",
+        "n": 27
+      },
+      {
+        "value": "1 per month",
+        "n": 23
+      },
+      {
+        "value": "seizure free for multiple months",
+        "n": 21
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "condition",
+    "eligible": 88,
+    "populated": 11,
+    "null": 77,
+    "distinct": 11,
+    "top": [
+      {
+        "value": "after a period of sleep deprivation",
+        "n": 1
+      },
+      {
+        "value": "after an overnight shift and early start the following day",
+        "n": 1
+      },
+      {
+        "value": "after a missed evening dose",
+        "n": 1
+      },
+      {
+        "value": "provoked by patterned or flickering visual stimuli",
+        "n": 1
+      },
+      {
+        "value": "on-site following extended machinery loading",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "event",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 53,
+    "object": true
+  },
+  {
+    "group": "last_seizure",
+    "path": "event.description",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 45,
+    "top": [
+      {
+        "value": "seizures",
+        "n": 9
+      },
+      {
+        "value": "episode",
+        "n": 6
+      },
+      {
+        "value": "generalised convulsion",
+        "n": 5
+      },
+      {
+        "value": "tonic-clonic seizure",
+        "n": 5
+      },
+      {
+        "value": "generalised tonic–clonic seizures",
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "event.grouping",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "one_type",
+        "n": 56
+      },
+      {
+        "value": "unspecified",
+        "n": 32
+      }
+    ],
+    "levels": [
+      {
+        "value": "one_type",
+        "n": 56
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 0
+      },
+      {
+        "value": "unspecified",
+        "n": 32
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "event.seizure_interpretation",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "stated_seizure",
+        "n": 76
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 11
+      },
+      {
+        "value": "not_specified",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "stated_seizure",
+        "n": 76
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 11
+      },
+      {
+        "value": "explicitly_non_seizure",
+        "n": 0
+      },
+      {
+        "value": "not_specified",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "evidence",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 87,
+    "top": [
+      {
+        "value": "a focal impaired-awareness seizure occurred 2 Thursdays ago",
+        "n": 2
+      },
+      {
+        "value": "His last generalised tonic–clonic seizure was in May 2025 after a night of sleep deprivation, and there have been none since.",
+        "n": 1
+      },
+      {
+        "value": "The most recent event occurred 10 days ago",
+        "n": 1
+      },
+      {
+        "value": "the previous seizure occurred during a flight’s descent",
+        "n": 1
+      },
+      {
+        "value": "most recent episode occurring after a period of sleep deprivation",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "finding_id",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": "f2",
+        "n": 42
+      },
+      {
+        "value": "f1",
+        "n": 20
+      },
+      {
+        "value": "f4",
+        "n": 12
+      },
+      {
+        "value": "f3",
+        "n": 12
+      },
+      {
+        "value": "f6",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "measurement",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 83,
+    "object": true
+  },
+  {
+    "group": "last_seizure",
+    "path": "measurement.kind",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "last_seizure",
+        "n": 88
+      }
+    ],
+    "levels": [
+      {
+        "value": "last_seizure",
+        "n": 88
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "measurement.when",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 83,
+    "object": true
+  },
+  {
+    "group": "last_seizure",
+    "path": "measurement.when.form",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "calendar",
+        "n": 59
+      },
+      {
+        "value": "relative",
+        "n": 29
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 59
+      },
+      {
+        "value": "relative",
+        "n": 29
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "measurement.when.precision",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": "day",
+        "n": 41
+      },
+      {
+        "value": "month",
+        "n": 32
+      },
+      {
+        "value": "week",
+        "n": 7
+      },
+      {
+        "value": "unspecified",
+        "n": 6
+      },
+      {
+        "value": "year",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 41
+      },
+      {
+        "value": "week",
+        "n": 7
+      },
+      {
+        "value": "month",
+        "n": 32
+      },
+      {
+        "value": "year",
+        "n": 2
+      },
+      {
+        "value": "unspecified",
+        "n": 6
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "measurement.when.wording",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 82,
+    "top": [
+      {
+        "value": "May 2025",
+        "n": 2
+      },
+      {
+        "value": "10 days ago",
+        "n": 2
+      },
+      {
+        "value": "over two years ago",
+        "n": 2
+      },
+      {
+        "value": "three months ago",
+        "n": 2
+      },
+      {
+        "value": "31-May",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period",
+    "eligible": 88,
+    "populated": 1,
+    "null": 87,
+    "distinct": 1,
+    "object": true
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration",
+    "eligible": 1,
+    "populated": 0,
+    "null": 1,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<bound>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<bound>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<bound>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<bound>.relation",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 0
+      },
+      {
+        "value": "more_than",
+        "n": 0
+      },
+      {
+        "value": "at_most",
+        "n": 0
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<bound>.value",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<exact>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<exact>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<exact>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<exact>.value",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<range>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<range>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<range>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "range",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<range>.lower",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.quantity<range>.upper",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.duration.unit",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 0
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 0
+      },
+      {
+        "value": "year",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.end",
+    "eligible": 1,
+    "populated": 0,
+    "null": 1,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.end.form",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 0
+      },
+      {
+        "value": "relative",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.end.precision",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 0
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 0
+      },
+      {
+        "value": "year",
+        "n": 0
+      },
+      {
+        "value": "unspecified",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.end.wording",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.start",
+    "eligible": 1,
+    "populated": 0,
+    "null": 1,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.start.form",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 0
+      },
+      {
+        "value": "relative",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.start.precision",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 0
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 0
+      },
+      {
+        "value": "year",
+        "n": 0
+      },
+      {
+        "value": "unspecified",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.start.wording",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "last_seizure",
+    "path": "observation_period.wording",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "Since the last review",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "last_seizure",
+    "path": "temporal_status",
+    "eligible": 88,
+    "populated": 88,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "recent",
+        "n": 46
+      },
+      {
+        "value": "current",
+        "n": 24
+      },
+      {
+        "value": "historical",
+        "n": 18
+      }
+    ],
+    "levels": [
+      {
+        "value": "current",
+        "n": 24
+      },
+      {
+        "value": "recent",
+        "n": 46
+      },
+      {
+        "value": "historical",
+        "n": 18
+      },
+      {
+        "value": "future",
+        "n": 0
+      },
+      {
+        "value": "unclear",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "condition",
+    "eligible": 560,
+    "populated": 42,
+    "null": 518,
+    "distinct": 36,
+    "top": [
+      {
+        "value": "with more severe seizures",
+        "n": 3
+      },
+      {
+        "value": "around periods of marked sleep deprivation",
+        "n": 2
+      },
+      {
+        "value": "Prior to recent lifestyle changes",
+        "n": 2
+      },
+      {
+        "value": "in sleep",
+        "n": 2
+      },
+      {
+        "value": "while awake",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "event",
+    "eligible": 560,
+    "populated": 560,
+    "null": 0,
+    "distinct": 209,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "event.description",
+    "eligible": 560,
+    "populated": 560,
+    "null": 0,
+    "distinct": 179,
+    "top": [
+      {
+        "value": "seizures",
+        "n": 140
+      },
+      {
+        "value": "focal seizures",
+        "n": 21
+      },
+      {
+        "value": "generalised tonic-clonic seizures",
+        "n": 20
+      },
+      {
+        "value": "drop attacks",
+        "n": 18
+      },
+      {
+        "value": "seizures while awake",
+        "n": 11
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "event.grouping",
+    "eligible": 560,
+    "populated": 560,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "one_type",
+        "n": 321
+      },
+      {
+        "value": "unspecified",
+        "n": 233
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 6
+      }
+    ],
+    "levels": [
+      {
+        "value": "one_type",
+        "n": 321
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 6
+      },
+      {
+        "value": "unspecified",
+        "n": 233
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "event.seizure_interpretation",
+    "eligible": 560,
+    "populated": 560,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "stated_seizure",
+        "n": 497
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 62
+      },
+      {
+        "value": "not_specified",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "stated_seizure",
+        "n": 497
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 62
+      },
+      {
+        "value": "explicitly_non_seizure",
+        "n": 0
+      },
+      {
+        "value": "not_specified",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "evidence",
+    "eligible": 560,
+    "populated": 560,
+    "null": 0,
+    "distinct": 518,
+    "top": [
+      {
+        "value": "two drop attacks",
+        "n": 4
+      },
+      {
+        "value": "Jun x1",
+        "n": 4
+      },
+      {
+        "value": "one while awake",
+        "n": 3
+      },
+      {
+        "value": "May x1",
+        "n": 3
+      },
+      {
+        "value": "Oct x1",
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "finding_id",
+    "eligible": 560,
+    "populated": 560,
+    "null": 0,
+    "distinct": 12,
+    "top": [
+      {
+        "value": "f1",
+        "n": 175
+      },
+      {
+        "value": "f2",
+        "n": 152
+      },
+      {
+        "value": "f3",
+        "n": 100
+      },
+      {
+        "value": "f4",
+        "n": 61
+      },
+      {
+        "value": "f5",
+        "n": 24
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement",
+    "eligible": 560,
+    "populated": 560,
+    "null": 0,
+    "distinct": 43,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count",
+    "eligible": 560,
+    "populated": 560,
+    "null": 0,
+    "distinct": 43,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<bound>",
+    "eligible": 2,
+    "populated": 2,
+    "null": 0,
+    "distinct": 2,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<bound>.approximate",
+    "eligible": 2,
+    "populated": 2,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": false,
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 2
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<bound>.kind",
+    "eligible": 2,
+    "populated": 2,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "bound",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<bound>.relation",
+    "eligible": 2,
+    "populated": 2,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "at_least",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 2
+      },
+      {
+        "value": "more_than",
+        "n": 0
+      },
+      {
+        "value": "at_most",
+        "n": 0
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<bound>.value",
+    "eligible": 2,
+    "populated": 2,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": 2,
+        "n": 1
+      },
+      {
+        "value": 1,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 1.5,
+      "mean": 1.5,
+      "max": 2
+    }
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<exact>",
+    "eligible": 499,
+    "populated": 499,
+    "null": 0,
+    "distinct": 17,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<exact>.approximate",
+    "eligible": 499,
+    "populated": 499,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 494
+      },
+      {
+        "value": true,
+        "n": 5
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 494
+      },
+      {
+        "value": true,
+        "n": 5
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<exact>.kind",
+    "eligible": 499,
+    "populated": 499,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 499
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 499
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<exact>.value",
+    "eligible": 499,
+    "populated": 499,
+    "null": 0,
+    "distinct": 14,
+    "top": [
+      {
+        "value": 1,
+        "n": 137
+      },
+      {
+        "value": 2,
+        "n": 126
+      },
+      {
+        "value": 3,
+        "n": 61
+      },
+      {
+        "value": 5,
+        "n": 41
+      },
+      {
+        "value": 4,
+        "n": 37
+      }
+    ],
+    "numeric": {
+      "min": 0,
+      "median": 2,
+      "mean": 2.9398797595190382,
+      "max": 19
+    }
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<qualitative>",
+    "eligible": 15,
+    "populated": 15,
+    "null": 0,
+    "distinct": 5,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<qualitative>.kind",
+    "eligible": 15,
+    "populated": 15,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "qualitative",
+        "n": 15
+      }
+    ],
+    "levels": [
+      {
+        "value": "qualitative",
+        "n": 15
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<qualitative>.wording",
+    "eligible": 15,
+    "populated": 15,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": "several",
+        "n": 11
+      },
+      {
+        "value": "multiple",
+        "n": 1
+      },
+      {
+        "value": "handful",
+        "n": 1
+      },
+      {
+        "value": "a few",
+        "n": 1
+      },
+      {
+        "value": "small handful",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<range>",
+    "eligible": 44,
+    "populated": 44,
+    "null": 0,
+    "distinct": 19,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<range>.approximate",
+    "eligible": 44,
+    "populated": 44,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 37
+      },
+      {
+        "value": true,
+        "n": 7
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 37
+      },
+      {
+        "value": true,
+        "n": 7
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<range>.kind",
+    "eligible": 44,
+    "populated": 44,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "range",
+        "n": 44
+      }
+    ],
+    "levels": [
+      {
+        "value": "range",
+        "n": 44
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<range>.lower",
+    "eligible": 44,
+    "populated": 44,
+    "null": 0,
+    "distinct": 8,
+    "top": [
+      {
+        "value": 3,
+        "n": 13
+      },
+      {
+        "value": 2,
+        "n": 11
+      },
+      {
+        "value": 5,
+        "n": 5
+      },
+      {
+        "value": 7,
+        "n": 5
+      },
+      {
+        "value": 6,
+        "n": 5
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 3.0,
+      "mean": 4.159090909090909,
+      "max": 21
+    }
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.count<range>.upper",
+    "eligible": 44,
+    "populated": 44,
+    "null": 0,
+    "distinct": 9,
+    "top": [
+      {
+        "value": 4,
+        "n": 11
+      },
+      {
+        "value": 3,
+        "n": 10
+      },
+      {
+        "value": 7,
+        "n": 7
+      },
+      {
+        "value": 5,
+        "n": 5
+      },
+      {
+        "value": 9,
+        "n": 4
+      }
+    ],
+    "numeric": {
+      "min": 3,
+      "median": 5.0,
+      "mean": 5.909090909090909,
+      "max": 28
+    }
+  },
+  {
+    "group": "observed_count",
+    "path": "measurement.kind",
+    "eligible": 560,
+    "populated": 560,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "observed_count",
+        "n": 560
+      }
+    ],
+    "levels": [
+      {
+        "value": "observed_count",
+        "n": 560
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period",
+    "eligible": 560,
+    "populated": 507,
+    "null": 53,
+    "distinct": 308,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration",
+    "eligible": 507,
+    "populated": 216,
+    "null": 291,
+    "distinct": 19,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity",
+    "eligible": 216,
+    "populated": 216,
+    "null": 0,
+    "distinct": 12,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<bound>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<bound>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<bound>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<bound>.relation",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 0
+      },
+      {
+        "value": "more_than",
+        "n": 0
+      },
+      {
+        "value": "at_most",
+        "n": 0
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<bound>.value",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<exact>",
+    "eligible": 216,
+    "populated": 216,
+    "null": 0,
+    "distinct": 12,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<exact>.approximate",
+    "eligible": 216,
+    "populated": 216,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 215
+      },
+      {
+        "value": true,
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 215
+      },
+      {
+        "value": true,
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<exact>.kind",
+    "eligible": 216,
+    "populated": 216,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 216
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 216
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<exact>.value",
+    "eligible": 216,
+    "populated": 216,
+    "null": 0,
+    "distinct": 11,
+    "top": [
+      {
+        "value": 1,
+        "n": 114
+      },
+      {
+        "value": 3,
+        "n": 29
+      },
+      {
+        "value": 2,
+        "n": 27
+      },
+      {
+        "value": 6,
+        "n": 27
+      },
+      {
+        "value": 4,
+        "n": 9
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 1.0,
+      "mean": 2.7222222222222223,
+      "max": 30
+    }
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<range>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<range>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<range>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "range",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<range>.lower",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.quantity<range>.upper",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.duration.unit",
+    "eligible": 216,
+    "populated": 216,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "month",
+        "n": 148
+      },
+      {
+        "value": "week",
+        "n": 55
+      },
+      {
+        "value": "day",
+        "n": 7
+      },
+      {
+        "value": "year",
+        "n": 6
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 7
+      },
+      {
+        "value": "week",
+        "n": 55
+      },
+      {
+        "value": "month",
+        "n": 148
+      },
+      {
+        "value": "year",
+        "n": 6
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.end",
+    "eligible": 507,
+    "populated": 36,
+    "null": 471,
+    "distinct": 31,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.end.form",
+    "eligible": 36,
+    "populated": 36,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "calendar",
+        "n": 34
+      },
+      {
+        "value": "relative",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 34
+      },
+      {
+        "value": "relative",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.end.precision",
+    "eligible": 36,
+    "populated": 36,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "month",
+        "n": 29
+      },
+      {
+        "value": "day",
+        "n": 5
+      },
+      {
+        "value": "year",
+        "n": 1
+      },
+      {
+        "value": "unspecified",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 5
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 29
+      },
+      {
+        "value": "year",
+        "n": 1
+      },
+      {
+        "value": "unspecified",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.end.wording",
+    "eligible": 36,
+    "populated": 36,
+    "null": 0,
+    "distinct": 31,
+    "top": [
+      {
+        "value": "September",
+        "n": 2
+      },
+      {
+        "value": "May",
+        "n": 2
+      },
+      {
+        "value": "August",
+        "n": 2
+      },
+      {
+        "value": "December",
+        "n": 2
+      },
+      {
+        "value": "March",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.start",
+    "eligible": 507,
+    "populated": 238,
+    "null": 269,
+    "distinct": 96,
+    "object": true
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.start.form",
+    "eligible": 238,
+    "populated": 238,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "calendar",
+        "n": 227
+      },
+      {
+        "value": "relative",
+        "n": 11
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 227
+      },
+      {
+        "value": "relative",
+        "n": 11
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.start.precision",
+    "eligible": 238,
+    "populated": 238,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": "month",
+        "n": 215
+      },
+      {
+        "value": "year",
+        "n": 10
+      },
+      {
+        "value": "day",
+        "n": 6
+      },
+      {
+        "value": "unspecified",
+        "n": 6
+      },
+      {
+        "value": "week",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 6
+      },
+      {
+        "value": "week",
+        "n": 1
+      },
+      {
+        "value": "month",
+        "n": 215
+      },
+      {
+        "value": "year",
+        "n": 10
+      },
+      {
+        "value": "unspecified",
+        "n": 6
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.start.wording",
+    "eligible": 238,
+    "populated": 238,
+    "null": 0,
+    "distinct": 96,
+    "top": [
+      {
+        "value": "August",
+        "n": 14
+      },
+      {
+        "value": "May",
+        "n": 12
+      },
+      {
+        "value": "June",
+        "n": 11
+      },
+      {
+        "value": "March",
+        "n": 10
+      },
+      {
+        "value": "July",
+        "n": 10
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "observation_period.wording",
+    "eligible": 507,
+    "populated": 507,
+    "null": 0,
+    "distinct": 236,
+    "top": [
+      {
+        "value": "last month",
+        "n": 14
+      },
+      {
+        "value": "July",
+        "n": 10
+      },
+      {
+        "value": "last week",
+        "n": 9
+      },
+      {
+        "value": "this month",
+        "n": 9
+      },
+      {
+        "value": "August",
+        "n": 9
+      }
+    ]
+  },
+  {
+    "group": "observed_count",
+    "path": "temporal_status",
+    "eligible": 560,
+    "populated": 560,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "current",
+        "n": 286
+      },
+      {
+        "value": "recent",
+        "n": 197
+      },
+      {
+        "value": "historical",
+        "n": 77
+      }
+    ],
+    "levels": [
+      {
+        "value": "current",
+        "n": 286
+      },
+      {
+        "value": "recent",
+        "n": 197
+      },
+      {
+        "value": "historical",
+        "n": 77
+      },
+      {
+        "value": "future",
+        "n": 0
+      },
+      {
+        "value": "unclear",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "condition",
+    "eligible": 527,
+    "populated": 92,
+    "null": 435,
+    "distinct": 80,
+    "top": [
+      {
+        "value": "when overtired",
+        "n": 3
+      },
+      {
+        "value": "under stress",
+        "n": 3
+      },
+      {
+        "value": "following the use of her prescribed medication",
+        "n": 3
+      },
+      {
+        "value": "after dose increase",
+        "n": 2
+      },
+      {
+        "value": "on waking",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "event",
+    "eligible": 527,
+    "populated": 527,
+    "null": 0,
+    "distinct": 306,
+    "object": true
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "event.description",
+    "eligible": 527,
+    "populated": 527,
+    "null": 0,
+    "distinct": 278,
+    "top": [
+      {
+        "value": "seizures",
+        "n": 77
+      },
+      {
+        "value": "events",
+        "n": 44
+      },
+      {
+        "value": "myoclonic jerks",
+        "n": 20
+      },
+      {
+        "value": "episodes",
+        "n": 13
+      },
+      {
+        "value": "generalised tonic-clonic seizures",
+        "n": 12
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "event.grouping",
+    "eligible": 527,
+    "populated": 527,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "one_type",
+        "n": 290
+      },
+      {
+        "value": "unspecified",
+        "n": 224
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 13
+      }
+    ],
+    "levels": [
+      {
+        "value": "one_type",
+        "n": 290
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 13
+      },
+      {
+        "value": "unspecified",
+        "n": 224
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "event.seizure_interpretation",
+    "eligible": 527,
+    "populated": 527,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "stated_seizure",
+        "n": 352
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 142
+      },
+      {
+        "value": "not_specified",
+        "n": 19
+      },
+      {
+        "value": "explicitly_non_seizure",
+        "n": 14
+      }
+    ],
+    "levels": [
+      {
+        "value": "stated_seizure",
+        "n": 352
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 142
+      },
+      {
+        "value": "explicitly_non_seizure",
+        "n": 14
+      },
+      {
+        "value": "not_specified",
+        "n": 19
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "evidence",
+    "eligible": 527,
+    "populated": 527,
+    "null": 0,
+    "distinct": 488,
+    "top": [
+      {
+        "value": "rarely achieving more than ten consecutive seizure-free days",
+        "n": 5
+      },
+      {
+        "value": "occasional generalised tonic-clonic seizures",
+        "n": 4
+      },
+      {
+        "value": "occasional generalised tonic–clonic seizures",
+        "n": 3
+      },
+      {
+        "value": "Daytime events are rare",
+        "n": 3
+      },
+      {
+        "value": "together with drop attacks",
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "finding_id",
+    "eligible": 527,
+    "populated": 527,
+    "null": 0,
+    "distinct": 13,
+    "top": [
+      {
+        "value": "f1",
+        "n": 129
+      },
+      {
+        "value": "f2",
+        "n": 118
+      },
+      {
+        "value": "f3",
+        "n": 106
+      },
+      {
+        "value": "f4",
+        "n": 80
+      },
+      {
+        "value": "f5",
+        "n": 59
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "measurement",
+    "eligible": 527,
+    "populated": 527,
+    "null": 0,
+    "distinct": 323,
+    "object": true
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "measurement.kind",
+    "eligible": 527,
+    "populated": 527,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "qualitative_frequency",
+        "n": 527
+      }
+    ],
+    "levels": [
+      {
+        "value": "qualitative_frequency",
+        "n": 527
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "measurement.wording",
+    "eligible": 527,
+    "populated": 527,
+    "null": 0,
+    "distinct": 323,
+    "top": [
+      {
+        "value": "occasional",
+        "n": 58
+      },
+      {
+        "value": "intermittent",
+        "n": 24
+      },
+      {
+        "value": "infrequent",
+        "n": 19
+      },
+      {
+        "value": "rare",
+        "n": 14
+      },
+      {
+        "value": "recurrent",
+        "n": 12
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period",
+    "eligible": 527,
+    "populated": 134,
+    "null": 393,
+    "distinct": 85,
+    "object": true
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration",
+    "eligible": 134,
+    "populated": 63,
+    "null": 71,
+    "distinct": 15,
+    "object": true
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity",
+    "eligible": 63,
+    "populated": 63,
+    "null": 0,
+    "distinct": 9,
+    "object": true
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<bound>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<bound>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<bound>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<bound>.relation",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 0
+      },
+      {
+        "value": "more_than",
+        "n": 0
+      },
+      {
+        "value": "at_most",
+        "n": 0
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<bound>.value",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<exact>",
+    "eligible": 63,
+    "populated": 63,
+    "null": 0,
+    "distinct": 9,
+    "object": true
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<exact>.approximate",
+    "eligible": 63,
+    "populated": 63,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": false,
+        "n": 63
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 63
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<exact>.kind",
+    "eligible": 63,
+    "populated": 63,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 63
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 63
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<exact>.value",
+    "eligible": 63,
+    "populated": 63,
+    "null": 0,
+    "distinct": 9,
+    "top": [
+      {
+        "value": 3,
+        "n": 20
+      },
+      {
+        "value": 1,
+        "n": 14
+      },
+      {
+        "value": 6,
+        "n": 12
+      },
+      {
+        "value": 2,
+        "n": 9
+      },
+      {
+        "value": 8,
+        "n": 2
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 3,
+      "mean": 3.857142857142857,
+      "max": 18
+    }
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<range>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<range>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<range>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "range",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<range>.lower",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.quantity<range>.upper",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.duration.unit",
+    "eligible": 63,
+    "populated": 63,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "month",
+        "n": 40
+      },
+      {
+        "value": "week",
+        "n": 11
+      },
+      {
+        "value": "year",
+        "n": 11
+      },
+      {
+        "value": "day",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 1
+      },
+      {
+        "value": "week",
+        "n": 11
+      },
+      {
+        "value": "month",
+        "n": 40
+      },
+      {
+        "value": "year",
+        "n": 11
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.end",
+    "eligible": 134,
+    "populated": 4,
+    "null": 130,
+    "distinct": 4,
+    "object": true
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.end.form",
+    "eligible": 4,
+    "populated": 4,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "calendar",
+        "n": 2
+      },
+      {
+        "value": "relative",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 2
+      },
+      {
+        "value": "relative",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.end.precision",
+    "eligible": 4,
+    "populated": 4,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "month",
+        "n": 2
+      },
+      {
+        "value": "year",
+        "n": 1
+      },
+      {
+        "value": "unspecified",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 0
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 2
+      },
+      {
+        "value": "year",
+        "n": 1
+      },
+      {
+        "value": "unspecified",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.end.wording",
+    "eligible": 4,
+    "populated": 4,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "2023",
+        "n": 1
+      },
+      {
+        "value": "dose stabilisation",
+        "n": 1
+      },
+      {
+        "value": "dose increase in May",
+        "n": 1
+      },
+      {
+        "value": "January",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.start",
+    "eligible": 134,
+    "populated": 9,
+    "null": 125,
+    "distinct": 9,
+    "object": true
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.start.form",
+    "eligible": 9,
+    "populated": 9,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "calendar",
+        "n": 6
+      },
+      {
+        "value": "relative",
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 6
+      },
+      {
+        "value": "relative",
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.start.precision",
+    "eligible": 9,
+    "populated": 9,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "month",
+        "n": 5
+      },
+      {
+        "value": "unspecified",
+        "n": 3
+      },
+      {
+        "value": "day",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 1
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 5
+      },
+      {
+        "value": "year",
+        "n": 0
+      },
+      {
+        "value": "unspecified",
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.start.wording",
+    "eligible": 9,
+    "populated": 9,
+    "null": 0,
+    "distinct": 9,
+    "top": [
+      {
+        "value": "March 2025",
+        "n": 1
+      },
+      {
+        "value": "10 June 2025",
+        "n": 1
+      },
+      {
+        "value": "Since adding lamotrigine alongside levetiracetam",
+        "n": 1
+      },
+      {
+        "value": "January 2025",
+        "n": 1
+      },
+      {
+        "value": "December",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "observation_period.wording",
+    "eligible": 134,
+    "populated": 134,
+    "null": 0,
+    "distinct": 83,
+    "top": [
+      {
+        "value": "this year",
+        "n": 9
+      },
+      {
+        "value": "over the past three months",
+        "n": 8
+      },
+      {
+        "value": "Over the past three months",
+        "n": 7
+      },
+      {
+        "value": "over the past year",
+        "n": 5
+      },
+      {
+        "value": "over recent months",
+        "n": 5
+      }
+    ]
+  },
+  {
+    "group": "qualitative_frequency",
+    "path": "temporal_status",
+    "eligible": 527,
+    "populated": 527,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "current",
+        "n": 433
+      },
+      {
+        "value": "historical",
+        "n": 51
+      },
+      {
+        "value": "recent",
+        "n": 41
+      },
+      {
+        "value": "unclear",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "current",
+        "n": 433
+      },
+      {
+        "value": "recent",
+        "n": 41
+      },
+      {
+        "value": "historical",
+        "n": 51
+      },
+      {
+        "value": "future",
+        "n": 0
+      },
+      {
+        "value": "unclear",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "condition",
+    "eligible": 360,
+    "populated": 28,
+    "null": 332,
+    "distinct": 26,
+    "top": [
+      {
+        "value": "brief periods",
+        "n": 2
+      },
+      {
+        "value": "on awakening",
+        "n": 2
+      },
+      {
+        "value": "if events become more frequent",
+        "n": 1
+      },
+      {
+        "value": "following consecutive late shifts",
+        "n": 1
+      },
+      {
+        "value": "On current therapy",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "event",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 148,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "event.description",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 140,
+    "top": [
+      {
+        "value": "seizures",
+        "n": 65
+      },
+      {
+        "value": "generalised tonic-clonic seizures",
+        "n": 26
+      },
+      {
+        "value": "absence seizures",
+        "n": 20
+      },
+      {
+        "value": "events",
+        "n": 15
+      },
+      {
+        "value": "focal impaired-awareness seizures",
+        "n": 12
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "event.grouping",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "one_type",
+        "n": 265
+      },
+      {
+        "value": "unspecified",
+        "n": 88
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 7
+      }
+    ],
+    "levels": [
+      {
+        "value": "one_type",
+        "n": 265
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 7
+      },
+      {
+        "value": "unspecified",
+        "n": 88
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "event.seizure_interpretation",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "stated_seizure",
+        "n": 332
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 27
+      },
+      {
+        "value": "not_specified",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "stated_seizure",
+        "n": 332
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 27
+      },
+      {
+        "value": "explicitly_non_seizure",
+        "n": 0
+      },
+      {
+        "value": "not_specified",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "evidence",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 319,
+    "top": [
+      {
+        "value": "daily drop attacks",
+        "n": 6
+      },
+      {
+        "value": "focal impaired-awareness seizures with disorientation are reported every four to six weeks",
+        "n": 6
+      },
+      {
+        "value": "tonic-clonic seizures 2 times per month",
+        "n": 5
+      },
+      {
+        "value": "previously they only happened once or twice a month",
+        "n": 5
+      },
+      {
+        "value": "previously they were restricted to once every couple of weeks",
+        "n": 5
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "finding_id",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 7,
+    "top": [
+      {
+        "value": "f1",
+        "n": 190
+      },
+      {
+        "value": "f2",
+        "n": 97
+      },
+      {
+        "value": "f3",
+        "n": 49
+      },
+      {
+        "value": "f4",
+        "n": 16
+      },
+      {
+        "value": "f5",
+        "n": 6
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 146,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 52,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<bound>",
+    "eligible": 20,
+    "populated": 20,
+    "null": 0,
+    "distinct": 11,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<bound>.approximate",
+    "eligible": 20,
+    "populated": 20,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 18
+      },
+      {
+        "value": true,
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 18
+      },
+      {
+        "value": true,
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<bound>.kind",
+    "eligible": 20,
+    "populated": 20,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "bound",
+        "n": 20
+      }
+    ],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 20
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<bound>.relation",
+    "eligible": 20,
+    "populated": 20,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "at_most",
+        "n": 16
+      },
+      {
+        "value": "more_than",
+        "n": 3
+      },
+      {
+        "value": "at_least",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 1
+      },
+      {
+        "value": "more_than",
+        "n": 3
+      },
+      {
+        "value": "at_most",
+        "n": 16
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<bound>.value",
+    "eligible": 20,
+    "populated": 20,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": 2,
+        "n": 8
+      },
+      {
+        "value": 1,
+        "n": 5
+      },
+      {
+        "value": 4,
+        "n": 3
+      },
+      {
+        "value": 3,
+        "n": 3
+      },
+      {
+        "value": 7,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 2.0,
+      "mean": 2.45,
+      "max": 7
+    }
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<exact>",
+    "eligible": 263,
+    "populated": 263,
+    "null": 0,
+    "distinct": 18,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<exact>.approximate",
+    "eligible": 263,
+    "populated": 263,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 214
+      },
+      {
+        "value": true,
+        "n": 49
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 214
+      },
+      {
+        "value": true,
+        "n": 49
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<exact>.kind",
+    "eligible": 263,
+    "populated": 263,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 263
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 263
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<exact>.value",
+    "eligible": 263,
+    "populated": 263,
+    "null": 0,
+    "distinct": 11,
+    "top": [
+      {
+        "value": 1,
+        "n": 175
+      },
+      {
+        "value": 2,
+        "n": 33
+      },
+      {
+        "value": 4,
+        "n": 18
+      },
+      {
+        "value": 3,
+        "n": 12
+      },
+      {
+        "value": 9,
+        "n": 8
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 1,
+      "mean": 2.079847908745247,
+      "max": 17
+    }
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<qualitative>",
+    "eligible": 23,
+    "populated": 23,
+    "null": 0,
+    "distinct": 8,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<qualitative>.kind",
+    "eligible": 23,
+    "populated": 23,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "qualitative",
+        "n": 23
+      }
+    ],
+    "levels": [
+      {
+        "value": "qualitative",
+        "n": 23
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<qualitative>.wording",
+    "eligible": 23,
+    "populated": 23,
+    "null": 0,
+    "distinct": 8,
+    "top": [
+      {
+        "value": "several",
+        "n": 15
+      },
+      {
+        "value": "dozens",
+        "n": 2
+      },
+      {
+        "value": "multiple",
+        "n": 1
+      },
+      {
+        "value": "many",
+        "n": 1
+      },
+      {
+        "value": "Several",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<range>",
+    "eligible": 54,
+    "populated": 54,
+    "null": 0,
+    "distinct": 15,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<range>.approximate",
+    "eligible": 54,
+    "populated": 54,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 45
+      },
+      {
+        "value": true,
+        "n": 9
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 45
+      },
+      {
+        "value": true,
+        "n": 9
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<range>.kind",
+    "eligible": 54,
+    "populated": 54,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "range",
+        "n": 54
+      }
+    ],
+    "levels": [
+      {
+        "value": "range",
+        "n": 54
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<range>.lower",
+    "eligible": 54,
+    "populated": 54,
+    "null": 0,
+    "distinct": 7,
+    "top": [
+      {
+        "value": 1,
+        "n": 22
+      },
+      {
+        "value": 2,
+        "n": 16
+      },
+      {
+        "value": 3,
+        "n": 7
+      },
+      {
+        "value": 6,
+        "n": 5
+      },
+      {
+        "value": 4,
+        "n": 2
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 2.0,
+      "mean": 2.7037037037037037,
+      "max": 21
+    }
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.count<range>.upper",
+    "eligible": 54,
+    "populated": 54,
+    "null": 0,
+    "distinct": 8,
+    "top": [
+      {
+        "value": 2,
+        "n": 22
+      },
+      {
+        "value": 4,
+        "n": 10
+      },
+      {
+        "value": 3,
+        "n": 10
+      },
+      {
+        "value": 7,
+        "n": 5
+      },
+      {
+        "value": 5,
+        "n": 3
+      }
+    ],
+    "numeric": {
+      "min": 2,
+      "median": 3.0,
+      "mean": 4.333333333333333,
+      "max": 30
+    }
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 48,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 28,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<bound>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<bound>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<bound>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<bound>.relation",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 0
+      },
+      {
+        "value": "more_than",
+        "n": 0
+      },
+      {
+        "value": "at_most",
+        "n": 0
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<bound>.value",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<exact>",
+    "eligible": 318,
+    "populated": 318,
+    "null": 0,
+    "distinct": 16,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<exact>.approximate",
+    "eligible": 318,
+    "populated": 318,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 304
+      },
+      {
+        "value": true,
+        "n": 14
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 304
+      },
+      {
+        "value": true,
+        "n": 14
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<exact>.kind",
+    "eligible": 318,
+    "populated": 318,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 318
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 318
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<exact>.value",
+    "eligible": 318,
+    "populated": 318,
+    "null": 0,
+    "distinct": 10,
+    "top": [
+      {
+        "value": 1,
+        "n": 261
+      },
+      {
+        "value": 2,
+        "n": 27
+      },
+      {
+        "value": 4,
+        "n": 10
+      },
+      {
+        "value": 3,
+        "n": 8
+      },
+      {
+        "value": 8,
+        "n": 5
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 1.0,
+      "mean": 1.5031446540880504,
+      "max": 12
+    }
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<range>",
+    "eligible": 42,
+    "populated": 42,
+    "null": 0,
+    "distinct": 12,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<range>.approximate",
+    "eligible": 42,
+    "populated": 42,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 36
+      },
+      {
+        "value": true,
+        "n": 6
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 36
+      },
+      {
+        "value": true,
+        "n": 6
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<range>.kind",
+    "eligible": 42,
+    "populated": 42,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "range",
+        "n": 42
+      }
+    ],
+    "levels": [
+      {
+        "value": "range",
+        "n": 42
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<range>.lower",
+    "eligible": 42,
+    "populated": 42,
+    "null": 0,
+    "distinct": 8,
+    "top": [
+      {
+        "value": 1,
+        "n": 10
+      },
+      {
+        "value": 2,
+        "n": 10
+      },
+      {
+        "value": 3,
+        "n": 9
+      },
+      {
+        "value": 4,
+        "n": 7
+      },
+      {
+        "value": 6,
+        "n": 3
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 3.0,
+      "mean": 3.2142857142857144,
+      "max": 14
+    }
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.quantity<range>.upper",
+    "eligible": 42,
+    "populated": 42,
+    "null": 0,
+    "distinct": 9,
+    "top": [
+      {
+        "value": 2,
+        "n": 10
+      },
+      {
+        "value": 3,
+        "n": 10
+      },
+      {
+        "value": 4,
+        "n": 9
+      },
+      {
+        "value": 6,
+        "n": 6
+      },
+      {
+        "value": 8,
+        "n": 3
+      }
+    ],
+    "numeric": {
+      "min": 2,
+      "median": 4.0,
+      "mean": 4.619047619047619,
+      "max": 21
+    }
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.denominator.unit",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": "week",
+        "n": 129
+      },
+      {
+        "value": "month",
+        "n": 98
+      },
+      {
+        "value": "day",
+        "n": 89
+      },
+      {
+        "value": "year",
+        "n": 39
+      },
+      {
+        "value": "hour",
+        "n": 5
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 5
+      },
+      {
+        "value": "day",
+        "n": 89
+      },
+      {
+        "value": "week",
+        "n": 129
+      },
+      {
+        "value": "month",
+        "n": 98
+      },
+      {
+        "value": "year",
+        "n": 39
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "measurement.kind",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "recurring_rate",
+        "n": 360
+      }
+    ],
+    "levels": [
+      {
+        "value": "recurring_rate",
+        "n": 360
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period",
+    "eligible": 360,
+    "populated": 107,
+    "null": 253,
+    "distinct": 63,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration",
+    "eligible": 107,
+    "populated": 76,
+    "null": 31,
+    "distinct": 16,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity",
+    "eligible": 76,
+    "populated": 76,
+    "null": 0,
+    "distinct": 10,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<bound>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<bound>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<bound>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<bound>.relation",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 0
+      },
+      {
+        "value": "more_than",
+        "n": 0
+      },
+      {
+        "value": "at_most",
+        "n": 0
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<bound>.value",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<exact>",
+    "eligible": 76,
+    "populated": 76,
+    "null": 0,
+    "distinct": 10,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<exact>.approximate",
+    "eligible": 76,
+    "populated": 76,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": false,
+        "n": 76
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 76
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<exact>.kind",
+    "eligible": 76,
+    "populated": 76,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 76
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 76
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<exact>.value",
+    "eligible": 76,
+    "populated": 76,
+    "null": 0,
+    "distinct": 10,
+    "top": [
+      {
+        "value": 6,
+        "n": 26
+      },
+      {
+        "value": 1,
+        "n": 18
+      },
+      {
+        "value": 3,
+        "n": 13
+      },
+      {
+        "value": 2,
+        "n": 5
+      },
+      {
+        "value": 8,
+        "n": 5
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 4.0,
+      "mean": 4.5131578947368425,
+      "max": 18
+    }
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<range>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<range>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<range>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "range",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<range>.lower",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.quantity<range>.upper",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.duration.unit",
+    "eligible": 76,
+    "populated": 76,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "month",
+        "n": 51
+      },
+      {
+        "value": "week",
+        "n": 16
+      },
+      {
+        "value": "year",
+        "n": 9
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 0
+      },
+      {
+        "value": "week",
+        "n": 16
+      },
+      {
+        "value": "month",
+        "n": 51
+      },
+      {
+        "value": "year",
+        "n": 9
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.end",
+    "eligible": 107,
+    "populated": 0,
+    "null": 107,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.end.form",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 0
+      },
+      {
+        "value": "relative",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.end.precision",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 0
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 0
+      },
+      {
+        "value": "year",
+        "n": 0
+      },
+      {
+        "value": "unspecified",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.end.wording",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.start",
+    "eligible": 107,
+    "populated": 6,
+    "null": 101,
+    "distinct": 6,
+    "object": true
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.start.form",
+    "eligible": 6,
+    "populated": 6,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "relative",
+        "n": 4
+      },
+      {
+        "value": "calendar",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 2
+      },
+      {
+        "value": "relative",
+        "n": 4
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.start.precision",
+    "eligible": 6,
+    "populated": 6,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "unspecified",
+        "n": 3
+      },
+      {
+        "value": "month",
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 0
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 3
+      },
+      {
+        "value": "year",
+        "n": 0
+      },
+      {
+        "value": "unspecified",
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.start.wording",
+    "eligible": 6,
+    "populated": 6,
+    "null": 0,
+    "distinct": 6,
+    "top": [
+      {
+        "value": "the last clinic contact",
+        "n": 1
+      },
+      {
+        "value": "March this year",
+        "n": 1
+      },
+      {
+        "value": "late spring",
+        "n": 1
+      },
+      {
+        "value": "eight months ago",
+        "n": 1
+      },
+      {
+        "value": "the travel",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "observation_period.wording",
+    "eligible": 107,
+    "populated": 107,
+    "null": 0,
+    "distinct": 63,
+    "top": [
+      {
+        "value": "over the last six months",
+        "n": 10
+      },
+      {
+        "value": "for many years",
+        "n": 6
+      },
+      {
+        "value": "over the past three months",
+        "n": 5
+      },
+      {
+        "value": "over the past six months",
+        "n": 5
+      },
+      {
+        "value": "Over the past year",
+        "n": 4
+      }
+    ]
+  },
+  {
+    "group": "recurring_rate",
+    "path": "temporal_status",
+    "eligible": 360,
+    "populated": 360,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "current",
+        "n": 316
+      },
+      {
+        "value": "historical",
+        "n": 35
+      },
+      {
+        "value": "future",
+        "n": 5
+      },
+      {
+        "value": "recent",
+        "n": 4
+      }
+    ],
+    "levels": [
+      {
+        "value": "current",
+        "n": 316
+      },
+      {
+        "value": "recent",
+        "n": 4
+      },
+      {
+        "value": "historical",
+        "n": 35
+      },
+      {
+        "value": "future",
+        "n": 5
+      },
+      {
+        "value": "unclear",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "condition",
+    "eligible": 543,
+    "populated": 19,
+    "null": 524,
+    "distinct": 17,
+    "top": [
+      {
+        "value": "between clusters",
+        "n": 2
+      },
+      {
+        "value": "with treatment",
+        "n": 2
+      },
+      {
+        "value": "outside of nights with curtailed rest",
+        "n": 1
+      },
+      {
+        "value": "outside perimenstrual window",
+        "n": 1
+      },
+      {
+        "value": "Outside this window",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "event",
+    "eligible": 543,
+    "populated": 543,
+    "null": 0,
+    "distinct": 193,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "event.description",
+    "eligible": 543,
+    "populated": 543,
+    "null": 0,
+    "distinct": 166,
+    "top": [
+      {
+        "value": "seizures",
+        "n": 162
+      },
+      {
+        "value": "events",
+        "n": 40
+      },
+      {
+        "value": "generalised tonic–clonic seizures",
+        "n": 39
+      },
+      {
+        "value": "generalised convulsions",
+        "n": 15
+      },
+      {
+        "value": "generalised tonic-clonic seizures",
+        "n": 15
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "event.grouping",
+    "eligible": 543,
+    "populated": 543,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "unspecified",
+        "n": 281
+      },
+      {
+        "value": "one_type",
+        "n": 221
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 41
+      }
+    ],
+    "levels": [
+      {
+        "value": "one_type",
+        "n": 221
+      },
+      {
+        "value": "explicit_combined_group",
+        "n": 41
+      },
+      {
+        "value": "unspecified",
+        "n": 281
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "event.seizure_interpretation",
+    "eligible": 543,
+    "populated": 543,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "stated_seizure",
+        "n": 452
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 64
+      },
+      {
+        "value": "not_specified",
+        "n": 27
+      }
+    ],
+    "levels": [
+      {
+        "value": "stated_seizure",
+        "n": 452
+      },
+      {
+        "value": "uncertain_seizure",
+        "n": 64
+      },
+      {
+        "value": "explicitly_non_seizure",
+        "n": 0
+      },
+      {
+        "value": "not_specified",
+        "n": 27
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "evidence",
+    "eligible": 543,
+    "populated": 543,
+    "null": 0,
+    "distinct": 495,
+    "top": [
+      {
+        "value": "No events have occurred since his most recent review",
+        "n": 5
+      },
+      {
+        "value": "There have been no generalised tonic–clonic seizures reported.",
+        "n": 4
+      },
+      {
+        "value": "No generalised tonic–clonic seizures reported.",
+        "n": 4
+      },
+      {
+        "value": "Since the last clinic visit, no further seizures have been reported.",
+        "n": 4
+      },
+      {
+        "value": "he has been seizure free for a long duration",
+        "n": 4
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "finding_id",
+    "eligible": 543,
+    "populated": 543,
+    "null": 0,
+    "distinct": 12,
+    "top": [
+      {
+        "value": "f2",
+        "n": 145
+      },
+      {
+        "value": "f3",
+        "n": 143
+      },
+      {
+        "value": "f1",
+        "n": 110
+      },
+      {
+        "value": "f4",
+        "n": 77
+      },
+      {
+        "value": "f5",
+        "n": 40
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement",
+    "eligible": 543,
+    "populated": 543,
+    "null": 0,
+    "distinct": 193,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration",
+    "eligible": 543,
+    "populated": 148,
+    "null": 395,
+    "distinct": 49,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity",
+    "eligible": 148,
+    "populated": 148,
+    "null": 0,
+    "distinct": 34,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<bound>",
+    "eligible": 31,
+    "populated": 31,
+    "null": 0,
+    "distinct": 13,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<bound>.approximate",
+    "eligible": 31,
+    "populated": 31,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 25
+      },
+      {
+        "value": true,
+        "n": 6
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 25
+      },
+      {
+        "value": true,
+        "n": 6
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<bound>.kind",
+    "eligible": 31,
+    "populated": 31,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "bound",
+        "n": 31
+      }
+    ],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 31
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<bound>.relation",
+    "eligible": 31,
+    "populated": 31,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "more_than",
+        "n": 26
+      },
+      {
+        "value": "at_most",
+        "n": 4
+      },
+      {
+        "value": "at_least",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 1
+      },
+      {
+        "value": "more_than",
+        "n": 26
+      },
+      {
+        "value": "at_most",
+        "n": 4
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<bound>.value",
+    "eligible": 31,
+    "populated": 31,
+    "null": 0,
+    "distinct": 9,
+    "top": [
+      {
+        "value": 1,
+        "n": 9
+      },
+      {
+        "value": 2,
+        "n": 8
+      },
+      {
+        "value": 4,
+        "n": 4
+      },
+      {
+        "value": 9,
+        "n": 3
+      },
+      {
+        "value": 18,
+        "n": 2
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 2,
+      "mean": 4.580645161290323,
+      "max": 18
+    }
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<exact>",
+    "eligible": 116,
+    "populated": 116,
+    "null": 0,
+    "distinct": 20,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<exact>.approximate",
+    "eligible": 116,
+    "populated": 116,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": false,
+        "n": 106
+      },
+      {
+        "value": true,
+        "n": 10
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 106
+      },
+      {
+        "value": true,
+        "n": 10
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<exact>.kind",
+    "eligible": 116,
+    "populated": 116,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 116
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 116
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<exact>.value",
+    "eligible": 116,
+    "populated": 116,
+    "null": 0,
+    "distinct": 16,
+    "top": [
+      {
+        "value": 1,
+        "n": 27
+      },
+      {
+        "value": 6,
+        "n": 21
+      },
+      {
+        "value": 3,
+        "n": 15
+      },
+      {
+        "value": 12,
+        "n": 12
+      },
+      {
+        "value": 8,
+        "n": 9
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 5.0,
+      "mean": 5.702586206896552,
+      "max": 18
+    }
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<range>",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<range>.approximate",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": true,
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<range>.kind",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "range",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "range",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<range>.lower",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": 1,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1
+    }
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.quantity<range>.upper",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": 2,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 2,
+      "median": 2,
+      "mean": 2,
+      "max": 2
+    }
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.duration.unit",
+    "eligible": 148,
+    "populated": 148,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "month",
+        "n": 76
+      },
+      {
+        "value": "year",
+        "n": 35
+      },
+      {
+        "value": "week",
+        "n": 32
+      },
+      {
+        "value": "day",
+        "n": 5
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 5
+      },
+      {
+        "value": "week",
+        "n": 32
+      },
+      {
+        "value": "month",
+        "n": 76
+      },
+      {
+        "value": "year",
+        "n": 35
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.kind",
+    "eligible": 543,
+    "populated": 543,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "seizure_free_interval",
+        "n": 543
+      }
+    ],
+    "levels": [
+      {
+        "value": "seizure_free_interval",
+        "n": 543
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.since",
+    "eligible": 543,
+    "populated": 176,
+    "null": 367,
+    "distinct": 143,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.since.form",
+    "eligible": 176,
+    "populated": 176,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "relative",
+        "n": 90
+      },
+      {
+        "value": "calendar",
+        "n": 86
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 86
+      },
+      {
+        "value": "relative",
+        "n": 90
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.since.precision",
+    "eligible": 176,
+    "populated": 176,
+    "null": 0,
+    "distinct": 5,
+    "top": [
+      {
+        "value": "unspecified",
+        "n": 74
+      },
+      {
+        "value": "month",
+        "n": 50
+      },
+      {
+        "value": "day",
+        "n": 41
+      },
+      {
+        "value": "year",
+        "n": 9
+      },
+      {
+        "value": "week",
+        "n": 2
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 41
+      },
+      {
+        "value": "week",
+        "n": 2
+      },
+      {
+        "value": "month",
+        "n": 50
+      },
+      {
+        "value": "year",
+        "n": 9
+      },
+      {
+        "value": "unspecified",
+        "n": 74
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "measurement.since.wording",
+    "eligible": 176,
+    "populated": 176,
+    "null": 0,
+    "distinct": 143,
+    "top": [
+      {
+        "value": "his most recent review",
+        "n": 5
+      },
+      {
+        "value": "last clinic visit",
+        "n": 5
+      },
+      {
+        "value": "then",
+        "n": 4
+      },
+      {
+        "value": "June",
+        "n": 3
+      },
+      {
+        "value": "our last review",
+        "n": 3
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period",
+    "eligible": 543,
+    "populated": 145,
+    "null": 398,
+    "distinct": 127,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration",
+    "eligible": 145,
+    "populated": 56,
+    "null": 89,
+    "distinct": 14,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity",
+    "eligible": 56,
+    "populated": 56,
+    "null": 0,
+    "distinct": 10,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<bound>",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<bound>.approximate",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": false,
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 1
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<bound>.kind",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "bound",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "bound",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<bound>.relation",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "more_than",
+        "n": 1
+      }
+    ],
+    "levels": [
+      {
+        "value": "at_least",
+        "n": 0
+      },
+      {
+        "value": "more_than",
+        "n": 1
+      },
+      {
+        "value": "at_most",
+        "n": 0
+      },
+      {
+        "value": "less_than",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<bound>.value",
+    "eligible": 1,
+    "populated": 1,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": 1,
+        "n": 1
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1
+    }
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<exact>",
+    "eligible": 55,
+    "populated": 55,
+    "null": 0,
+    "distinct": 9,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<exact>.approximate",
+    "eligible": 55,
+    "populated": 55,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": false,
+        "n": 55
+      }
+    ],
+    "levels": [
+      {
+        "value": false,
+        "n": 55
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<exact>.kind",
+    "eligible": 55,
+    "populated": 55,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "exact",
+        "n": 55
+      }
+    ],
+    "levels": [
+      {
+        "value": "exact",
+        "n": 55
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<exact>.value",
+    "eligible": 55,
+    "populated": 55,
+    "null": 0,
+    "distinct": 9,
+    "top": [
+      {
+        "value": 1,
+        "n": 19
+      },
+      {
+        "value": 6,
+        "n": 14
+      },
+      {
+        "value": 12,
+        "n": 6
+      },
+      {
+        "value": 3,
+        "n": 6
+      },
+      {
+        "value": 8,
+        "n": 3
+      }
+    ],
+    "numeric": {
+      "min": 1,
+      "median": 6,
+      "mean": 5.2727272727272725,
+      "max": 18
+    }
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<range>",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<range>.approximate",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": false,
+        "n": 0
+      },
+      {
+        "value": true,
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<range>.kind",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": [],
+    "levels": [
+      {
+        "value": "range",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<range>.lower",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.quantity<range>.upper",
+    "eligible": 0,
+    "populated": 0,
+    "null": 0,
+    "distinct": 0,
+    "top": []
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.duration.unit",
+    "eligible": 56,
+    "populated": 56,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "month",
+        "n": 40
+      },
+      {
+        "value": "year",
+        "n": 12
+      },
+      {
+        "value": "week",
+        "n": 4
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 0
+      },
+      {
+        "value": "week",
+        "n": 4
+      },
+      {
+        "value": "month",
+        "n": 40
+      },
+      {
+        "value": "year",
+        "n": 12
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.end",
+    "eligible": 145,
+    "populated": 10,
+    "null": 135,
+    "distinct": 9,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.end.form",
+    "eligible": 10,
+    "populated": 10,
+    "null": 0,
+    "distinct": 1,
+    "top": [
+      {
+        "value": "calendar",
+        "n": 10
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 10
+      },
+      {
+        "value": "relative",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.end.precision",
+    "eligible": 10,
+    "populated": 10,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "month",
+        "n": 7
+      },
+      {
+        "value": "day",
+        "n": 3
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 3
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 7
+      },
+      {
+        "value": "year",
+        "n": 0
+      },
+      {
+        "value": "unspecified",
+        "n": 0
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.end.wording",
+    "eligible": 10,
+    "populated": 10,
+    "null": 0,
+    "distinct": 9,
+    "top": [
+      {
+        "value": "30 September 2025",
+        "n": 2
+      },
+      {
+        "value": "late July",
+        "n": 1
+      },
+      {
+        "value": "June",
+        "n": 1
+      },
+      {
+        "value": "21 September 2025",
+        "n": 1
+      },
+      {
+        "value": "Feb 2024",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.start",
+    "eligible": 145,
+    "populated": 53,
+    "null": 92,
+    "distinct": 50,
+    "object": true
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.start.form",
+    "eligible": 53,
+    "populated": 53,
+    "null": 0,
+    "distinct": 2,
+    "top": [
+      {
+        "value": "calendar",
+        "n": 34
+      },
+      {
+        "value": "relative",
+        "n": 19
+      }
+    ],
+    "levels": [
+      {
+        "value": "calendar",
+        "n": 34
+      },
+      {
+        "value": "relative",
+        "n": 19
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.start.precision",
+    "eligible": 53,
+    "populated": 53,
+    "null": 0,
+    "distinct": 4,
+    "top": [
+      {
+        "value": "month",
+        "n": 23
+      },
+      {
+        "value": "unspecified",
+        "n": 14
+      },
+      {
+        "value": "day",
+        "n": 12
+      },
+      {
+        "value": "year",
+        "n": 4
+      }
+    ],
+    "levels": [
+      {
+        "value": "second",
+        "n": 0
+      },
+      {
+        "value": "minute",
+        "n": 0
+      },
+      {
+        "value": "hour",
+        "n": 0
+      },
+      {
+        "value": "day",
+        "n": 12
+      },
+      {
+        "value": "week",
+        "n": 0
+      },
+      {
+        "value": "month",
+        "n": 23
+      },
+      {
+        "value": "year",
+        "n": 4
+      },
+      {
+        "value": "unspecified",
+        "n": 14
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.start.wording",
+    "eligible": 53,
+    "populated": 53,
+    "null": 0,
+    "distinct": 50,
+    "top": [
+      {
+        "value": "10 March 2025",
+        "n": 2
+      },
+      {
+        "value": "our last review",
+        "n": 2
+      },
+      {
+        "value": "11th June 2025",
+        "n": 2
+      },
+      {
+        "value": "2018",
+        "n": 1
+      },
+      {
+        "value": "our last appointment",
+        "n": 1
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "observation_period.wording",
+    "eligible": 145,
+    "populated": 145,
+    "null": 0,
+    "distinct": 123,
+    "top": [
+      {
+        "value": "this year",
+        "n": 6
+      },
+      {
+        "value": "over the past six months",
+        "n": 4
+      },
+      {
+        "value": "Since her last review six months ago",
+        "n": 3
+      },
+      {
+        "value": "since last review",
+        "n": 2
+      },
+      {
+        "value": "in the past year",
+        "n": 2
+      }
+    ]
+  },
+  {
+    "group": "seizure_free_interval",
+    "path": "temporal_status",
+    "eligible": 543,
+    "populated": 543,
+    "null": 0,
+    "distinct": 3,
+    "top": [
+      {
+        "value": "current",
+        "n": 498
+      },
+      {
+        "value": "historical",
+        "n": 28
+      },
+      {
+        "value": "recent",
+        "n": 17
+      }
+    ],
+    "levels": [
+      {
+        "value": "current",
+        "n": 498
+      },
+      {
+        "value": "recent",
+        "n": 17
+      },
+      {
+        "value": "historical",
+        "n": 28
+      },
+      {
+        "value": "future",
+        "n": 0
+      },
+      {
+        "value": "unclear",
+        "n": 0
+      }
+    ]
+  }
+]

@@ -78,6 +78,57 @@ spreading changes. Then review permitted rich/simple development disagreements,
 distinguishing source extraction, representation, answer selection and benchmark
 convention. No correction modifies the frozen requests used for timeout reruns.
 
+#### Final R7 schema decision (2026-09-14)
+
+R7 (`one_shot_frequency_v2_measurements_r7`, revision `simplified_dates_v1`) is
+finalised as a separate no-call development candidate. It incorporates Conor's
+approved simplifications and modest date collection, while preserving cluster
+interval counts and compound bounds. The source is
+`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r7.py`.
+R5 and the frozen r4/r5/r6 requests and runners remain unchanged. Finalising this
+schema does not freeze or authorise a new benchmark run.
+
+| Concern | R7 decision |
+| --- | --- |
+| Measurement types | `rate`, `count`, `cluster`, `seizure_free`, `last_seizure`, `qualitative`; all discriminators use `type`. |
+| Events | `event.type` retains the source event name, without inferring a diagnosis. `scope` is `specific`, `combined` or `unspecified`; combined requires explicit source support for events measured together. `seizure_status` is `stated`, `uncertain`, `non_seizure` or `unspecified`. |
+| Finding metadata | `id`, `timing`, `period`, `condition`, `evidence`; answer links are `selected_ids`. Timing is `current`, `historical`, `future` or `unclear`. Recent findings describing the present situation are current; dates and periods retain finer timing. |
+| Quantities | `number`, `range`, `bound`, `qualitative`. Qualitative quantities retain source text in `quantity`; qualitative frequencies use `frequency`. |
+| Bounds | Keep `relation` values `at_least`, `more_than`, `at_most`, `less_than`. A bound may apply to a number or a range. Merge `bounded_range` into `range`, with lower/upper inclusivity defaulting to true. Preserve explicit exclusive endpoints and reject empty or reversed intervals. |
+| Durations | Flatten the numeric quantity and `unit` into one object. Rate denominators are `per`. Keep positive-duration validation. |
+| Clusters | `rate` contains count and per without a redundant nested type. `count` counts observed clusters; `seizures_per_cluster` counts seizures within each cluster. A cluster count needs `period` or `occurred_at`; unquantified clusters can omit both count and rate. |
+| Approximation | One optional `approximate` flag on each measurement, default false. It covers any approximate numeric component, including an associated period duration. No nested approximation flags. The exact quotation retains which component was approximate; the structured flag no longer does. |
+| Time points | `time` retains the source expression; `form` remains calendar or relative. Remove `precision`. Do not infer missing years, resolve relative references, compute calendar dates or derive source durations from dates. |
+| Document dates | Optional `document_dates` entries contain role (`clinic`, `letter`, `unspecified`), time, form and evidence. Keep clinic and letter dates distinct. Birth dates and seizure dates are not document dates. Document dates alone do not change the no-reference answer. |
+| Dated events | Optional `occurred_at` on count and cluster; last-seizure `when` becomes required `occurred_at`. Keep `since` for seizure freedom. Separate dated counts only with source support; never distribute a combined total across dates by inference. |
+| Periods | Use `period.time` for the source window and optional start, end and flattened duration. Keep observation windows separate from recurring rate denominators. |
+| Omission | Omit absent optional fields, false approximation and true inclusivity flags. Omission means no value extracted, not proof of source absence. The parser applies declared defaults and accepts explicit null for optional objects; compact output omits it. The existing no-reference answer still requires explicit null evidence, empty findings and empty selected_ids. |
+
+The instructions are rendered through the existing ChatAdapter JSON envelope,
+which does not require every schema property to be emitted. No provider-side
+strict response-format mode was added or tested. Required IDs, evidence, answer
+and links remain strict; old field spellings are not accepted as aliases. Native
+task instructions, selection cases and label forms are identical to r5. Only the
+output schema and its population instructions change; no semantic output repair
+or automatic conversion of saved model responses is introduced.
+
+[No-call artifacts](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7_no_call/)
+contain the rendered rich messages, schema, r5-to-r7 prompt diff, source/artifact
+hashes and 23 fictional fixtures. Reproduce with
+`.venv/bin/python scripts/benchmarks/prepare_one_shot_r7.py`.
+The [complete fictional example](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7_no_call/complete_example.md)
+shows the agreed date and cluster structures. Additional representation fixtures
+use explicitly marked placeholder unknown answers; they do not establish native
+answer conversion or benchmark performance.
+
+Remaining limits: a dated event can overlap an interval total without an explicit
+relationship link; findings are not automatically additive. Relative references
+such as “that date” rely on their quoted antecedents. Approximation no longer
+identifies its numeric component, and removed time precision is not recovered in
+this candidate. These are deliberate representation tradeoffs, not resolved
+annotation or date-normalisation problems. Disagreement classification and any
+candidate evaluation remain pending.
+
 ### Main next research step: full seizure-finding annotation
 
 The target is all dev750 letters, including row_ok=False, with a complete inventory

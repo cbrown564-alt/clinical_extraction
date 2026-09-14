@@ -1,0 +1,1478 @@
+--- r5
++++ r7
+@@ -549,9 +549,9 @@
+       "Bound": {
+         "additionalProperties": false,
+         "properties": {
+-          "kind": {
++          "type": {
+             "const": "bound",
+-            "title": "Kind",
++            "title": "Type",
+             "type": "string"
+           },
+           "relation": {
+@@ -565,57 +565,119 @@
+             "type": "string"
+           },
+           "value": {
+-            "minimum": 0,
+-            "title": "Value",
+-            "type": "number"
+-          },
++            "anyOf": [
++              {
++                "minimum": 0,
++                "type": "number"
++              },
++              {
++                "$ref": "#/$defs/Range"
++              }
++            ],
++            "title": "Value"
++          }
++        },
++        "required": [
++          "type",
++          "relation",
++          "value"
++        ],
++        "title": "Bound",
++        "type": "object"
++      },
++      "BoundDuration": {
++        "additionalProperties": false,
++        "properties": {
++          "type": {
++            "const": "bound",
++            "title": "Type",
++            "type": "string"
++          },
++          "relation": {
++            "enum": [
++              "at_least",
++              "more_than",
++              "at_most",
++              "less_than"
++            ],
++            "title": "Relation",
++            "type": "string"
++          },
++          "value": {
++            "anyOf": [
++              {
++                "minimum": 0,
++                "type": "number"
++              },
++              {
++                "$ref": "#/$defs/Range"
++              }
++            ],
++            "title": "Value"
++          },
++          "unit": {
++            "enum": [
++              "second",
++              "minute",
++              "hour",
++              "day",
++              "week",
++              "month",
++              "year"
++            ],
++            "title": "Unit",
++            "type": "string"
++          }
++        },
++        "required": [
++          "type",
++          "relation",
++          "value",
++          "unit"
++        ],
++        "title": "BoundDuration",
++        "type": "object"
++      },
++      "Cluster": {
++        "additionalProperties": false,
++        "properties": {
+           "approximate": {
++            "default": false,
++            "description": "True if any numeric part of this measurement or its period is approximate.",
+             "title": "Approximate",
+             "type": "boolean"
+-          }
+-        },
+-        "required": [
+-          "kind",
+-          "relation",
+-          "value",
+-          "approximate"
+-        ],
+-        "title": "Bound",
+-        "type": "object"
+-      },
+-      "ClusterPattern": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "kind": {
+-            "const": "cluster_pattern",
+-            "title": "Kind",
+-            "type": "string"
+-          },
+-          "cadence": {
++          },
++          "type": {
++            "const": "cluster",
++            "title": "Type",
++            "type": "string"
++          },
++          "rate": {
+             "anyOf": [
+               {
+-                "$ref": "#/$defs/RecurringRate"
++                "$ref": "#/$defs/RateDetails"
+               },
+               {
+                 "type": "null"
+               }
+-            ]
+-          },
+-          "seizures_per_cluster": {
++            ],
++            "default": null
++          },
++          "count": {
+             "anyOf": [
+               {
+                 "discriminator": {
+                   "mapping": {
+                     "bound": "#/$defs/Bound",
+-                    "exact": "#/$defs/Exact",
++                    "number": "#/$defs/Number",
+                     "qualitative": "#/$defs/QualitativeQuantity",
+                     "range": "#/$defs/Range"
+                   },
+-                  "propertyName": "kind"
++                  "propertyName": "type"
+                 },
+                 "oneOf": [
+                   {
+-                    "$ref": "#/$defs/Exact"
++                    "$ref": "#/$defs/Number"
+                   },
+                   {
+                     "$ref": "#/$defs/Range"
+@@ -632,41 +694,357 @@
+                 "type": "null"
+               }
+             ],
++            "default": null,
++            "title": "Count"
++          },
++          "seizures_per_cluster": {
++            "anyOf": [
++              {
++                "discriminator": {
++                  "mapping": {
++                    "bound": "#/$defs/Bound",
++                    "number": "#/$defs/Number",
++                    "qualitative": "#/$defs/QualitativeQuantity",
++                    "range": "#/$defs/Range"
++                  },
++                  "propertyName": "type"
++                },
++                "oneOf": [
++                  {
++                    "$ref": "#/$defs/Number"
++                  },
++                  {
++                    "$ref": "#/$defs/Range"
++                  },
++                  {
++                    "$ref": "#/$defs/Bound"
++                  },
++                  {
++                    "$ref": "#/$defs/QualitativeQuantity"
++                  }
++                ]
++              },
++              {
++                "type": "null"
++              }
++            ],
++            "default": null,
+             "title": "Seizures Per Cluster"
+-          }
+-        },
+-        "required": [
+-          "kind",
+-          "cadence",
+-          "seizures_per_cluster"
+-        ],
+-        "title": "ClusterPattern",
+-        "type": "object"
+-      },
+-      "Duration": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "quantity": {
++          },
++          "occurred_at": {
++            "anyOf": [
++              {
++                "$ref": "#/$defs/TimePoint"
++              },
++              {
++                "type": "null"
++              }
++            ],
++            "default": null
++          }
++        },
++        "required": [
++          "type"
++        ],
++        "title": "Cluster",
++        "type": "object"
++      },
++      "Count": {
++        "additionalProperties": false,
++        "properties": {
++          "approximate": {
++            "default": false,
++            "description": "True if any numeric part of this measurement or its period is approximate.",
++            "title": "Approximate",
++            "type": "boolean"
++          },
++          "type": {
++            "const": "count",
++            "title": "Type",
++            "type": "string"
++          },
++          "count": {
+             "discriminator": {
+               "mapping": {
+                 "bound": "#/$defs/Bound",
+-                "exact": "#/$defs/Exact",
++                "number": "#/$defs/Number",
++                "qualitative": "#/$defs/QualitativeQuantity",
+                 "range": "#/$defs/Range"
+               },
+-              "propertyName": "kind"
++              "propertyName": "type"
+             },
+             "oneOf": [
+               {
+-                "$ref": "#/$defs/Exact"
++                "$ref": "#/$defs/Number"
+               },
+               {
+                 "$ref": "#/$defs/Range"
+               },
+               {
+                 "$ref": "#/$defs/Bound"
+-              }
+-            ],
+-            "title": "Quantity"
++              },
++              {
++                "$ref": "#/$defs/QualitativeQuantity"
++              }
++            ],
++            "title": "Count"
++          },
++          "occurred_at": {
++            "anyOf": [
++              {
++                "$ref": "#/$defs/TimePoint"
++              },
++              {
++                "type": "null"
++              }
++            ],
++            "default": null
++          }
++        },
++        "required": [
++          "type",
++          "count"
++        ],
++        "title": "Count",
++        "type": "object"
++      },
++      "DocumentDate": {
++        "additionalProperties": false,
++        "properties": {
++          "time": {
++            "description": "The source time expression; do not resolve relative dates.",
++            "minLength": 1,
++            "pattern": "\\S",
++            "title": "Time",
++            "type": "string"
++          },
++          "form": {
++            "enum": [
++              "calendar",
++              "relative"
++            ],
++            "title": "Form",
++            "type": "string"
++          },
++          "role": {
++            "enum": [
++              "clinic",
++              "letter",
++              "unspecified"
++            ],
++            "title": "Role",
++            "type": "string"
++          },
++          "evidence": {
++            "minLength": 1,
++            "pattern": "\\S",
++            "title": "Evidence",
++            "type": "string"
++          }
++        },
++        "required": [
++          "time",
++          "form",
++          "role",
++          "evidence"
++        ],
++        "title": "DocumentDate",
++        "type": "object"
++      },
++      "Event": {
++        "additionalProperties": false,
++        "properties": {
++          "type": {
++            "description": "The source's event name, not an inferred diagnosis.",
++            "minLength": 1,
++            "pattern": "\\S",
++            "title": "Type",
++            "type": "string"
++          },
++          "scope": {
++            "enum": [
++              "specific",
++              "combined",
++              "unspecified"
++            ],
++            "title": "Scope",
++            "type": "string"
++          },
++          "seizure_status": {
++            "enum": [
++              "stated",
++              "uncertain",
++              "non_seizure",
++              "unspecified"
++            ],
++            "title": "Seizure Status",
++            "type": "string"
++          }
++        },
++        "required": [
++          "type",
++          "scope",
++          "seizure_status"
++        ],
++        "title": "Event",
++        "type": "object"
++      },
++      "Finding": {
++        "additionalProperties": false,
++        "properties": {
++          "id": {
++            "minLength": 1,
++            "pattern": "\\S",
++            "title": "Id",
++            "type": "string"
++          },
++          "event": {
++            "$ref": "#/$defs/Event"
++          },
++          "measurement": {
++            "discriminator": {
++              "mapping": {
++                "cluster": "#/$defs/Cluster",
++                "count": "#/$defs/Count",
++                "last_seizure": "#/$defs/LastSeizure",
++                "qualitative": "#/$defs/QualitativeFrequency",
++                "rate": "#/$defs/Rate",
++                "seizure_free": "#/$defs/SeizureFree"
++              },
++              "propertyName": "type"
++            },
++            "oneOf": [
++              {
++                "$ref": "#/$defs/Rate"
++              },
++              {
++                "$ref": "#/$defs/Count"
++              },
++              {
++                "$ref": "#/$defs/Cluster"
++              },
++              {
++                "$ref": "#/$defs/SeizureFree"
++              },
++              {
++                "$ref": "#/$defs/LastSeizure"
++              },
++              {
++                "$ref": "#/$defs/QualitativeFrequency"
++              }
++            ],
++            "title": "Measurement"
++          },
++          "timing": {
++            "enum": [
++              "current",
++              "historical",
++              "future",
++              "unclear"
++            ],
++            "title": "Timing",
++            "type": "string"
++          },
++          "period": {
++            "anyOf": [
++              {
++                "$ref": "#/$defs/Period"
++              },
++              {
++                "type": "null"
++              }
++            ],
++            "default": null
++          },
++          "condition": {
++            "anyOf": [
++              {
++                "minLength": 1,
++                "pattern": "\\S",
++                "type": "string"
++              },
++              {
++                "type": "null"
++              }
++            ],
++            "default": null,
++            "title": "Condition"
++          },
++          "evidence": {
++            "minLength": 1,
++            "pattern": "\\S",
++            "title": "Evidence",
++            "type": "string"
++          }
++        },
++        "required": [
++          "id",
++          "event",
++          "measurement",
++          "timing",
++          "evidence"
++        ],
++        "title": "Finding",
++        "type": "object"
++      },
++      "LastSeizure": {
++        "additionalProperties": false,
++        "properties": {
++          "approximate": {
++            "default": false,
++            "description": "True if any numeric part of this measurement or its period is approximate.",
++            "title": "Approximate",
++            "type": "boolean"
++          },
++          "type": {
++            "const": "last_seizure",
++            "title": "Type",
++            "type": "string"
++          },
++          "occurred_at": {
++            "$ref": "#/$defs/TimePoint"
++          }
++        },
++        "required": [
++          "type",
++          "occurred_at"
++        ],
++        "title": "LastSeizure",
++        "type": "object"
++      },
++      "Number": {
++        "additionalProperties": false,
++        "properties": {
++          "type": {
++            "const": "number",
++            "title": "Type",
++            "type": "string"
++          },
++          "value": {
++            "minimum": 0,
++            "title": "Value",
++            "type": "number"
++          }
++        },
++        "required": [
++          "type",
++          "value"
++        ],
++        "title": "Number",
++        "type": "object"
++      },
++      "NumberDuration": {
++        "additionalProperties": false,
++        "properties": {
++          "type": {
++            "const": "number",
++            "title": "Type",
++            "type": "string"
++          },
++          "value": {
++            "exclusiveMinimum": 0,
++            "title": "Value",
++            "type": "number"
+           },
+           "unit": {
+             "enum": [
+@@ -683,324 +1061,130 @@
+           }
+         },
+         "required": [
+-          "quantity",
++          "type",
++          "value",
+           "unit"
+         ],
+-        "title": "Duration",
+-        "type": "object"
+-      },
+-      "EventScope": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "description": {
++        "title": "NumberDuration",
++        "type": "object"
++      },
++      "Period": {
++        "additionalProperties": false,
++        "properties": {
++          "time": {
++            "description": "The source observation window, such as since the last review.",
+             "minLength": 1,
+             "pattern": "\\S",
+-            "title": "Description",
+-            "type": "string"
+-          },
+-          "grouping": {
+-            "enum": [
+-              "one_type",
+-              "explicit_combined_group",
+-              "unspecified"
+-            ],
+-            "title": "Grouping",
+-            "type": "string"
+-          },
+-          "seizure_interpretation": {
+-            "enum": [
+-              "stated_seizure",
+-              "uncertain_seizure",
+-              "explicitly_non_seizure",
+-              "not_specified"
+-            ],
+-            "title": "Seizure Interpretation",
+-            "type": "string"
+-          }
+-        },
+-        "required": [
+-          "description",
+-          "grouping",
+-          "seizure_interpretation"
+-        ],
+-        "title": "EventScope",
+-        "type": "object"
+-      },
+-      "Exact": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "kind": {
+-            "const": "exact",
+-            "title": "Kind",
+-            "type": "string"
+-          },
+-          "value": {
+-            "minimum": 0,
+-            "title": "Value",
+-            "type": "number"
+-          },
++            "title": "Time",
++            "type": "string"
++          },
++          "start": {
++            "anyOf": [
++              {
++                "$ref": "#/$defs/TimePoint"
++              },
++              {
++                "type": "null"
++              }
++            ],
++            "default": null
++          },
++          "end": {
++            "anyOf": [
++              {
++                "$ref": "#/$defs/TimePoint"
++              },
++              {
++                "type": "null"
++              }
++            ],
++            "default": null
++          },
++          "duration": {
++            "anyOf": [
++              {
++                "discriminator": {
++                  "mapping": {
++                    "bound": "#/$defs/BoundDuration",
++                    "number": "#/$defs/NumberDuration",
++                    "range": "#/$defs/RangeDuration"
++                  },
++                  "propertyName": "type"
++                },
++                "oneOf": [
++                  {
++                    "$ref": "#/$defs/NumberDuration"
++                  },
++                  {
++                    "$ref": "#/$defs/RangeDuration"
++                  },
++                  {
++                    "$ref": "#/$defs/BoundDuration"
++                  }
++                ]
++              },
++              {
++                "type": "null"
++              }
++            ],
++            "default": null,
++            "title": "Duration"
++          }
++        },
++        "required": [
++          "time"
++        ],
++        "title": "Period",
++        "type": "object"
++      },
++      "QualitativeFrequency": {
++        "additionalProperties": false,
++        "properties": {
+           "approximate": {
++            "default": false,
++            "description": "True if any numeric part of this measurement or its period is approximate.",
+             "title": "Approximate",
+             "type": "boolean"
+-          }
+-        },
+-        "required": [
+-          "kind",
+-          "value",
+-          "approximate"
+-        ],
+-        "title": "Exact",
+-        "type": "object"
+-      },
+-      "Finding": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "finding_id": {
++          },
++          "type": {
++            "const": "qualitative",
++            "title": "Type",
++            "type": "string"
++          },
++          "frequency": {
++            "description": "The source frequency, such as occasional or most days.",
+             "minLength": 1,
+             "pattern": "\\S",
+-            "title": "Finding Id",
+-            "type": "string"
+-          },
+-          "event": {
+-            "$ref": "#/$defs/EventScope"
+-          },
+-          "measurement": {
+-            "discriminator": {
+-              "mapping": {
+-                "cluster_pattern": "#/$defs/ClusterPattern",
+-                "last_seizure": "#/$defs/LastSeizure",
+-                "observed_count": "#/$defs/ObservedCount",
+-                "qualitative_frequency": "#/$defs/QualitativeFrequency",
+-                "recurring_rate": "#/$defs/RecurringRate",
+-                "seizure_free_interval": "#/$defs/SeizureFreeInterval"
+-              },
+-              "propertyName": "kind"
+-            },
+-            "oneOf": [
+-              {
+-                "$ref": "#/$defs/RecurringRate"
+-              },
+-              {
+-                "$ref": "#/$defs/ObservedCount"
+-              },
+-              {
+-                "$ref": "#/$defs/ClusterPattern"
+-              },
+-              {
+-                "$ref": "#/$defs/SeizureFreeInterval"
+-              },
+-              {
+-                "$ref": "#/$defs/LastSeizure"
+-              },
+-              {
+-                "$ref": "#/$defs/QualitativeFrequency"
+-              }
+-            ],
+-            "title": "Measurement"
+-          },
+-          "temporal_status": {
+-            "enum": [
+-              "current",
+-              "recent",
+-              "historical",
+-              "future",
+-              "unclear"
+-            ],
+-            "title": "Temporal Status",
+-            "type": "string"
+-          },
+-          "observation_period": {
+-            "anyOf": [
+-              {
+-                "$ref": "#/$defs/ObservationPeriod"
+-              },
+-              {
+-                "type": "null"
+-              }
+-            ]
+-          },
+-          "condition": {
+-            "anyOf": [
+-              {
+-                "minLength": 1,
+-                "pattern": "\\S",
+-                "type": "string"
+-              },
+-              {
+-                "type": "null"
+-              }
+-            ],
+-            "title": "Condition"
+-          },
+-          "evidence": {
++            "title": "Frequency",
++            "type": "string"
++          }
++        },
++        "required": [
++          "type",
++          "frequency"
++        ],
++        "title": "QualitativeFrequency",
++        "type": "object"
++      },
++      "QualitativeQuantity": {
++        "additionalProperties": false,
++        "properties": {
++          "type": {
++            "const": "qualitative",
++            "title": "Type",
++            "type": "string"
++          },
++          "quantity": {
++            "description": "The source's quantity, such as several or multiple.",
+             "minLength": 1,
+             "pattern": "\\S",
+-            "title": "Evidence",
+-            "type": "string"
+-          }
+-        },
+-        "required": [
+-          "finding_id",
+-          "event",
+-          "measurement",
+-          "temporal_status",
+-          "observation_period",
+-          "condition",
+-          "evidence"
+-        ],
+-        "title": "Finding",
+-        "type": "object"
+-      },
+-      "LastSeizure": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "kind": {
+-            "const": "last_seizure",
+-            "title": "Kind",
+-            "type": "string"
+-          },
+-          "when": {
+-            "$ref": "#/$defs/TimePoint"
+-          }
+-        },
+-        "required": [
+-          "kind",
+-          "when"
+-        ],
+-        "title": "LastSeizure",
+-        "type": "object"
+-      },
+-      "ObservationPeriod": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "wording": {
+-            "minLength": 1,
+-            "pattern": "\\S",
+-            "title": "Wording",
+-            "type": "string"
+-          },
+-          "start": {
+-            "anyOf": [
+-              {
+-                "$ref": "#/$defs/TimePoint"
+-              },
+-              {
+-                "type": "null"
+-              }
+-            ]
+-          },
+-          "end": {
+-            "anyOf": [
+-              {
+-                "$ref": "#/$defs/TimePoint"
+-              },
+-              {
+-                "type": "null"
+-              }
+-            ]
+-          },
+-          "duration": {
+-            "anyOf": [
+-              {
+-                "$ref": "#/$defs/Duration"
+-              },
+-              {
+-                "type": "null"
+-              }
+-            ]
+-          }
+-        },
+-        "required": [
+-          "wording",
+-          "start",
+-          "end",
+-          "duration"
+-        ],
+-        "title": "ObservationPeriod",
+-        "type": "object"
+-      },
+-      "ObservedCount": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "kind": {
+-            "const": "observed_count",
+-            "title": "Kind",
+-            "type": "string"
+-          },
+-          "count": {
+-            "discriminator": {
+-              "mapping": {
+-                "bound": "#/$defs/Bound",
+-                "exact": "#/$defs/Exact",
+-                "qualitative": "#/$defs/QualitativeQuantity",
+-                "range": "#/$defs/Range"
+-              },
+-              "propertyName": "kind"
+-            },
+-            "oneOf": [
+-              {
+-                "$ref": "#/$defs/Exact"
+-              },
+-              {
+-                "$ref": "#/$defs/Range"
+-              },
+-              {
+-                "$ref": "#/$defs/Bound"
+-              },
+-              {
+-                "$ref": "#/$defs/QualitativeQuantity"
+-              }
+-            ],
+-            "title": "Count"
+-          }
+-        },
+-        "required": [
+-          "kind",
+-          "count"
+-        ],
+-        "title": "ObservedCount",
+-        "type": "object"
+-      },
+-      "QualitativeFrequency": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "kind": {
+-            "const": "qualitative_frequency",
+-            "title": "Kind",
+-            "type": "string"
+-          },
+-          "wording": {
+-            "minLength": 1,
+-            "pattern": "\\S",
+-            "title": "Wording",
+-            "type": "string"
+-          }
+-        },
+-        "required": [
+-          "kind",
+-          "wording"
+-        ],
+-        "title": "QualitativeFrequency",
+-        "type": "object"
+-      },
+-      "QualitativeQuantity": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "kind": {
+-            "const": "qualitative",
+-            "title": "Kind",
+-            "type": "string"
+-          },
+-          "wording": {
+-            "minLength": 1,
+-            "pattern": "\\S",
+-            "title": "Wording",
+-            "type": "string"
+-          }
+-        },
+-        "required": [
+-          "kind",
+-          "wording"
++            "title": "Quantity",
++            "type": "string"
++          }
++        },
++        "required": [
++          "type",
++          "quantity"
+         ],
+         "title": "QualitativeQuantity",
+         "type": "object"
+@@ -1008,9 +1192,9 @@
+       "Range": {
+         "additionalProperties": false,
+         "properties": {
+-          "kind": {
++          "type": {
+             "const": "range",
+-            "title": "Kind",
++            "title": "Type",
+             "type": "string"
+           },
+           "lower": {
+@@ -1023,121 +1207,54 @@
+             "title": "Upper",
+             "type": "number"
+           },
+-          "approximate": {
+-            "title": "Approximate",
++          "lower_inclusive": {
++            "default": true,
++            "title": "Lower Inclusive",
+             "type": "boolean"
+-          }
+-        },
+-        "required": [
+-          "kind",
++          },
++          "upper_inclusive": {
++            "default": true,
++            "title": "Upper Inclusive",
++            "type": "boolean"
++          }
++        },
++        "required": [
++          "type",
+           "lower",
+-          "upper",
+-          "approximate"
++          "upper"
+         ],
+         "title": "Range",
+         "type": "object"
+       },
+-      "RecurringRate": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "kind": {
+-            "const": "recurring_rate",
+-            "title": "Kind",
+-            "type": "string"
+-          },
+-          "count": {
+-            "discriminator": {
+-              "mapping": {
+-                "bound": "#/$defs/Bound",
+-                "exact": "#/$defs/Exact",
+-                "qualitative": "#/$defs/QualitativeQuantity",
+-                "range": "#/$defs/Range"
+-              },
+-              "propertyName": "kind"
+-            },
+-            "oneOf": [
+-              {
+-                "$ref": "#/$defs/Exact"
+-              },
+-              {
+-                "$ref": "#/$defs/Range"
+-              },
+-              {
+-                "$ref": "#/$defs/Bound"
+-              },
+-              {
+-                "$ref": "#/$defs/QualitativeQuantity"
+-              }
+-            ],
+-            "title": "Count"
+-          },
+-          "denominator": {
+-            "$ref": "#/$defs/Duration"
+-          }
+-        },
+-        "required": [
+-          "kind",
+-          "count",
+-          "denominator"
+-        ],
+-        "title": "RecurringRate",
+-        "type": "object"
+-      },
+-      "SeizureFreeInterval": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "kind": {
+-            "const": "seizure_free_interval",
+-            "title": "Kind",
+-            "type": "string"
+-          },
+-          "duration": {
+-            "anyOf": [
+-              {
+-                "$ref": "#/$defs/Duration"
+-              },
+-              {
+-                "type": "null"
+-              }
+-            ]
+-          },
+-          "since": {
+-            "anyOf": [
+-              {
+-                "$ref": "#/$defs/TimePoint"
+-              },
+-              {
+-                "type": "null"
+-              }
+-            ]
+-          }
+-        },
+-        "required": [
+-          "kind",
+-          "duration",
+-          "since"
+-        ],
+-        "title": "SeizureFreeInterval",
+-        "type": "object"
+-      },
+-      "TimePoint": {
+-        "additionalProperties": false,
+-        "properties": {
+-          "wording": {
+-            "minLength": 1,
+-            "pattern": "\\S",
+-            "title": "Wording",
+-            "type": "string"
+-          },
+-          "form": {
+-            "enum": [
+-              "calendar",
+-              "relative"
+-            ],
+-            "title": "Form",
+-            "type": "string"
+-          },
+-          "precision": {
++      "RangeDuration": {
++        "additionalProperties": false,
++        "properties": {
++          "type": {
++            "const": "range",
++            "title": "Type",
++            "type": "string"
++          },
++          "lower": {
++            "exclusiveMinimum": 0,
++            "title": "Lower",
++            "type": "number"
++          },
++          "upper": {
++            "minimum": 0,
++            "title": "Upper",
++            "type": "number"
++          },
++          "lower_inclusive": {
++            "default": true,
++            "title": "Lower Inclusive",
++            "type": "boolean"
++          },
++          "upper_inclusive": {
++            "default": true,
++            "title": "Upper Inclusive",
++            "type": "boolean"
++          },
++          "unit": {
+             "enum": [
+               "second",
+               "minute",
+@@ -1145,17 +1262,235 @@
+               "day",
+               "week",
+               "month",
+-              "year",
+-              "unspecified"
+-            ],
+-            "title": "Precision",
+-            "type": "string"
+-          }
+-        },
+-        "required": [
+-          "wording",
+-          "form",
+-          "precision"
++              "year"
++            ],
++            "title": "Unit",
++            "type": "string"
++          }
++        },
++        "required": [
++          "type",
++          "lower",
++          "upper",
++          "unit"
++        ],
++        "title": "RangeDuration",
++        "type": "object"
++      },
++      "Rate": {
++        "additionalProperties": false,
++        "properties": {
++          "approximate": {
++            "default": false,
++            "description": "True if any numeric part of this measurement or its period is approximate.",
++            "title": "Approximate",
++            "type": "boolean"
++          },
++          "count": {
++            "discriminator": {
++              "mapping": {
++                "bound": "#/$defs/Bound",
++                "number": "#/$defs/Number",
++                "qualitative": "#/$defs/QualitativeQuantity",
++                "range": "#/$defs/Range"
++              },
++              "propertyName": "type"
++            },
++            "oneOf": [
++              {
++                "$ref": "#/$defs/Number"
++              },
++              {
++                "$ref": "#/$defs/Range"
++              },
++              {
++                "$ref": "#/$defs/Bound"
++              },
++              {
++                "$ref": "#/$defs/QualitativeQuantity"
++              }
++            ],
++            "title": "Count"
++          },
++          "per": {
++            "discriminator": {
++              "mapping": {
++                "bound": "#/$defs/BoundDuration",
++                "number": "#/$defs/NumberDuration",
++                "range": "#/$defs/RangeDuration"
++              },
++              "propertyName": "type"
++            },
++            "oneOf": [
++              {
++                "$ref": "#/$defs/NumberDuration"
++              },
++              {
++                "$ref": "#/$defs/RangeDuration"
++              },
++              {
++                "$ref": "#/$defs/BoundDuration"
++              }
++            ],
++            "title": "Per"
++          },
++          "type": {
++            "const": "rate",
++            "title": "Type",
++            "type": "string"
++          }
++        },
++        "required": [
++          "count",
++          "per",
++          "type"
++        ],
++        "title": "Rate",
++        "type": "object"
++      },
++      "RateDetails": {
++        "additionalProperties": false,
++        "properties": {
++          "count": {
++            "discriminator": {
++              "mapping": {
++                "bound": "#/$defs/Bound",
++                "number": "#/$defs/Number",
++                "qualitative": "#/$defs/QualitativeQuantity",
++                "range": "#/$defs/Range"
++              },
++              "propertyName": "type"
++            },
++            "oneOf": [
++              {
++                "$ref": "#/$defs/Number"
++              },
++              {
++                "$ref": "#/$defs/Range"
++              },
++              {
++                "$ref": "#/$defs/Bound"
++              },
++              {
++                "$ref": "#/$defs/QualitativeQuantity"
++              }
++            ],
++            "title": "Count"
++          },
++          "per": {
++            "discriminator": {
++              "mapping": {
++                "bound": "#/$defs/BoundDuration",
++                "number": "#/$defs/NumberDuration",
++                "range": "#/$defs/RangeDuration"
++              },
++              "propertyName": "type"
++            },
++            "oneOf": [
++              {
++                "$ref": "#/$defs/NumberDuration"
++              },
++              {
++                "$ref": "#/$defs/RangeDuration"
++              },
++              {
++                "$ref": "#/$defs/BoundDuration"
++              }
++            ],
++            "title": "Per"
++          }
++        },
++        "required": [
++          "count",
++          "per"
++        ],
++        "title": "RateDetails",
++        "type": "object"
++      },
++      "SeizureFree": {
++        "additionalProperties": false,
++        "properties": {
++          "approximate": {
++            "default": false,
++            "description": "True if any numeric part of this measurement or its period is approximate.",
++            "title": "Approximate",
++            "type": "boolean"
++          },
++          "type": {
++            "const": "seizure_free",
++            "title": "Type",
++            "type": "string"
++          },
++          "duration": {
++            "anyOf": [
++              {
++                "discriminator": {
++                  "mapping": {
++                    "bound": "#/$defs/BoundDuration",
++                    "number": "#/$defs/NumberDuration",
++                    "range": "#/$defs/RangeDuration"
++                  },
++                  "propertyName": "type"
++                },
++                "oneOf": [
++                  {
++                    "$ref": "#/$defs/NumberDuration"
++                  },
++                  {
++                    "$ref": "#/$defs/RangeDuration"
++                  },
++                  {
++                    "$ref": "#/$defs/BoundDuration"
++                  }
++                ]
++              },
++              {
++                "type": "null"
++              }
++            ],
++            "default": null,
++            "title": "Duration"
++          },
++          "since": {
++            "anyOf": [
++              {
++                "$ref": "#/$defs/TimePoint"
++              },
++              {
++                "type": "null"
++              }
++            ],
++            "default": null
++          }
++        },
++        "required": [
++          "type"
++        ],
++        "title": "SeizureFree",
++        "type": "object"
++      },
++      "TimePoint": {
++        "additionalProperties": false,
++        "properties": {
++          "time": {
++            "description": "The source time expression; do not resolve relative dates.",
++            "minLength": 1,
++            "pattern": "\\S",
++            "title": "Time",
++            "type": "string"
++          },
++          "form": {
++            "enum": [
++              "calendar",
++              "relative"
++            ],
++            "title": "Form",
++            "type": "string"
++          }
++        },
++        "required": [
++          "time",
++          "form"
+         ],
+         "title": "TimePoint",
+         "type": "object"
+@@ -1163,6 +1498,13 @@
+     },
+     "additionalProperties": false,
+     "properties": {
++      "document_dates": {
++        "items": {
++          "$ref": "#/$defs/DocumentDate"
++        },
++        "title": "Document Dates",
++        "type": "array"
++      },
+       "answer": {
+         "$ref": "#/$defs/Answer"
+       },
+@@ -1173,42 +1515,39 @@
+         "title": "Findings",
+         "type": "array"
+       },
+-      "selected_finding_ids": {
++      "selected_ids": {
+         "items": {
+           "minLength": 1,
+           "pattern": "\\S",
+           "type": "string"
+         },
+-        "title": "Selected Finding Ids",
++        "title": "Selected Ids",
+         "type": "array"
+       }
+     },
+     "required": [
+       "answer",
+       "findings",
+-      "selected_finding_ids"
++      "selected_ids"
+     ],
+     "title": "Rich",
+     "type": "object"
+   },
+   "schema_instructions": [
+-    "The cases show intermediate facts and selections, not the response schema. Their raw_value/evidence preserve source wording; normalised_label illustrates label conversion. Populate answer.label with the case's answer label, or the selected fact's normalised_label when no new label is given. Always declare the answer label, including unknown and no seizure frequency reference, and copy its supporting quotation into answer.evidence. Only no-reference has null evidence.",
+-    "Source measurements preserve what was stated; the original cases govern the final answer, including combining counts and interpreting time. An answer conversion must not overwrite source measurements.",
+-    "For each finding, populate the source measurement and evidence fields. Keep original wording in evidence and measurement-specific wording fields. Retain findings even when their answer label is unknown. Map the cases' fact_id to finding_id and selected_fact_ids to selected_finding_ids.",
+-    "Return all seizure-frequency findings and one declared current-frequency answer in JSON.",
+-    "Represent what the source states before projecting it into the answer label. Preserve approximation, ranges and one-sided bounds rather than replacing them with a midpoint.",
+-    "A recurring rate is distinct from a count observed during an interval. Do not convert an observed count into a recurring finding. Any task-label conversion belongs only in answer.",
+-    "Keep cluster cadence separate from seizures per cluster in source measurements. The cases still govern arithmetic for the answer label.",
+-    "For each event copy its description. Distinguish one type, an explicitly combined group and unspecified seizures. Preserve explicit uncertainty about whether events are seizures; do not infer a diagnosis from an event name.",
+-    "Retain observation periods separately from rate denominators. Use observation_period for every finding, including observed counts, only when explicitly stated. There is no interval field inside an observed-count measurement.",
+-    "Preserve calendar or relative time wording and its stated precision. Do not infer calendar dates, missing years or a duration from dates in source measurements. Use null for unstated time information. The cases still govern time conversion for the answer label.",
+-    "Use seizure_free_interval for absence of seizures, retaining the stated event type and period. Do not turn absence of one seizure type into absence of all seizures. No more than twice weekly is an upper bound, not a denied rate. Preserve wording such as not clustered or less frequent but not absent as qualitative frequency. Not documented means missing information, not a zero count or seizure freedom.",
+-    "Keep qualitative wording when a measurement cannot be quantified. Retain an explicit condition such as only when medication is missed; do not infer restrictions.",
+-    "Evidence must be an exact source quotation. Do not add a duplicate raw-value field, model confidence or rationale. Link the answer to the relevant unique finding IDs. For no-reference return empty findings/links and null answer evidence. Do not silently omit uncertain findings.",
+-    "A cluster_pattern may have null cadence and null seizures_per_cluster when neither is quantified. The evidence preserves the stated cluster pattern. A qualitative quantity uses kind qualitative and wording such as multiple; do not invent a number.",
+-    "Time precision may be second, minute, hour, day, week, month, year or unspecified, following the stated expression. Preserve its original wording without inventing dates.",
+-    "Durations must be positive. Ongoing seizures are not a zero-duration seizure-free interval. Use null duration only when a seizure-free statement gives no duration.",
+-    "An unknown answer still links to its supporting findings. For example, for Possible seizures continue but their frequency is unclear, a qualitative_frequency finding f1 retains frequency is unclear and uncertainty about the events; answer.label is unknown and selected_finding_ids is [f1]. Copy the supporting source text into answer.evidence."
++    "The cases show intermediate facts and selections, not the response schema. Their raw_value/evidence preserve source text; normalised_label illustrates label conversion. Populate answer.label with the case's answer label, or the selected fact's normalised_label when no new label is given. Always declare answer.label, including unknown and no seizure frequency reference. Copy its supporting quotation into answer.evidence. Only no-reference has null answer.evidence. Map fact_id to id and selected_fact_ids to selected_ids.",
++    "Return all seizure-frequency findings and one declared current-frequency answer. Source measurements preserve what was stated; the original cases govern the answer, including combining counts and interpreting time. Answer conversion must not overwrite measurements.",
++    "Use measurement types rate, count, cluster, seizure_free, last_seizure and qualitative. A rate asserts recurrence (count per duration). A count is observed during a period or at occurred_at, not an inferred recurring rate. Do not divide an observed count by its period to create a source rate. Preserve unspecified observation times by omitting the fields.",
++    "A cluster separates rate, observed cluster count and seizures_per_cluster. Its nested rate contains count and per without a type field. Cluster count requires period or occurred_at. An unquantified cluster may omit all numeric fields; evidence retains the cluster statement. Do not invent a cluster rate or infer a numeric cluster size from the word clusters.",
++    "Use type number for a single number, range for two endpoints, bound for a one-sided limit, and qualitative with quantity for text such as multiple. Bounds retain relation at_least, more_than, at_most or less_than. For up to 2-3, use a bound with relation at_most and a range value from 2 to 3. Do not replace it with an endpoint or midpoint. Range endpoints default to inclusive; for more than 2 but at most 5 set lower_inclusive false and upper 5. Durations use the same numeric forms with unit alongside the value/endpoints, without a quantity wrapper. Duration values must be positive.",
++    "Set approximate true once on the measurement if any numeric part, including its period duration, is explicitly approximate. Never put approximate inside a count, range, bound, per or nested cluster rate. Omission defaults to false. Evidence retains which part was approximate; the flag does not imply that every part is approximate.",
++    "Use event.type for the source event name without inferring a diagnosis. Scope is specific for named events, combined only when the source explicitly measures events together, and unspecified otherwise. Seizure_status is stated, uncertain, non_seizure or unspecified. Preserve uncertainty about whether events are seizures; do not omit uncertain findings.",
++    "Timing is current, historical, future or unclear. Current includes recent findings used to describe the present situation; dates and periods retain their finer timing. Do not turn a past event into a recurring present rate. Keep explicit conditions in condition.",
++    "Use period for an observation window, keeping its source expression in time and any explicit start, end or duration. It is distinct from a rate's per. Use occurred_at on count and cluster for individual dated events and on last_seizure for the last event. Separate separately dated counts only when supported; do not distribute a combined count across dates. A cluster spanning days may retain its window in period.",
++    "Time points contain time and form (calendar or relative). Preserve partial dates and relative references, including that date. Do not infer missing years, resolve references, calculate calendar dates, or derive source durations from dates. Include enough exact evidence to retain the antecedent of a relative reference. The original cases still govern time conversion for answer.label.",
++    "Collect explicitly labelled document dates in document_dates with role clinic, letter or unspecified, source time, form and exact evidence. A clinic date is not automatically a letter date. Do not copy patient birth dates or seizure dates into document_dates. Document dates alone are not seizure-frequency findings and do not change no-reference.",
++    "Seizure_free retains absence of the specified event, optionally duration or since. Absence of one event type is not absence of all seizures. Ongoing seizures are not a zero-duration seizure-free interval. No more than twice weekly is an upper bound, not absence. Use qualitative with frequency for expressions such as less frequent but not absent or not clustered. Not documented is not a zero count or seizure freedom.",
++    "Evidence must be an exact source quotation. Link the answer to unique finding IDs in selected_ids; an unknown answer still needs supporting findings and evidence. For no-reference return empty findings and selected_ids and null answer.evidence. Overlapping findings are not additive: a dated cluster within a period total is not an additional cluster. Last seizure and none since can describe distinct claims from one quote.",
++    "Omit absent optional fields rather than emitting null. Omission means no value extracted, not proof that the source lacks information. Omit approximate when false and range inclusivity flags when true. Keep required answer, findings and selected_ids, even when the latter two are empty. Do not add confidence, rationale or duplicate raw-value fields."
+   ],
+   "note_text": "<NOTE_TEXT>"
+ }

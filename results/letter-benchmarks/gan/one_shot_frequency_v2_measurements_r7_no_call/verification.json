@@ -1,0 +1,139 @@
+{
+  "version": "one_shot_frequency_v2_measurements_r7",
+  "revision": "simplified_dates_v1",
+  "scope": "fictional no-call representation checks only; not an evaluation freeze",
+  "model_calls": 0,
+  "dataset_rows_loaded": 0,
+  "repair": "none",
+  "scorer": "none; native task instructions/cases/label forms unchanged",
+  "checks": [
+    {
+      "name": "approximate_range",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "observed_count",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "cluster",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "seizure_free",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "last_seizure",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "qualitative",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "nonclustered_pattern",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "upper_bound",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "conditional",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "reduced_not_absent",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "subtype_seizure_free",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "no_reference",
+      "valid": true,
+      "exact_quotes": 0
+    },
+    {
+      "name": "unquantified_cluster",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "qualitative_cluster_size",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "weekly_precision",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "unknown_link",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "observed_clusters",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "bound_on_range",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "compound_duration",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "dated_count",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "relative_cluster",
+      "valid": true,
+      "exact_quotes": 2
+    },
+    {
+      "name": "document_dates_without_findings",
+      "valid": true,
+      "exact_quotes": 1
+    },
+    {
+      "name": "complete_dates_example",
+      "valid": true,
+      "exact_quotes": 8
+    }
+  ],
+  "rendered_payload_identical": true,
+  "sha256": {
+    "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r7.py": "86dfe196d11856f7c1e79795d5d4a689d49cd70bb222043cdb72529d335a75f5",
+    "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r5.py": "53beb5707c8fccaa626a5ac7c0a97bd4a86a698e9674e5d57788cf53def36e37",
+    "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements.py": "a9cb300e9b800dfa1ce19bcb81c9501b1105946cbd0b665a54510bff4625ac08",
+    "/Users/cobro/code/clinical-extraction/scripts/benchmarks/prepare_one_shot_r7.py": "dfbf8d95f148a0d3d5a2c626c429aabf5367b9ba56c6a225c5d1a803a55da90a",
+    "results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7_no_call/rich.messages.json": "3b295a9384a109100389f7353371674f8462f437abcc8494f387bd0d7eace839",
+    "results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7_no_call/rich.schema.json": "88024062c569f38e19163036c82756a41fb4bd5741da2afa75091626754d5702",
+    "results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7_no_call/fictional_fixtures.json": "626a7d5c2f539c639b69cb0ba1b7a72b3ddf8308aba0b3665ea86b2bd0bf3973",
+    "results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7_no_call/complete_example.json": "222ac7f73fc151120a95a4003a14f875be02c00ccdaa52e2c7b1879489985dd2",
+    "results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7_no_call/complete_example.md": "26d06be49f970bb3c1f07e6d1beb49b1741f59d3662b8f1a804393f35221a27e",
+    "results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7_no_call/r5_r7.diff": "74a56d99714c9681d06fd16d3ede41f98430792c3c3d292a9ff1f925d3379c9a"
+  }
+}
