@@ -2,11 +2,11 @@
 
 # Seizure-finding annotation guide
 
-Canonical owner of source annotation rules and the output format. Version v0.5,
+Canonical owner of source annotation rules and the output format. Version v0.6,
 2026-09-15. Apply with the [annotation workflow and review](annotation_guide.md).
 The [study protocol](../../../../docs/research/gan2026/one_shot_paper_protocol.md) owns benchmark endpoints and permissions.
 
-## Seizure-finding annotation guidelines — v0.5 (2026-09-15)
+## Seizure-finding annotation guidelines — v0.6 (2026-09-15)
 
 These instructions define the development annotation conventions. The
 [execution record](../../../../docs/research/gan2026/one_shot_execution_record.md#annotation-instructions-and-pilot-2026-09-15)
@@ -128,7 +128,7 @@ Set measurement-level `approximate: true` for explicit numeric approximation,
 including an approximate observation duration. Evidence preserves which component
 is approximate. An ordinary range is not automatically approximate. Durations use
 numeric forms with `unit` alongside the value/endpoints; permitted units are second,
-minute, hour, day, week, month and year. Duration of an individual seizure is not
+minute, hour, day, week, month, quarter and year. Duration of an individual seizure is not
 a frequency denominator. “Seizures on three days” counts seizure-days, not seizures:
 retain the complete phrase as qualitative frequency, preserving the affected-day unit. Do not infer an event count; this alone does not require an issue.
 
@@ -153,7 +153,7 @@ fictional examples belong in the tracked example directory.
 
 Required wrapper fields:
 
-- `guide_version`: `seizure_finding_annotation_v0.5`.
+- `guide_version`: `seizure_finding_annotation_v0.6`.
 - `source_id`, `source_row_index`, `source_sha256`: copied from the manifest.
 - `annotation_state`: `complete`, `needs_review` or `source_unavailable`.
 - `document_dates`, `findings`: arrays using the R7 structures above, without an
@@ -271,10 +271,27 @@ finding schema or benchmark outputs. Apply them to equivalent candidates across
 dev750; retain separate issues when another ambiguity remains. The execution record
 owns the adjudication evidence and review scope.
 
+## Native quarter support for v0.6 (2026-09-15)
+
+Use the separately versioned native-quarter R7 candidate described in the
+[schema decision](one_shot_schema_decisions.md#native-quarter-r7-candidate-2026-09-15).
+Quarter is a native duration unit in numeric, range and bounded durations, including
+rate denominators, cluster rates, observation windows and seizure-free durations.
+Explicit recurrence such as an estimated 8–16 seizures per quarter is a rate with
+range count 8–16, per 1 quarter, and measurement-level approximation. Preserve
+quarter without converting to months or days. An observed count in the past quarter
+remains a count with its stated observation period. Do not infer calendar-quarter
+boundaries, a date or a missing year from the unit.
+
+Earlier v0.5 annotations that preserved quarterly recurrence qualitatively remain
+valid historical outputs. Reclassification is a separately attributed semantic
+change to a v0.6 reviewed snapshot, never an overwrite of an immutable initial.
+No native benchmark label/scorer conversion is changed by this annotation decision.
+
 # Seizure-finding annotation workflow and review
 
 Canonical owner of annotation execution, both reviewers' checks and finding matching.
-Workflow revision: Grok handover, 2026-09-15; annotation conventions remain v0.5. Apply with the [annotation guide](annotation_guide.md).
+Workflow revision: Grok handover, 2026-09-15; annotation conventions are v0.6 (native quarter support). Apply with the [annotation guide](annotation_guide.md).
 The [study protocol](../../../../docs/research/gan2026/one_shot_paper_protocol.md) owns the separate Gan answer endpoint.
 
 The user authorised source annotation and self-review by Gemini through AGY on
@@ -340,8 +357,12 @@ A provider error with a complete valid record remains a provider-error attempt,
 even if its record is usable. A failed letter is not an empty inventory.
 
 Use the small file workflow first. An automatic scheduler, retry engine or custom
-model client is not required. Prove the next five-letter assignment before adding
-concurrency. On interruption, inspect saved files and resume pending source IDs;
+model client is not required. The user authorised increased concurrency for the next ten batches on 2026-09-15.
+Keep five-letter assignments, give each source a single writer, and save outputs
+in distinct batch/attempt directories. The coordinator alone updates shared
+collections and manifests after checking saved files. Preserve each running batch's
+actual package/version; apply v0.6 to newly dispatched batches and review quarter
+wording separately in any already-running v0.5 batch. On interruption, inspect saved files and resume pending source IDs;
 do not reconstruct annotations from chat memory. Freeze any model/settings change
 as a new segment and compare its decisions with the earlier segment.
 

@@ -1,7 +1,7 @@
 # Seizure-finding annotation workflow and review
 
 Canonical owner of annotation execution, both reviewers' checks and finding matching.
-Workflow revision: Grok handover, 2026-09-15; annotation conventions remain v0.5. Apply with the [annotation guide](seizure_finding_annotation_guide.md).
+Workflow revision: Grok handover, 2026-09-15; annotation conventions are v0.6 (native quarter support). Apply with the [annotation guide](seizure_finding_annotation_guide.md).
 The [study protocol](one_shot_paper_protocol.md) owns the separate Gan answer endpoint.
 
 The user authorised source annotation and self-review by Gemini through AGY on
@@ -67,8 +67,12 @@ A provider error with a complete valid record remains a provider-error attempt,
 even if its record is usable. A failed letter is not an empty inventory.
 
 Use the small file workflow first. An automatic scheduler, retry engine or custom
-model client is not required. Prove the next five-letter assignment before adding
-concurrency. On interruption, inspect saved files and resume pending source IDs;
+model client is not required. The user authorised increased concurrency for the next ten batches on 2026-09-15.
+Keep five-letter assignments, give each source a single writer, and save outputs
+in distinct batch/attempt directories. The coordinator alone updates shared
+collections and manifests after checking saved files. Preserve each running batch's
+actual package/version; apply v0.6 to newly dispatched batches and review quarter
+wording separately in any already-running v0.5 batch. On interruption, inspect saved files and resume pending source IDs;
 do not reconstruct annotations from chat memory. Freeze any model/settings change
 as a new segment and compare its decisions with the earlier segment.
 

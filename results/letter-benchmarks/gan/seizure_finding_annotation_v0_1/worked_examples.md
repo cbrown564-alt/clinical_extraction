@@ -64,7 +64,7 @@ from the supplied manifest, not calculated or invented by Gemini.
 
 ```json
 {
-  "guide_version": "seizure_finding_annotation_v0.5",
+  "guide_version": "seizure_finding_annotation_v0.6",
   "source_id": "fictional-example-01",
   "source_row_index": 0,
   "source_sha256": "a3ca54724e1f1f34dfd614e7797d466c1b12e10212ae22acb589a093be1913c6",
@@ -325,3 +325,12 @@ A completed mechanical report alone never supplies the nine review decisions.
 | “She has three seizures per month. Missed meals may trigger these seizures.” | Retain rate 3/month and the qualified condition “Missed meals may trigger these seizures”. Include both sentences in evidence. Do not change this into three seizures only when meals are missed, or assert a proven cause. |
 | “A cluster occurred yesterday. No clear trigger was identified, though poor sleep was noted beforehand.” | Retain the observed cluster and the full qualified context. “No clear trigger” must not be dropped while retaining poor sleep. |
 | “She had one seizure on Monday. In general, missed meals may trigger her seizures.” | Retain the observed count and Monday. The general statement does not establish that a missed meal preceded Monday's event; do not attach an invented incident-specific cause. |
+
+
+## Native quarter representation (v0.6)
+
+Fictional source: “Seizures occur at an estimated 8 to 16 per quarter.”
+Represent this as a `rate` with range count 8–16, `per` equal to a number duration
+of 1 `quarter`, and `approximate: true`. Preserve the unit; do not convert to months.
+The native-quarter candidate's fictional fixtures also exercise cluster-rate ranges
+and bounded seizure-free durations. These are representation checks, not performance evidence.

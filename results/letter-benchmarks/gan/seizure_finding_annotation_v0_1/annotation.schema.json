@@ -77,6 +77,7 @@
             "day",
             "week",
             "month",
+            "quarter",
             "year"
           ],
           "title": "Unit",
@@ -606,6 +607,7 @@
             "day",
             "week",
             "month",
+            "quarter",
             "year"
           ],
           "title": "Unit",
@@ -814,6 +816,7 @@
             "day",
             "week",
             "month",
+            "quarter",
             "year"
           ],
           "title": "Unit",
@@ -1142,7 +1145,7 @@
   "additionalProperties": false,
   "properties": {
     "guide_version": {
-      "const": "seizure_finding_annotation_v0.5",
+      "const": "seizure_finding_annotation_v0.6",
       "title": "Guide Version",
       "type": "string"
     },

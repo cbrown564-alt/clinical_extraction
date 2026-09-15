@@ -38,14 +38,14 @@ header = (
 )
 (folder / "annotation_guide.md").write_text(header + section + "\n")
 manifest = {
-    "guide_version": "seizure_finding_annotation_v0.5",
+    "guide_version": "seizure_finding_annotation_v0.6",
     "status": "instruction package; no dev750 sources or annotation run included",
     "canonical_owners": [str(path.relative_to(root)) for path in owners],
     "canonical_section_sha256": hashlib.sha256(original.encode()).hexdigest(),
     "r7_source_sha256": hashlib.sha256(
         (
             root / "src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/"
-            "one_shot_measurements_r7.py"
+            "one_shot_measurements_r7_quarter.py"
         ).read_bytes()
     ).hexdigest(),
     "files": {
