@@ -1,5 +1,23 @@
 # One-call study execution record
 
+## Batch 003–012 domain decisions applied (2026-09-15)
+
+CB selected 1A, 2A, 3A and 4A from the secondary review. Codex applied the choices
+in a separate five-source partial snapshot under
+`reviews/codex/grok_batches003_012/adjudication_CB_1A_2A_3A_4A/` in the local run.
+The source date conflict retains unclear timing; both potentially overlapping
+counts remain unchanged with issues and no sum. Named aura-event absence is
+included, and duration-qualified convulsive-event absence retains its restriction.
+
+All five records, now 15 findings, pass the frozen v0.6 checker and targeted
+application checks. Three source ambiguities intentionally remain open; no domain
+choice is awaiting a response. Other proposed batch corrections and full-set
+reviews remain pending. The accepted reference stays at 34 letters/107 findings.
+Grok initials, historical checks and their hashes are preserved. This is an
+attributed source-annotation application on Gan synthetic dev750, not a schema,
+scorer or model-output repair. No model calls or locked data were used.
+
+
 ## Grok batches 003–012 secondary review (2026-09-15)
 
 Codex completed full-source secondary review of the 50 saved v0.6 initials:
