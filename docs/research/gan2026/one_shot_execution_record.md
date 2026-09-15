@@ -1,5 +1,35 @@
 # One-call study execution record
 
+## Batches 008–012 corrections and current totals (2026-09-15)
+
+Codex applied the remaining source-specific corrections under v0.6: 25 letters
+now contain 79 findings (previously 64). Twenty-three letters are adjudicable;
+two retain the subtype-scope ambiguity selected by CB. Cluster occurrence and
+size, omitted subsets, event identity, restricted absence and duplicate claims
+are corrected without changing the original initials.
+
+Across batches 003–012, all 102 proposals are implemented: 50 letters, 165 findings,
+47 adjudicable letters/157 findings and three deliberately retained source issues.
+Final A01–A09 review has 444 passing checks, six unresolved and no failures. All ten
+structural checks and 165 isolated R7 finding parses passed, together with evidence,
+source identity, proposal coverage and CB-decision checks. Final C01–C07 review
+covers 42 groups/1,911 memberships and 12 explicit comparisons. Seven C08 screens
+with 3,342 memberships still require wider full-source propagation review.
+
+Including the earlier pieces, 84 reviewed letters contain 272 findings; 81 letters
+and 264 findings are adjudicable. The previously accepted 34-letter/107-finding
+set remains separately recorded. There are 666 unannotated letters, with batch_013
+next in the assignment list. Both full750 reviews remain pending. These counts
+are annotation progress, not clinical validation or benchmark performance.
+
+The local correction report, summary, checks, changes and immutable snapshot hashes
+are under the correction directory named below. Current per-batch paths are in the
+run's `batches/manifest.json`; `progress.jsonl` and `TERMINAL_HANDOFF.md` point to the
+corrected records. Source-bearing files remain local-only. No paid calls, locked-test
+inspection or extraction-code changes were needed; repository tests were not rerun
+for these annotation/documentation changes. Historical sections below retain the
+counts and pending work at their original checkpoints.
+
 ## Batches 003–007 corrections implemented (2026-09-15)
 
 Codex applied the source-specific review corrections in separate v0.6 snapshots:
