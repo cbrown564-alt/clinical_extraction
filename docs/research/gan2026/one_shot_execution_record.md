@@ -1,5 +1,19 @@
 # One-call study execution record
 
+## Grok batch 002 initials (2026-09-15)
+
+The user asked Grok 4.6 to annotate batch 002 while Codex finished the batch-001
+formal report. Runtime recorded for this segment is Cursor Grok 4.6
+(`cursor-grok-4.6`); no AGY effort flag was available. Initials for source IDs
+419, 446, 466, 467 and 531 are saved under
+`runs/seizure_finding_annotation_v0_2/agy_gemini38_high/raw/grok_segment/batch_002/`
+and assembled as `batches/batch_002.initial.jsonl`. There are now 34 initial
+records and 716 unannotated letters. The v0.5 Grok-handoff checker passed
+structurally on all five letters. This is not batch acceptance, clinical
+validation or a full-set review. Codex still owns batch-001 formal acceptance
+and the independent secondary check of this Grok segment before throughput
+increases.
+
 ## Low-effort continuation and Grok 4.6 handover (2026-09-15)
 
 The user authorised Gemini low effort, then replaced Gemini with Grok 4.6 as the
