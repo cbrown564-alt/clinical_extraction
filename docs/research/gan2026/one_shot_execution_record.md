@@ -1,18 +1,84 @@
 # One-call study execution record
 
-## Grok batch 002 initials (2026-09-15)
+## Grok batches 003–012 initials under v0.6 (2026-09-15)
 
-The user asked Grok 4.6 to annotate batch 002 while Codex finished the batch-001
-formal report. Runtime recorded for this segment is Cursor Grok 4.6
-(`cursor-grok-4.6`); no AGY effort flag was available. Initials for source IDs
-419, 446, 466, 467 and 531 are saved under
-`runs/seizure_finding_annotation_v0_2/agy_gemini38_high/raw/grok_segment/batch_002/`
-and assembled as `batches/batch_002.initial.jsonl`. There are now 34 initial
-records and 716 unannotated letters. The v0.5 Grok-handoff checker passed
-structurally on all five letters. This is not batch acceptance, clinical
-validation or a full-set review. Codex still owns batch-001 formal acceptance
-and the independent secondary check of this Grok segment before throughput
-increases.
+Grok 4.6 (`cursor-grok-4.6`, no AGY effort flag) saved first valid initials for
+the assigned ten batches (50 letters: 003–012) using frozen
+`guide_versions/v0.6_quarter/`. Quarterly recurrence is encoded as a native
+duration unit where the source states it (source 1773: increase over the last
+quarter plus 2 drop attacks and 9 convulsions in the past three months). The
+v0.6 checker passed structurally on each five-letter file. There are now 84
+initial records and 666 unannotated letters. These initials are not accepted
+and are not a full-set review. Codex still owns independent secondary review
+before throughput increases further.
+
+## Native quarter implementation and concurrent continuation (2026-09-15)
+
+The user authorised increased concurrency and assigned Grok the next ten batches
+(003–012). Keep five-letter assignments, one writer per source and distinct batch
+attempts; the coordinator merges shared manifests and progress. Do not dispatch
+duplicate annotation work. Use frozen `guide_versions/v0.6_quarter/` for new
+assignments. Already-running v0.5 assignments retain their actual package/version
+and receive separate reviewed quarter reclassification where needed.
+
+The separate R7 quarter candidate and annotation guide/schema v0.6 are implemented.
+The schema decision owner records native-unit semantics and version isolation.
+In the local annotation run, `batches/batch_002.adjudicated_v06.jsonl` records source
+531's estimated 12–30 seizures per quarter as an approximate range rate per one
+quarter. CB 1A remains applied. The other four records change wrapper version only;
+all prior initials and reviewed snapshots remain preserved. Five letters, 18
+findings and 45 final checks pass. Reviewed pieces still cover 34 letters and 107
+findings; this does not claim completion of the externally assigned batches.
+
+`reviews/codex/grok_batch002/quarter_verification.json`, `quarter_changes.jsonl`
+and `checks_v06.jsonl` own the checks and attributed changes. A source-only dev750
+lexical screen found 18 quarter-wording candidates including the reclassified 531;
+the other 17 require full-source review, not automatic conversion. No scorer was
+used: these are annotation/representation checks on Gan synthetic dev750, all750
+row policy including `row_ok=False`, with no model calls, repairs to raw output or
+locked-row inspection. Verification passed: 26 fictional candidate fixtures, 32
+portable-package checks, 832 tests, Ruff and mypy (420 source files). Full-set
+primary and secondary annotation review remain pending.
+
+## Grok batch 002 secondary review (2026-09-15)
+
+The user asked Grok 4.6 to annotate batch 002 while Codex finished batch 001.
+The recorded runtime is Cursor Grok 4.6 (`cursor-grok-4.6`), with no AGY effort
+flag. All five initials are preserved. There are 34 initials and 716 unannotated
+sources. Codex completed a source-first secondary review and saved a separate
+corrected snapshot: `batches/batch_002.codex_reviewed.jsonl` in the existing run.
+
+The batch changed from 17 to 18 findings. Corrections added a missed named-event
+absence and conditional subtype occurrence, separated hypothetical advice from
+actual evidence, removed general deterioration as a frequency change, restored
+joint scope/antecedents, removed false sleep/wake overlap links and retained
+explicit approximation and document times. All five records pass the structural
+checker. The 45 Codex checks comprise 43 pass and two unresolved judgements for
+one source-specific issue in letter 531. Four letters are adjudicable; 531 remains
+excluded pending Conor/domain interpretation of an aura-scope clause.
+
+The report, exact issue/options, seven named reference comparisons, immutable
+before/after records, propagation candidates and verification are under
+`reviews/codex/grok_batch002/`. The report is `REVIEW.md`; `summary.json` records
+review completion with one unresolved case. Both full-set reviews remain required.
+The available Grok provenance does not include a complete raw conversation or
+per-letter timing/usage; no missing metadata was invented. No model calls or
+locked-row inspection were performed by Codex for this review.
+
+CB subsequently selected option 1A for letter 531: exclude its aura clause as a
+warning-feature description. Codex applied the decision in a separate
+`batches/batch_002.adjudicated.jsonl` snapshot and verified five complete letters,
+18 unchanged findings, zero issues and 45 passing final checks. Batch 002 is now
+accepted. The original unresolved report and snapshot remain preserved; application
+and the affected comparison are recorded beside the batch report. All 34 reviewed
+letters are adjudicable under the current v0.5 conventions.
+
+The user subsequently requested native quarter support in R7 for letter 531's
+quarterly recurrence. The existing reviewed snapshot preserves the phrase under
+v0.5; numeric reclassification was subsequently completed in the versioned change above.
+Frozen schemas and original outputs are preserved. This is separate from the
+resolved aura issue. This initial review changed no extraction code; the later
+schema implementation has its own full verification above.
 
 ## Low-effort continuation and Grok 4.6 handover (2026-09-15)
 
@@ -41,13 +107,22 @@ in a separate five-record snapshot, also with 11 findings. All three batch snaps
 pass the offline checker. These are annotation counts, not benchmark scores or
 clinical validation.
 
-Formal batch acceptance is still pending. Codex's source-first checklist and
-correction log are saved, but a complete keyed A01–A09 report and the comparison
-with accepted pilot conventions have not been recorded. Gemini's raw review report
-has a placeholder annotation hash and an unkeyed checks array; preserve it and
-reconcile the report before claiming review completion. Both full-set review passes
-remain required. Codex should finish that checkpoint, then Grok should annotate batch 002 under
-the existing rules, with Codex checking the new model segment before throughput increases.
+Batch 001 is now closed and accepted after Codex's final full-source reread. That
+reread added one omitted named-event absence and completed explicit source exclusions:
+five final letters, 12 findings, no open issues. The final snapshot is
+`batches/batch_001.codex_final.jsonl`. All 45 A01–A09 Codex checks and seven named
+comparisons against accepted pilot conventions are recorded. The original Gemini
+review was normalized to keyed checks and actual snapshot hashes without changing
+its 45 judgements; it retains its earlier scope and missed finding. No further
+model call was made. The detailed batch report is `reviews/codex/low_batch001/REVIEW.md`.
+
+An all750 lexical screen for the added omission pattern leaves 132 candidate
+matches for full-source review during continuation; they are not proven errors.
+The final batch checker, report/hash coverage, raw-initial preservation and
+correction-chain checks passed. The reviewed pieces now cover 29 letters and
+89 findings; full-set review remains pending. Grok batch 002 initials arrived in the shared workspace during closure; review
+that new model segment before increasing throughput. The leading section owns
+its current execution state.
 
 The existing local run is
 `runs/seizure_finding_annotation_v0_2/agy_gemini38_high/`. Its historical name is
@@ -59,8 +134,9 @@ produced no annotations; the third produced the five initials. A provider SUCCES
 on the second setup attempt did not mean annotation succeeded.
 
 Handover verification rechecked all three batch snapshots, distinct initial/source
-coverage, raw-initial preservation and manifest hashes. Detailed evidence is in
-`reviews/codex/low_batch001/handoff_verification.json`. Documentation hygiene passed.
+coverage, raw-initial preservation and manifest hashes. The initial handover check is preserved in
+`reviews/codex/low_batch001/handoff_verification.json`; the final batch closure is
+in `reviews/codex/low_batch001/verification.json`. Documentation hygiene passed.
 No source annotation, earlier frozen package, benchmark output, scorer or extraction
 code was changed for this handover. The portable guide was refreshed for the new
 annotator and snapshotted separately as `guide_versions/v0.5_grok_handoff/`; the
