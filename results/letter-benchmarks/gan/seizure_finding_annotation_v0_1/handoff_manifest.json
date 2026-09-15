@@ -1,0 +1,23 @@
+{
+  "guide_version": "seizure_finding_annotation_v0.5",
+  "status": "instruction package; no dev750 sources or annotation run included",
+  "canonical_owners": [
+    "docs/research/gan2026/seizure_finding_annotation_guide.md",
+    "docs/research/gan2026/seizure_finding_annotation_review.md"
+  ],
+  "canonical_section_sha256": "d9fa895c41142f7205b1085d5da9fab2f36fd9c3f910864a183c84e408819ccf",
+  "r7_source_sha256": "86dfe196d11856f7c1e79795d5d4a689d49cd70bb222043cdb72529d335a75f5",
+  "files": {
+    "annotation_guide.md": "dede82b6058baa2e5ea3ea9e46ebfe22bb9249a27df29b11c294edcbb56e8355",
+    "annotation.schema.json": "e62512f9b59f5a1539a1ebcfcf78f3a985a3226214cdf0b838b0f5afa2615754",
+    "worked_examples.md": "264c723ada2bfa0daa4e42adcf7d987c8729f54af5a1090cc1e48eb852eb175a",
+    "check_annotations.py": "af689262ea843af17822d1f067f9ed0fabfcbc7f19fe6636a9affaa6b52a09a4",
+    "export_guide.py": "2b553d662828e093c0515985a5d0680db4fc947693c29810d709233221c85a66",
+    "verify_handoff.py": "9c5f8e3bb6cd699c1198f7b6605f0e36c4476c6d1c0cbceae92970ae28f601f1",
+    "build_review_groups.py": "e95fd2e8750614a9bae58a43324f77f8fad05b48a3c8df57d31388c746d7cc99",
+    "verify_review_groups.py": "7b74566400c98600e7a48097e7aba04412e9b3964ab688f7522a74bf2e8a185b",
+    "review_searches.json": "f0ccdc4b5ffb21590f38a1256747031082699467112e7848c332df458d13581b",
+    "expand_group_review.py": "05a1de787933b96da894a59c4f46886ff9cfdc47d0c8baf211819cd13d7d17f0",
+    "verify_group_decisions.py": "b650d48a8d5373a3879de2ad1ab22af5982977e9f5a38d6956d77f03ed06ad03"
+  }
+}
