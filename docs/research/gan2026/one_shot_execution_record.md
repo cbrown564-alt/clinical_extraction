@@ -1,5 +1,27 @@
 # One-call study execution record
 
+## Grok batches 013–146 initials under v0.6 (2026-09-15)
+
+Grok 4.6 (`cursor-grok-4.6`, no AGY effort flag) saved first valid initials for
+the remaining 666 Gan synthetic dev750 letters (batches 013–146; batch 146 is
+one letter). The segment contains 2,570 findings, 25 empty inventories and 48
+`needs_review` letters. Each batch passed the frozen v0.6 structural checker
+(`--expected 5`, batch 146 `--expected 1`). The 666-letter subset checker also
+passed against its matching sources. The concatenated 750-letter v0.6 checker
+fails only A01 on 34 historical records that still declare a pre-v0.6
+`guide_version`; those initials were not rewritten.
+
+`annotations/initial.jsonl` now holds 750 distinct source records (84 historical
+plus the 666 new initials). Raw per-batch copies, provenance and checkers remain
+in the local run. These initials are not an accepted reference. The accepted
+34-letter/107-finding set is unchanged. Both required full750 reviews and C08
+propagation remain pending. Source ambiguities 816, 1597 and 1640 stay open on
+the 003–012 correction snapshot.
+
+Source-bearing files remain local-only. No extraction code, scorer, frozen
+package or locked-test inspection changed; repository tests were not rerun for
+this annotation/documentation update.
+
 ## Batches 008–012 corrections and current totals (2026-09-15)
 
 Codex applied the remaining source-specific corrections under v0.6: 25 letters
