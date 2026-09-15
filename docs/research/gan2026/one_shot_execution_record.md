@@ -1,5 +1,20 @@
 # One-call study execution record
 
+## Batches 003–007 corrections implemented (2026-09-15)
+
+Codex applied the source-specific review corrections in separate v0.6 snapshots:
+25 letters now contain 86 findings (previously 76). Twenty-four letters are
+adjudicable; the source date ambiguity selected by CB remains open in one letter.
+The five batch structural checks pass. Explicit numeric quantities, conditional
+recurrence, omitted event subsets, partial calendar windows and duplicate claims
+are corrected with verbatim evidence and stable surviving finding IDs.
+
+The local evidence owner is
+`runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/codex/grok_batches003_012/corrections/`.
+Its per-batch snapshots, attributed changes and proposal resolutions preserve the
+raw Grok initials and the earlier CB snapshot. No extraction code, scorer, frozen
+package or model output was overwritten; no model calls were made.
+
 ## Batch 003–012 domain decisions applied (2026-09-15)
 
 CB selected 1A, 2A, 3A and 4A from the secondary review. Codex applied the choices
