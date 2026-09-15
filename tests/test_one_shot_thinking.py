@@ -173,3 +173,35 @@ def test_r7_representation_preserves_task_and_frozen_r5() -> None:
     assert "approximate" not in schema["$defs"]["Rate"].get("required", [])
     assert "type" not in schema["$defs"]["RateDetails"]["properties"]
     assert "quantity" not in schema["$defs"]["NumberDuration"]["properties"]
+
+    # Native-quarter candidate widens units without changing frozen R7 or task semantics.
+    from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+        one_shot_measurements_r7_quarter as quarter,
+    )
+
+    original_messages = r7.messages("fictional note")
+    for case in quarter.fictional_cases():
+        parsed_quarter = quarter.Rich.model_validate(case["output"])
+        assert parsed_quarter.output() == case["output"]
+        if case["name"].startswith("quarter_"):
+            with pytest.raises(ValidationError):
+                r7.Rich.model_validate(case["output"])
+    assert r7.messages("fictional note") == original_messages
+    for key in ("task", "instructions", "label_forms", "cases"):
+        assert quarter.prompt_payload("note")[key] == r7.prompt_payload("note")[key]
+    period = quarter.Period.model_validate(
+        {
+            "time": "over the past two quarters",
+            "duration": {"type": "number", "value": 2, "unit": "quarter"},
+        }
+    )
+    assert period.duration is not None and period.duration.unit == "quarter"
+    for bad_value in (0, -1):
+        with pytest.raises(ValidationError):
+            quarter.DURATION_ADAPTER.validate_python(
+                {"type": "number", "value": bad_value, "unit": "quarter"}
+            )
+    with pytest.raises(ValidationError):
+        quarter.DURATION_ADAPTER.validate_python(
+            {"type": "range", "lower": 3, "upper": 1, "unit": "quarter"}
+        )

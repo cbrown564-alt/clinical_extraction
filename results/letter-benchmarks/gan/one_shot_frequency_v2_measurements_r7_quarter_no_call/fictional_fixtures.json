@@ -1,0 +1,997 @@
+[
+  {
+    "name": "approximate_range",
+    "note_text": "Approximately two to three focal seizures occur per month.",
+    "output": {
+      "answer": {
+        "label": "2 to 3 per month",
+        "evidence": "Approximately two to three focal seizures occur per month."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "focal seizures",
+            "scope": "specific",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "rate",
+            "count": {
+              "type": "range",
+              "lower": 2,
+              "upper": 3
+            },
+            "per": {
+              "type": "number",
+              "value": 1,
+              "unit": "month"
+            },
+            "approximate": true
+          },
+          "timing": "current",
+          "evidence": "Approximately two to three focal seizures occur per month."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "observed_count",
+    "note_text": "She had three seizures over the last six months.",
+    "output": {
+      "answer": {
+        "label": "3 per 6 months",
+        "evidence": "She had three seizures over the last six months."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "count",
+            "count": {
+              "type": "number",
+              "value": 3
+            }
+          },
+          "timing": "current",
+          "period": {
+            "time": "over the last six months",
+            "duration": {
+              "type": "number",
+              "value": 6,
+              "unit": "month"
+            }
+          },
+          "evidence": "She had three seizures over the last six months."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "cluster",
+    "note_text": "She has two clusters per month with three to five seizures per cluster.",
+    "output": {
+      "answer": {
+        "label": "2 cluster per month, 3 to 5 per cluster",
+        "evidence": "She has two clusters per month with three to five seizures per cluster."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "cluster",
+            "rate": {
+              "count": {
+                "type": "number",
+                "value": 2
+              },
+              "per": {
+                "type": "number",
+                "value": 1,
+                "unit": "month"
+              }
+            },
+            "seizures_per_cluster": {
+              "type": "range",
+              "lower": 3,
+              "upper": 5
+            }
+          },
+          "timing": "current",
+          "evidence": "She has two clusters per month with three to five seizures per cluster."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "seizure_free",
+    "note_text": "She has had no seizures for six months.",
+    "output": {
+      "answer": {
+        "label": "seizure free for 6 months",
+        "evidence": "She has had no seizures for six months."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "seizure_free",
+            "duration": {
+              "type": "number",
+              "value": 6,
+              "unit": "month"
+            }
+          },
+          "timing": "current",
+          "evidence": "She has had no seizures for six months."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "last_seizure",
+    "note_text": "Her last seizure was in March.",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Her last seizure was in March."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "last_seizure",
+            "occurred_at": {
+              "time": "in March",
+              "form": "calendar"
+            }
+          },
+          "timing": "historical",
+          "evidence": "Her last seizure was in March."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "qualitative",
+    "note_text": "Possible seizures are less frequent.",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Possible seizures are less frequent."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "uncertain"
+          },
+          "measurement": {
+            "type": "qualitative",
+            "frequency": "less frequent"
+          },
+          "timing": "current",
+          "evidence": "Possible seizures are less frequent."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "nonclustered_pattern",
+    "note_text": "Her seizures were not clustered.",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Her seizures were not clustered."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "qualitative",
+            "frequency": "not clustered"
+          },
+          "timing": "current",
+          "evidence": "Her seizures were not clustered."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "upper_bound",
+    "note_text": "She has no more than two seizures per week.",
+    "output": {
+      "answer": {
+        "label": "2 per week",
+        "evidence": "She has no more than two seizures per week."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "rate",
+            "count": {
+              "type": "bound",
+              "relation": "at_most",
+              "value": 2
+            },
+            "per": {
+              "type": "number",
+              "value": 1,
+              "unit": "week"
+            }
+          },
+          "timing": "current",
+          "evidence": "She has no more than two seizures per week."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "conditional",
+    "note_text": "Seizures occur only when medication is missed.",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Seizures occur only when medication is missed."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "Seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "qualitative",
+            "frequency": "only when medication is missed"
+          },
+          "timing": "current",
+          "condition": "only when medication is missed",
+          "evidence": "Seizures occur only when medication is missed."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "reduced_not_absent",
+    "note_text": "Her seizures are less frequent but not absent.",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Her seizures are less frequent but not absent."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "qualitative",
+            "frequency": "less frequent but not absent"
+          },
+          "timing": "current",
+          "evidence": "Her seizures are less frequent but not absent."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "subtype_seizure_free",
+    "note_text": "She has had no tonic-clonic seizures for six months.",
+    "output": {
+      "answer": {
+        "label": "seizure free for 6 months",
+        "evidence": "She has had no tonic-clonic seizures for six months."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "tonic-clonic seizures",
+            "scope": "specific",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "seizure_free",
+            "duration": {
+              "type": "number",
+              "value": 6,
+              "unit": "month"
+            }
+          },
+          "timing": "current",
+          "evidence": "She has had no tonic-clonic seizures for six months."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "no_reference",
+    "note_text": "Blood pressure was measured.",
+    "output": {
+      "answer": {
+        "label": "no seizure frequency reference",
+        "evidence": null
+      },
+      "findings": [],
+      "selected_ids": []
+    }
+  },
+  {
+    "name": "unquantified_cluster",
+    "note_text": "Seizures occur in clusters.",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Seizures occur in clusters."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "cluster"
+          },
+          "timing": "current",
+          "evidence": "Seizures occur in clusters."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "qualitative_cluster_size",
+    "note_text": "She has weekly clusters with multiple seizures per cluster.",
+    "output": {
+      "answer": {
+        "label": "1 cluster per week, multiple per cluster",
+        "evidence": "She has weekly clusters with multiple seizures per cluster."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "cluster",
+            "rate": {
+              "count": {
+                "type": "number",
+                "value": 1
+              },
+              "per": {
+                "type": "number",
+                "value": 1,
+                "unit": "week"
+              }
+            },
+            "seizures_per_cluster": {
+              "type": "qualitative",
+              "quantity": "multiple"
+            }
+          },
+          "timing": "current",
+          "evidence": "She has weekly clusters with multiple seizures per cluster."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "weekly_precision",
+    "note_text": "Her last seizure was two weeks ago.",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Her last seizure was two weeks ago."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "last_seizure",
+            "occurred_at": {
+              "time": "two weeks ago",
+              "form": "relative"
+            }
+          },
+          "timing": "current",
+          "evidence": "Her last seizure was two weeks ago."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "unknown_link",
+    "note_text": "Possible seizures continue but their frequency is unclear.",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Possible seizures continue but their frequency is unclear."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "uncertain"
+          },
+          "measurement": {
+            "type": "qualitative",
+            "frequency": "frequency is unclear"
+          },
+          "timing": "current",
+          "evidence": "Possible seizures continue but their frequency is unclear."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "observed_clusters",
+    "note_text": "There were three clusters in the past six weeks.",
+    "scope": "representation only; answer placeholder",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "There were three clusters in the past six weeks."
+      },
+      "selected_ids": [
+        "f1"
+      ],
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "cluster",
+            "count": {
+              "type": "number",
+              "value": 3
+            }
+          },
+          "timing": "current",
+          "evidence": "There were three clusters in the past six weeks.",
+          "period": {
+            "time": "the past six weeks",
+            "duration": {
+              "type": "number",
+              "value": 6,
+              "unit": "week"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "bound_on_range",
+    "note_text": "She has up to 2-3 seizures per week.",
+    "scope": "representation only; answer placeholder",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "She has up to 2-3 seizures per week."
+      },
+      "selected_ids": [
+        "f1"
+      ],
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "rate",
+            "count": {
+              "type": "bound",
+              "relation": "at_most",
+              "value": {
+                "type": "range",
+                "lower": 2,
+                "upper": 3
+              }
+            },
+            "per": {
+              "type": "number",
+              "value": 1,
+              "unit": "week"
+            }
+          },
+          "timing": "current",
+          "evidence": "She has up to 2-3 seizures per week."
+        }
+      ]
+    }
+  },
+  {
+    "name": "compound_duration",
+    "note_text": "She has one seizure every more than 2 but at most 5 days.",
+    "scope": "representation only; answer placeholder",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "She has one seizure every more than 2 but at most 5 days."
+      },
+      "selected_ids": [
+        "f1"
+      ],
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "rate",
+            "count": {
+              "type": "number",
+              "value": 1
+            },
+            "per": {
+              "type": "range",
+              "lower": 2,
+              "upper": 5,
+              "lower_inclusive": false,
+              "unit": "day"
+            }
+          },
+          "timing": "current",
+          "evidence": "She has one seizure every more than 2 but at most 5 days."
+        }
+      ]
+    }
+  },
+  {
+    "name": "dated_count",
+    "note_text": "She had two seizures on 12 May.",
+    "scope": "representation only; answer placeholder",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "She had two seizures on 12 May."
+      },
+      "selected_ids": [
+        "f1"
+      ],
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "count",
+            "count": {
+              "type": "number",
+              "value": 2
+            },
+            "occurred_at": {
+              "time": "12 May",
+              "form": "calendar"
+            }
+          },
+          "timing": "current",
+          "evidence": "She had two seizures on 12 May."
+        }
+      ]
+    }
+  },
+  {
+    "name": "relative_cluster",
+    "note_text": "One cluster occurred two weeks ago.",
+    "scope": "representation only; answer placeholder",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "One cluster occurred two weeks ago."
+      },
+      "selected_ids": [
+        "f1"
+      ],
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "cluster",
+            "count": {
+              "type": "number",
+              "value": 1
+            },
+            "occurred_at": {
+              "time": "two weeks ago",
+              "form": "relative"
+            }
+          },
+          "timing": "current",
+          "evidence": "One cluster occurred two weeks ago."
+        }
+      ]
+    }
+  },
+  {
+    "name": "document_dates_without_findings",
+    "note_text": "Clinic Date: 14 September 2026. Blood pressure was measured.",
+    "output": {
+      "document_dates": [
+        {
+          "role": "clinic",
+          "time": "14 September 2026",
+          "form": "calendar",
+          "evidence": "Clinic Date: 14 September 2026"
+        }
+      ],
+      "answer": {
+        "label": "no seizure frequency reference",
+        "evidence": null
+      },
+      "findings": [],
+      "selected_ids": []
+    }
+  },
+  {
+    "name": "complete_dates_example",
+    "note_text": "Clinic Date: 14 September 2026\nLetter Date: 16 September 2026\n\nShe currently reports about three brief staring episodes per week. It remains uncertain whether these are seizures.\n\nBetween 1 June and 31 August 2026, she reported two clusters of tonic-clonic seizures, with three to four seizures in each cluster. The latest cluster occurred on 28 August 2026. Her last tonic-clonic seizure was on that date, and she has had none since.",
+    "scope": "representation only; unknown answer and links are placeholders, not native-label conversion evidence",
+    "output": {
+      "document_dates": [
+        {
+          "role": "clinic",
+          "time": "14 September 2026",
+          "form": "calendar",
+          "evidence": "Clinic Date: 14 September 2026"
+        },
+        {
+          "role": "letter",
+          "time": "16 September 2026",
+          "form": "calendar",
+          "evidence": "Letter Date: 16 September 2026"
+        }
+      ],
+      "answer": {
+        "label": "unknown",
+        "evidence": "She currently reports about three brief staring episodes per week. It remains uncertain whether these are seizures."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "brief staring episodes",
+            "scope": "specific",
+            "seizure_status": "uncertain"
+          },
+          "measurement": {
+            "type": "rate",
+            "count": {
+              "type": "number",
+              "value": 3
+            },
+            "per": {
+              "type": "number",
+              "value": 1,
+              "unit": "week"
+            },
+            "approximate": true
+          },
+          "timing": "current",
+          "evidence": "She currently reports about three brief staring episodes per week. It remains uncertain whether these are seizures."
+        },
+        {
+          "id": "f2",
+          "event": {
+            "type": "tonic-clonic seizures",
+            "scope": "specific",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "cluster",
+            "count": {
+              "type": "number",
+              "value": 2
+            },
+            "seizures_per_cluster": {
+              "type": "range",
+              "lower": 3,
+              "upper": 4
+            }
+          },
+          "period": {
+            "time": "Between 1 June and 31 August 2026",
+            "start": {
+              "time": "1 June",
+              "form": "calendar"
+            },
+            "end": {
+              "time": "31 August 2026",
+              "form": "calendar"
+            }
+          },
+          "timing": "current",
+          "evidence": "Between 1 June and 31 August 2026, she reported two clusters of tonic-clonic seizures, with three to four seizures in each cluster."
+        },
+        {
+          "id": "f3",
+          "event": {
+            "type": "tonic-clonic seizures",
+            "scope": "specific",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "cluster",
+            "count": {
+              "type": "number",
+              "value": 1
+            },
+            "occurred_at": {
+              "time": "28 August 2026",
+              "form": "calendar"
+            }
+          },
+          "timing": "current",
+          "evidence": "The latest cluster occurred on 28 August 2026."
+        },
+        {
+          "id": "f4",
+          "event": {
+            "type": "tonic-clonic seizures",
+            "scope": "specific",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "last_seizure",
+            "occurred_at": {
+              "time": "that date",
+              "form": "relative"
+            }
+          },
+          "timing": "current",
+          "evidence": "The latest cluster occurred on 28 August 2026. Her last tonic-clonic seizure was on that date, and she has had none since."
+        },
+        {
+          "id": "f5",
+          "event": {
+            "type": "tonic-clonic seizures",
+            "scope": "specific",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "seizure_free",
+            "since": {
+              "time": "that date",
+              "form": "relative"
+            }
+          },
+          "timing": "current",
+          "evidence": "The latest cluster occurred on 28 August 2026. Her last tonic-clonic seizure was on that date, and she has had none since."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "quarter_rate",
+    "note_text": "Seizures occur at an estimated 8 to 16 per quarter.",
+    "scope": "fictional representation only; unknown answer is a placeholder",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Seizures occur at an estimated 8 to 16 per quarter."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "rate",
+            "approximate": true,
+            "count": {
+              "type": "range",
+              "lower": 8,
+              "upper": 16
+            },
+            "per": {
+              "type": "number",
+              "value": 1,
+              "unit": "quarter"
+            }
+          },
+          "timing": "current",
+          "evidence": "Seizures occur at an estimated 8 to 16 per quarter."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "quarter_cluster_rate",
+    "note_text": "Seizures occur in two clusters every one to two quarters.",
+    "scope": "fictional representation only; unknown answer is a placeholder",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Seizures occur in two clusters every one to two quarters."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "cluster",
+            "rate": {
+              "count": {
+                "type": "number",
+                "value": 2
+              },
+              "per": {
+                "type": "range",
+                "lower": 1,
+                "upper": 2,
+                "unit": "quarter"
+              }
+            }
+          },
+          "timing": "current",
+          "evidence": "Seizures occur in two clusters every one to two quarters."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "quarter_freedom",
+    "note_text": "There have been no seizures for at least two quarters.",
+    "scope": "fictional representation only; unknown answer is a placeholder",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "There have been no seizures for at least two quarters."
+      },
+      "findings": [
+        {
+          "id": "f1",
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "seizure_free",
+            "duration": {
+              "type": "bound",
+              "relation": "at_least",
+              "value": 2,
+              "unit": "quarter"
+            }
+          },
+          "timing": "current",
+          "evidence": "There have been no seizures for at least two quarters."
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  }
+]

@@ -17,6 +17,30 @@ spreading changes. Then review permitted rich/simple development disagreements,
 distinguishing source extraction, representation, answer selection and benchmark
 convention. No correction modifies the frozen requests used for timeout reruns.
 
+## Native quarter R7 candidate (2026-09-15)
+
+Conor requested native `quarter` support and numeric reclassification of source
+531. The isolated candidate `one_shot_frequency_v2_measurements_r7_quarter`,
+revision `native_quarter_v1`, adds `quarter` to number, range and bound durations.
+It supports rate denominators, cluster rates, observation periods and seizure-free
+durations. Preserve the source unit without converting quarters to months or days.
+An observed count within a quarter remains a count; cadence without an explicit
+count remains qualitative. This is an explicit semantic representation decision.
+
+The implementation is `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r7_quarter.py`.
+Original R7, frozen requests, scorers and saved model outputs remain unchanged.
+Task wording, selection examples and label forms are preserved. Annotation guide
+v0.6 and its portable schema add the same unit; earlier frozen guide versions
+remain available for existing batches. Reviewed migrations use separate snapshots.
+
+[No-call artifacts](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7_quarter_no_call/)
+contain 26 fictional fixtures, rendered messages and verification. Reproduce with
+`.venv/bin/python scripts/benchmarks/prepare_one_shot_r7_quarter.py`.
+Verification: 26 fixtures, 32 annotation-package checks, 832 tests, Ruff and mypy
+passed. Original R7 rejects the new unit, and removing quarter from the candidate's
+three duration enums restores its schema. No model calls or benchmark evaluation
+were performed. The execution record owns source reclassification and concurrency.
+
 ## Final R7 schema decision (2026-09-14)
 
 R7 (`one_shot_frequency_v2_measurements_r7`, revision `simplified_dates_v1`) is
