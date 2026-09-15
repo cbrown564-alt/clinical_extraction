@@ -5,10 +5,10 @@
     "docs/research/gan2026/seizure_finding_annotation_guide.md",
     "docs/research/gan2026/seizure_finding_annotation_review.md"
   ],
-  "canonical_section_sha256": "d9fa895c41142f7205b1085d5da9fab2f36fd9c3f910864a183c84e408819ccf",
+  "canonical_section_sha256": "d15e6d7efa1477571f49c7e5fde095c891554901e18cd6bb46213ad3c300e62f",
   "r7_source_sha256": "86dfe196d11856f7c1e79795d5d4a689d49cd70bb222043cdb72529d335a75f5",
   "files": {
-    "annotation_guide.md": "dede82b6058baa2e5ea3ea9e46ebfe22bb9249a27df29b11c294edcbb56e8355",
+    "annotation_guide.md": "069b1bf175efd4abb4655e4fdb65d9c17570b0d7a47af6f417de1b125ebef5a0",
     "annotation.schema.json": "e62512f9b59f5a1539a1ebcfcf78f3a985a3226214cdf0b838b0f5afa2615754",
     "worked_examples.md": "264c723ada2bfa0daa4e42adcf7d987c8729f54af5a1090cc1e48eb852eb175a",
     "check_annotations.py": "af689262ea843af17822d1f067f9ed0fabfcbc7f19fe6636a9affaa6b52a09a4",
