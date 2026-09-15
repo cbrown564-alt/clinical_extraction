@@ -1,5 +1,59 @@
 # One-call study execution record
 
+## Low-effort continuation and Grok 4.6 handover (2026-09-15)
+
+The user authorised Gemini low effort, then replaced Gemini with Grok 4.6 as the
+annotator and requested a documentation handover. Codex remains coordinator and
+independent secondary reviewer. Grok will annotate the remaining sources and perform
+the primary full-set review, including earlier Gemini annotations. Preserve the
+Gemini high/low segments and their actual review scope. No Grok model call or runtime
+configuration was tested; its provider model identifier, settings and access must
+be verified and recorded before starting a new segment. Execution is paused for
+handover, with no annotation process from this task left running.
+
+The segment retains the frozen v0.5 guide/schema and source-only Gan synthetic
+dev750 export, including `row_ok=False`. The accepted high-effort pilot remains
+24 letters and 77 adjudicated findings. The new first batch saved five immutable
+initial records with 14 findings. There are now 29 initial records in total and
+721 unannotated letters; batch 002 has not started. The original 146 assignments
+covered 726 letters at the segment's start.
+
+All five initials passed the structural checker but required semantic corrections:
+inferred counts from qualitative cadence, general condition changes treated as
+frequency changes, a location used as an event time, event-identity errors and
+insufficient antecedent evidence. Gemini's targeted correction pass saved five
+records with 11 findings. Codex then saved three further source-specific corrections
+in a separate five-record snapshot, also with 11 findings. All three batch snapshots
+pass the offline checker. These are annotation counts, not benchmark scores or
+clinical validation.
+
+Formal batch acceptance is still pending. Codex's source-first checklist and
+correction log are saved, but a complete keyed A01–A09 report and the comparison
+with accepted pilot conventions have not been recorded. Gemini's raw review report
+has a placeholder annotation hash and an unkeyed checks array; preserve it and
+reconcile the report before claiming review completion. Both full-set review passes
+remain required. Codex should finish that checkpoint, then Grok should annotate batch 002 under
+the existing rules, with Codex checking the new model segment before throughput increases.
+
+The existing local run is
+`runs/seizure_finding_annotation_v0_2/agy_gemini38_high/`. Its historical name is
+retained. `TERMINAL_HANDOFF.md` contains the Grok handover, exact next assignment,
+commands, rule reminders, runtime lessons and provenance paths. `manifest.json`
+and `progress.jsonl` identify the separate adjudicated pilot and latest batch
+snapshot; no final 29-letter reference has been assembled. The two setup attempts
+produced no annotations; the third produced the five initials. A provider SUCCESS
+on the second setup attempt did not mean annotation succeeded.
+
+Handover verification rechecked all three batch snapshots, distinct initial/source
+coverage, raw-initial preservation and manifest hashes. Detailed evidence is in
+`reviews/codex/low_batch001/handoff_verification.json`. Documentation hygiene passed.
+No source annotation, earlier frozen package, benchmark output, scorer or extraction
+code was changed for this handover. The portable guide was refreshed for the new
+annotator and snapshotted separately as `guide_versions/v0.5_grok_handoff/`; the
+clinical rules and JSON Schema remain unchanged. The stale wrapper version bullet
+now agrees with the existing v0.5 schema. Full extraction pytest/Ruff/mypy were not rerun for
+these documentation and run-metadata updates.
+
 ## Simplified workflow and completed pilot secondary review (2026-09-15)
 
 At the user's request, Codex retired the unfinished automatic annotation runner

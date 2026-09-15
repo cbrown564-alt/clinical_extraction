@@ -1,14 +1,20 @@
 # Seizure-finding annotation workflow and review
 
 Canonical owner of annotation execution, both reviewers' checks and finding matching.
-Version v0.4, 2026-09-15. Apply with the [annotation guide](seizure_finding_annotation_guide.md).
+Workflow revision: Grok handover, 2026-09-15; annotation conventions remain v0.5. Apply with the [annotation guide](seizure_finding_annotation_guide.md).
 The [study protocol](one_shot_paper_protocol.md) owns the separate Gan answer endpoint.
 
-The user authorised Codex to orchestrate Gemini 3.8 high effort through AGY on
-2026-09-14, including annotation and Gemini self-review, with Codex as secondary
-reviewer. This supersedes the earlier manual Gemini handoff. Codex may assess the
-pilot against the written criteria and continue when they pass; only unresolved
-clinical or consequential new policy questions require Conor/domain input.
+The user authorised source annotation and self-review by Gemini through AGY on
+2026-09-14, then replaced Gemini with Grok 4.6 as the annotator on 2026-09-15.
+Codex remains the coordinator and independent secondary reviewer. Grok owns the
+remaining initial annotations and the primary full-set review, including earlier
+Gemini-annotated sources; preserve Gemini's original outputs and actual review scope.
+Record Grok as a new model segment with its verified provider model identifier,
+effort/settings, input hashes and attempts before execution. Do not assume that the
+Gemini AGY route or effort flag applies to Grok. The execution record owns readiness.
+Codex may assess the pilot/batch checkpoint against the written criteria and
+continue when it passes; only unresolved clinical or consequential new policy
+questions require Conor/domain input.
 
 ## Working procedure
 
@@ -26,7 +32,7 @@ labels and evaluated predictions. Reject duplicate IDs/row indices, missing note
 and rows outside the authorised split. Keep identical texts with distinct source
 IDs; compare them during review.
 
-Supply the guide, schema, worked examples and their hashes together. Gemini must
+Supply the guide, schema, worked examples and their hashes together. The primary annotator must
 be able to reopen any of the 750 sources and previous annotations throughout the
 run. Verify access to the manifest, first/last source and another batch. Visibility
 means retrievable files; it does not require putting 750 letters into one prompt.
@@ -37,7 +43,7 @@ cases; start with 20 letters and add only necessary cases. Record actual coverag
 and gaps. Do not claim a category is absent solely because a search found no match.
 Codex reviews the pilot against A01–A09 and C01–C08, resolves general instruction
 gaps, and records the decision to proceed. Source-specific issues can remain open
-with an owner and exclusion from scoring. State the exact scope of Gemini's and
+with an owner and exclusion from scoring. State the exact scope of the primary annotator's and
 Codex's reviews; acceptance is not clinical validation.
 
 ### 2. Annotate in five-letter batches
@@ -66,9 +72,9 @@ concurrency. On interruption, inspect saved files and resume pending source IDs;
 do not reconstruct annotations from chat memory. Freeze any model/settings change
 as a new segment and compare its decisions with the earlier segment.
 
-### 3. Gemini reviews; then Codex reviews
+### 3. Grok reviews; then Codex reviews
 
-After the initial pass, Gemini rereads every source in a fresh review pass, records
+After the initial pass, Grok rereads every source in a fresh review pass, records
 candidate quotations before looking at the saved findings, then runs A01–A09 and
 C01–C08 across all 750. Empty records and unresolved letters are included. Save the
 review even when nothing changes. Source-specific issues do not block other letters.
@@ -77,7 +83,7 @@ A new general rule must be resolved and versioned before affected cases continue
 Codex performs the same full-source and cross-sample checks independently, then
 compares decisions and applies supported corrections. Preserve each review's actual
 input hash. Codex checks the final corrections and affected comparison groups;
-Gemini does not need to reapprove every Codex correction. Reopen a disagreement
+Grok does not need to reapprove every Codex correction. Reopen a disagreement
 only when source support or a rule remains unsettled. Do not create a third blanket
 review cycle merely to make both reports name the same final snapshot.
 
@@ -95,14 +101,16 @@ the native Gan answer endpoint.
 | `manifest.json` | Authorised sources, frozen package hashes, batch assignments and current artifact paths. |
 | `raw/` and original attempt folders | Immutable first records, requests/responses, failures and provider provenance. |
 | `annotations/initial.jsonl` | Source-ordered collection of first valid records, retaining historical pilot guide versions. |
-| `annotations/gemini_reviewed.jsonl`, `annotations/codex_reviewed.jsonl` | One active snapshot per review stage; preserve the parent before replacing it. |
-| `reviews/gemini/`, `reviews/codex/` | Per-letter checks, comparison groups, changes, summaries and unresolved issues for each reviewer. |
+| `annotations/grok_reviewed.jsonl`, `annotations/codex_reviewed.jsonl` | One active snapshot per review stage; preserve the parent before replacing it. |
+| `reviews/grok/`, `reviews/codex/` | Per-letter checks, comparison groups, changes, summaries and unresolved issues for each reviewer. |
 | `progress.jsonl` | Derived coverage from saved artifacts; never use a stale progress row to override an existing record. |
 | `decisions.jsonl` | Run-local rule applications and unresolved decisions; general rules belong in the guide. |
 
 Do not create another status board or duplicate review report. Update the active
 paths in the manifest; keep superseded artifacts only as provenance. The run's
-short handoff identifies the next batch and exact commands.
+short handoff identifies the next batch and exact commands. Existing Gemini paths
+remain historical provenance; use new Grok paths for new outputs and preserve the
+actual model identity for every record/review. Never rename Gemini results as Grok.
 
 ## Run the supplied offline checker
 
@@ -114,7 +122,7 @@ repository use `.venv/bin/python`. From the annotation working folder run:
 
 ```sh
 python check_annotations.py --sources sources.jsonl --annotations annotations/initial.jsonl > reviews/initial_checks.json
-python check_annotations.py --sources sources.jsonl --annotations annotations/gemini_reviewed.jsonl > reviews/gemini/mechanical_checks.json
+python check_annotations.py --sources sources.jsonl --annotations annotations/grok_reviewed.jsonl > reviews/grok/mechanical_checks.json
 python check_annotations.py --sources sources.jsonl --annotations annotations/codex_reviewed.jsonl > reviews/codex/mechanical_checks.json
 ```
 
@@ -132,7 +140,7 @@ The package's `export_guide.py` regenerates the portable guide and file hashes f
 the annotation guide and review documents without reading datasets. Run it with the repository `.venv` after
 editing this section or the examples. The JSON Schema is pinned separately; review
 any schema change explicitly and update its version with the guide. Keep the hash
-manifest with the exact files supplied to Gemini.
+manifest with the exact files supplied to the primary annotator.
 
 ### Build the comparison groups from files
 
@@ -143,7 +151,7 @@ not decide whether a label is correct. The group-tool and decision-coverage test
 the annotation-checker cases.
 
 ```sh
-python build_review_groups.py --sources sources.jsonl --annotations annotations/gemini_reviewed.jsonl --candidates reviews/gemini/candidates.jsonl --correction-patterns review_searches.json --out reviews/gemini/groups_pass1
+python build_review_groups.py --sources sources.jsonl --annotations annotations/grok_reviewed.jsonl --candidates reviews/grok/candidates.jsonl --correction-patterns review_searches.json --out reviews/grok/groups_pass1
 ```
 
 Use the corresponding Codex files and a separate output directory for the second
@@ -262,7 +270,7 @@ pending checks. Distinguish `review complete with unresolved cases` from `fully
 adjudicated`: unresolved clinical/representation questions have named owners and
 remain excluded from finding scoring. Report how many of 750 are adjudicable.
 Freeze manifest, source, guide, schema, examples, final annotation, review and
-change-log hashes in the final run manifest. Codex/Gemini agreement remains a
+change-log hashes in the final run manifest. Codex/model agreement remains a
 reviewed development reference, not independent clinical validation.
 
 
