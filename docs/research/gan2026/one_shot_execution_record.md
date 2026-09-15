@@ -1,5 +1,32 @@
 # One-call study execution record
 
+## Grok batches 003–012 secondary review (2026-09-15)
+
+Codex completed full-source secondary review of the 50 saved v0.6 initials:
+140 findings across ten batches. All 50 structural checks and raw-initial comparisons
+pass. The 450 A01–A09 judgements comprise 271 pass, 174 fail and 5 unresolved.
+All ten batches need corrections before acceptance. There are 102 proposed review
+items across 49 records, including evidence/context cleanup; these counts are not
+a clinical accuracy estimate. Four domain questions remain in the local report.
+
+Review evidence is under `reviews/codex/grok_batches003_012/` in the existing local
+annotation run. `REVIEW.md`, `checks.jsonl`, `changes.jsonl` and `summary.json`
+record source-specific proposals, original hashes and exact evidence. C01–C07
+cover 38 generated groups/1,780 memberships, with 12 named comparisons. Seven C08
+all750 lexical screens yield 3,342 candidate memberships; full-source propagation
+outside these 50 letters remains pending. The candidate set is not an error count.
+
+This is Gan synthetic dev750, all750 row policy including `row_ok=False`, annotator
+recorded as Cursor Grok 4.6 (`cursor-grok-4.6`), effort unavailable, guide v0.6.
+Offline rechecking used saved outputs and no scorer. No model calls, locked-row
+inspection or raw-output repairs occurred. All corrections are proposed, not
+applied; accepted reference pieces remain 34 letters and 107 findings. Initials
+remain 84 with 666 unannotated. Full750 primary and secondary review remain pending.
+Record hashes, exact quotations, raw preservation and group coverage passed.
+Extraction tests were not rerun because this review changes no extraction code.
+
+
+
 ## Grok batches 003–012 initials under v0.6 (2026-09-15)
 
 Grok 4.6 (`cursor-grok-4.6`, no AGY effort flag) saved first valid initials for
