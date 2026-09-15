@@ -5,7 +5,9 @@ Build modular deterministic, LLM, and hybrid pipelines for structured extraction
 The exclusive current focus is the one-call evidence-grounded seizure-frequency
 paper. Longitudinal prototype work, broader applications and research-paper tables
 are postponed. Preserve their saved artifacts and reference semantics. The roadmap
-owns current decisions; the paper outline and evaluation protocol own this study.
+owns current decisions; the paper outline and evaluation protocol own this study. Annotation rules, annotation
+review, schema decisions and execution records have separate owners linked from
+`docs/NAVIGATION.md`.
 Gan 2026 and ExECTv2 retain separate labels, scoring and split permissions.
 Read `PROJECT_STATUS.md` before assuming which work is active.
 

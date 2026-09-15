@@ -32,7 +32,8 @@ priorities and the decisions below, without repeating either document.
   use conditions arrive through Conor's supervisor. Do not recreate it from memory.
 - Build a source-first seizure-finding reference for all dev750 letters to measure
   finding correctness and completeness separately from the existing answer label.
-  Codex defines the guidelines; Conor obtains Gemini annotations; Codex reviews them.
+  Codex defines the guidelines and orchestrates Gemini through AGY for annotation
+  and self-review; Codex performs the secondary review.
   Model annotations are provisional until reviewed; clinical disagreements remain explicit.
 - Use one compact ExECT configuration example with native reference semantics.
   No longitudinal results, usability study, rule-authoring study, broad ExECT model
@@ -61,13 +62,13 @@ measurement bounds and approximation, explicit conditions and linked evidence.
 Generic raw-value, certainty and negation fields are removed. A dev750 wording
 review also removed the proposed measurement-denial flag; bounds, qualitative
 wording and event-scoped seizure freedom cover the retrieved examples. The
-[evaluation protocol](../research/gan2026/one_shot_paper_protocol.md#agreed-v2-measurement-design-2026-09-14)
+[schema decisions](../research/gan2026/one_shot_schema_decisions.md#agreed-v2-measurement-design-2026-09-14)
 owns the agreed fields and their semantics.
 
 V2 r4 aligns the paired simple instructions with its answer-only schema; shared
 clinical guidance and decision examples remain identical. V2 r3 restored the original one-shot task, extraction reminders, complete worked
 selection cases, label forms and request envelope. Only the output schema and its
-field-population instructions are adapted. The protocol owns the component audit.
+field-population instructions are adapted. The schema decisions own the component audit.
 V2 was prepared as a separate development candidate with fictional
 fixtures and matched rich/simple rendering. The completed v1 evaluation below is
 preserved. Its scores do not evaluate v2, and its freeze is not transferred to v2.
@@ -86,18 +87,17 @@ both conditions is an expectation to test, not a target for tuning.
 
 | Order | Work and owner | Completion evidence |
 | --- | --- | --- |
-| 1 — complete | Evaluation contributor reran the 14 r4 simple and 40 r5 rich timeouts at 600 seconds. | All 54 returned; original attempts preserved and replay verified. Both conditions reached 658/750 Purist answer agreement; rich strict is 656/750. The protocol owns results, timing and costs. |
+| 1 — complete | Evaluation contributor reran the 14 r4 simple and 40 r5 rich timeouts at 600 seconds. | All 54 returned; original attempts preserved and replay verified. Both conditions reached 658/750 Purist answer agreement; rich strict is 656/750. The execution record owns results, timing and costs. |
 | 2 — representation implemented; review pending | Implementation contributor makes the smallest demonstrated representation corrections, then reviews rich/simple disagreements. | Finalised r7 candidate covers cluster interval counts, compound bounds, agreed schema simplifications and document/event dates; 23 fictional fixtures and unchanged native task rules. Disagreement classification remains pending. Frozen timeout-rerun conditions are unchanged. |
-| 3 | Codex defines expanded seizure-finding annotation guidelines in the existing evaluation protocol. | Source-first inventory scope, worked examples, units and qualifiers, duplicate and ambiguity policies, and correctness/completeness matching rules ready for Gemini. |
-| 4 | Conor obtains Gemini annotations; Codex reviews them, first on a representative pilot and then across dev750. | Reviewed source-linked inventories, retained original annotations, corrections and unresolved disagreements; versioned guide and reference suitable for separate finding correctness and completeness measures. |
+| 3 — authored; pilot secondary review complete | Codex defined [v0.5 annotation guidelines](../research/gan2026/seizure_finding_annotation_guide.md#seizure-finding-annotation-guidelines--v05-2026-09-15) in the standalone annotation guide. | Portable instructions/schema, source-first decisions, offline checks and shared full-set Gemini/Codex review procedures are written, with fictional examples and matching rules. Codex completed secondary review of 24 pilot letters; CB subsequently adjudicated the four open cases under v0.5. All 24 are complete, and staged continuation is accepted. The execution record owns review scope and evidence; clinical validation remains separate. |
+| 4 — next phase; 726 remaining | Codex orchestrates Gemini 3.8 high effort through AGY for annotation and self-review, first on the pilot and then across dev750; Codex performs the secondary review. | Reviewed source-linked inventories, retained original annotations, corrections and unresolved disagreements; versioned guide and reference suitable for separate finding correctness and completeness measures. |
 | 5 | If the seizure annotation process works well, extend it to medications, diagnoses and investigations. Conor and Codex define the extension and review its annotations. | Reviewed four-family development reference and a frozen paired comparison of seizure-only versus all-four-family extraction on the original frequency-label endpoint. |
 | 6 | Conor provides the reviewed dataset and guidelines to Yujian Gan and asks whether the King's College London Hospital annotators are willing to apply the expanded annotation to real patient letters. | Collaborator feedback and agreed clinical annotation scope, permissions and review procedure; no willingness or real annotation assumed in advance. |
 | 7 | Conor/custodian and evaluation collaborator freeze and execute the authorised real-letter study; manuscript contributor completes the paper. | Separate real and synthetic results, finding measures supported by the references actually obtained, native answer agreement, time per letter and declared limitations. |
 
 Draft the manuscript alongside this work. Real-data permissions and exposure
 metadata can be resolved in parallel; they do not block synthetic guideline work.
-Holgate receipt blocks only that comparator. The protocol owns detailed execution,
-annotation and analysis requirements. A bounded output-only support audit is no
+Holgate receipt blocks only that comparator. The protocol links the separate execution, annotation and review owners. A bounded output-only support audit is no
 longer the planned substitute for a full source-first development inventory.
 
 ## Progress against steps 1–4 (2026-09-13)
@@ -118,7 +118,7 @@ longer the planned substitute for a full source-first development inventory.
    condition was selected before test results; no sealed errors were inspected.
    Dell execution awaits access, with a prepared development bundle and client.
 
-See the [protocol's completed comparison](../research/gan2026/one_shot_paper_protocol.md#completed-synthetic-comparison-2026-09-13)
+See the [completed comparison](../research/gan2026/one_shot_execution_record.md#completed-synthetic-comparison-2026-09-13)
 for results and artifact ownership. No superiority, non-inferiority, fresh-holdout
 or real-patient result is claimed from this synthetic comparison.
 

@@ -27,7 +27,7 @@ investigations and test whether all-four-family extraction harms the original
 frequency-label endpoint. Conor then plans to share the reviewed materials with
 Yujian Gan and explore clinical annotation of real letters by the King's team.
 Participation, permissions and real finding references are not yet established.
-The evaluation protocol owns guidelines, matching, rerun accounting and freezes;
+The protocol links the separate annotation, review, schema and execution owners;
 the roadmap owns sequencing. This outline owns how those findings enter the paper.
 
 ## Execution scope update (2026-09-13)
@@ -196,7 +196,7 @@ Conor approved a v2 candidate that makes frequency measurements computable: type
 rates, observed counts, cluster components, seizure-free intervals, last-seizure
 times and qualitative findings. It preserves event scope, measurement uncertainty,
 conditions and exact evidence without a universal raw-value/negation/confidence bag.
-The protocol owns the [agreed design](../../docs/research/gan2026/one_shot_paper_protocol.md#agreed-v2-measurement-design-2026-09-14).
+The schema decisions own the [agreed design](../../docs/research/gan2026/one_shot_schema_decisions.md#agreed-v2-measurement-design-2026-09-14).
 This candidate has fictional no-call checks and a permitted dev750 wording review,
 which removed the generic measurement-denial flag. No model-run performance
 evidence exists for this candidate. The synthetic results
@@ -212,7 +212,7 @@ Pragmatic agreement was 368/450 versus 360/450. Four rich and three simple outpu
 were unusable and counted as incorrect. These are reused-holdout synthetic results,
 not patient-data results or clinical validation of the full finding inventory.
 
-The [evaluation protocol](../../docs/research/gan2026/one_shot_paper_protocol.md#completed-synthetic-comparison-2026-09-13)
+The [execution record](../../docs/research/gan2026/one_shot_execution_record.md#completed-synthetic-comparison-2026-09-13)
 owns detailed reliability/cost reporting and the
 [reviewed machine aggregate](../../results/letter-benchmarks/gan/one_shot_frequency_v1/test450.aggregate.json).
 Table 3 and the API portions of Table 4 can now be populated from those artifacts.

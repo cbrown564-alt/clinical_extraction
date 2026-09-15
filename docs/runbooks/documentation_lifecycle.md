@@ -3,14 +3,18 @@
 Updated: 2026-09-13. Current focus: the one-call paper.
 
 The roadmap owns decisions and work order, the paper outline owns presentation,
-and the evaluation protocol owns the study procedure. Navigation links these
+and the evaluation protocol owns the study design. Annotation rules, annotation
+review, schema decisions and execution records have separate owners after the
+user-requested split on 2026-09-14. Navigation links these
 owners; local PROJECT_STATUS.md records only current state and next actions.
 Source/tests own implementation and result artifacts own measured outcomes.
 
 Keep no more than 50 Markdown files under docs/, including generated references
 and paused-prototype policies. Publication writing and frozen artifact README
 files are outside that count; do not move obsolete prose there to evade it.
-A new document should replace or consolidate an existing owner.
+A new document should replace or consolidate an existing owner. The explicitly
+requested 2026-09-14 protocol split is a scoped exception to the count limit; do not
+remove unrelated retained documents merely to offset that split.
 
 Retain a file only for current paper work, an executable dependency or interpretation
 of preserved evidence. Recover superseded plans and historical study narratives
