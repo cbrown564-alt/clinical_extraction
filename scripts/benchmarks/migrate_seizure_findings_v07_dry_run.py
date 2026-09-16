@@ -20,12 +20,16 @@ import re
 from pathlib import Path
 from typing import Any
 
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import one_shot_measurements_r8 as r8
+
 GUIDE_VERSION = "seizure_finding_annotation_v0.7"
 DEFAULT_INPUT = Path(
     "runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/codex/pro_final/"
     "working750_candidate.jsonl"
 )
 DEFAULT_QUESTIONS = DEFAULT_INPUT.with_name("CB_QUESTIONS.jsonl")
+DEFAULT_SOURCES = Path("runs/seizure_finding_annotation_v0_2/agy_gemini38_high/sources.jsonl")
+SENTENCE_END = re.compile(r"(?<=[.!?;])\s+|\n+")
 DEFAULT_OUT = Path(
     "runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/codex/v07_dry_run"
 )
@@ -287,6 +291,11 @@ def quantity(lo: float, hi: float | None) -> dict[str, Any]:
     return {"type": "range", "lower": lo, "upper": hi}
 
 
+def bounded(relation: str, value: dict[str, Any]) -> dict[str, Any]:
+    inner: Any = value["value"] if value["type"] == "number" else value
+    return {"type": "bound", "relation": relation, "value": inner}
+
+
 def parse_cadence(phrase: str) -> dict[str, Any] | None:
     """Return an R7 rate measurement for a plain-reading cadence phrase, else None."""
     text = phrase.strip().lower().rstrip(".").strip("“”\"'")
@@ -315,7 +324,7 @@ def parse_cadence(phrase: str) -> dict[str, Any] | None:
                 "per": duration(lo, hi, UNIT_WORDS[interval.group("unit")]),
             }
     if rate is not None and relation is not None:
-        rate["count"] = {"type": "bound", "relation": relation, "value": rate["count"]}
+        rate["count"] = bounded(relation, rate["count"])
     return rate
 
 
@@ -410,7 +419,7 @@ def map_qualitative(phrase: str) -> tuple[str, dict[str, Any] | None]:
         size: dict[str, Any] = quantity(lo, hi)
         tail = cluster.groupdict().get("tail") or ""
         if re.match(r"^\s*or more\b", tail):
-            size = {"type": "bound", "relation": "at_least", "value": size}
+            size = bounded("at_least", size)
         return "converted_to_cluster", {
             "type": "cluster",
             "rate": {"count": quantity(1, None), "per": duration(1, None, unit)},
@@ -476,6 +485,53 @@ def strip_flags(obj: Any) -> Any:
     return obj
 
 
+def trim_evidence(span: str, finding: dict[str, Any], hint: str) -> str:
+    """Shortest sentence run inside the span that carries the measurement (guide v0.7)."""
+    pieces = [part for part in SENTENCE_END.split(span) if part and part.strip()]
+    sentences: list[str] = []
+    cursor = 0
+    for piece in pieces:
+        start = span.find(piece, cursor)
+        if start < 0:
+            return span
+        sentences.append(span[start : start + len(piece)])
+        cursor = start + len(piece)
+    if len(sentences) <= 1:
+        return span
+    measurement = finding["measurement"]
+    tokens: list[str] = [hint.lower()] if hint else []
+
+    def collect(value: Any) -> None:
+        if isinstance(value, dict):
+            for key, item in value.items():
+                if key in {"time", "quantity", "frequency"} and isinstance(item, str):
+                    tokens.append(item.lower())
+                elif key in {"value", "lower", "upper"} and isinstance(item, int | float):
+                    number = int(item) if float(item).is_integer() else item
+                    tokens.append(str(number))
+                    tokens.extend(w for w, n in NUMBER_WORDS.items() if n == number and len(w) > 2)
+                else:
+                    collect(item)
+
+    collect(measurement)
+    collect(finding.get("period") or {})
+    scores = []
+    for index, sentence in enumerate(sentences):
+        low = sentence.lower()
+        score = sum(1 for token in tokens if token and token in low)
+        scores.append((score, index))
+    best_score, best = max(scores, key=lambda pair: (pair[0], -pair[1]))
+    if best_score == 0:
+        return span
+    label = finding["event"]["type"].lower()
+    start = best
+    if label not in sentences[best].lower() and best > 0:
+        start = best - 1
+    begin = span.find(sentences[start])
+    end = span.find(sentences[best], begin) + len(sentences[best])
+    return span[begin:end]
+
+
 def finding_key(finding: dict[str, Any]) -> str:
     keyed = {
         "event": {k: str(v).lower() for k, v in finding["event"].items()},
@@ -494,14 +550,18 @@ def migrate_record(
     manual: list[dict[str, Any]],
     conversions: list[dict[str, Any]],
     excluded: list[dict[str, Any]],
+    source_text: str | None = None,
 ) -> dict[str, Any]:
     source_id = str(record["source_id"])
     findings: list[dict[str, Any]] = []
     dropped_ids: set[str] = set()
+    notes: list[str] = []
+    manual_ids: list[str] = []
     for original in record["findings"]:
         finding = copy.deepcopy(original)
         measurement = finding["measurement"]
         kind = measurement["type"]
+        hint = measurement.get("frequency", "") if kind == "qualitative" else ""
         tally[f"before.measurement.{kind}"] += 1
         tally[f"before.timing.{finding['timing']}"] += 1
         if finding.get("condition"):
@@ -518,6 +578,12 @@ def migrate_record(
             continue
         if finding["timing"] == "future":
             tally["dropped.future_timing"] += 1
+            dropped_ids.add(finding["id"])
+            continue
+        if kind == "cluster" and not any(
+            measurement.get(k) for k in ("rate", "count", "seizures_per_cluster")
+        ):
+            tally["dropped.unquantified_cluster"] += 1
             dropped_ids.add(finding["id"])
             continue
         if kind == "qualitative":
@@ -542,7 +608,11 @@ def migrate_record(
                         "phrase": measurement["frequency"],
                     }
                 )
-                finding["migration_note"] = "manual_mapping"
+                notes.append(
+                    f"MANUAL {finding['id']}: qualitative phrase {measurement['frequency']!r}"
+                )
+                manual_ids.append(finding["id"])
+                finding["measurement"] = {"type": "qualitative", "frequency": "unknown"}
             elif replacement is not None:
                 hint = replacement.pop("_period_hint", None)
                 if hint and not finding.get("period"):
@@ -569,7 +639,21 @@ def migrate_record(
             finding.pop("condition", None)
         else:
             finding["condition"] = condition
+            if condition_outcome == "manual_attribution_mixed":
+                notes.append(f"CONDITION {finding['id']}: check attribution in {condition!r}")
+        if finding["event"].get("seizure_status") in (None, "unspecified"):
+            tally["status.unspecified_to_stated"] += 1
+            finding["event"]["seizure_status"] = "stated"
+        derived = r8.derive_scope(finding["event"]["type"])
+        if finding["event"].get("scope") != derived:
+            tally["scope.rederived"] += 1
+        finding["event"]["scope"] = derived
         finding = strip_flags(finding)
+        if source_text is not None:
+            trimmed = trim_evidence(finding["evidence"], finding, hint)
+            if trimmed != finding["evidence"] and trimmed in source_text:
+                tally["evidence.trimmed"] += 1
+                finding["evidence"] = trimmed
         findings.append(finding)
 
     merged: list[dict[str, Any]] = []
@@ -595,18 +679,23 @@ def migrate_record(
             tally[f"issues.retained_for_review.{group}"] += 1
             retained_reasons.append(f"{issue['id']}: {issue['question']}")
 
-    out = {
+    if manual_ids:
+        retained_reasons.append(
+            "manual mapping needed for " + ", ".join(manual_ids) + " (see notes)"
+        )
+    out: dict[str, Any] = {
         "guide_version": GUIDE_VERSION,
-        "source_id": record["source_id"],
+        "source_id": str(record["source_id"]),
         "source_row_index": record["source_row_index"],
         "source_sha256": record["source_sha256"],
         "annotation_state": "needs_review" if retained_reasons else "complete",
-        "document_dates": record.get("document_dates", []),
+        "document_dates": strip_flags(record.get("document_dates", [])),
         "findings": merged,
-        "migrated_from": "seizure_finding_annotation_v0.6 working750 candidate (mechanical dry run)",
     }
     if retained_reasons:
         out["review_reason"] = " | ".join(retained_reasons)
+    if notes:
+        out["notes"] = " | ".join(notes)
     for finding in merged:
         tally[f"after.measurement.{finding['measurement']['type']}"] += 1
         tally[f"after.timing.{finding['timing']}"] += 1
@@ -627,8 +716,20 @@ def main() -> None:
     parser.add_argument("--annotations", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--questions", type=Path, default=DEFAULT_QUESTIONS)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
+    parser.add_argument("--sources", type=Path, default=DEFAULT_SOURCES)
+    parser.add_argument(
+        "--write-records",
+        action="store_true",
+        help="Write migrated records for a test450 input (annotation continuation only).",
+    )
     args = parser.parse_args()
-    aggregate_only = "test450" in str(args.annotations)
+    aggregate_only = "test450" in str(args.annotations) and not args.write_records
+    texts: dict[str, str] = {}
+    if args.sources.exists():
+        for line in args.sources.read_text().splitlines():
+            if line.strip():
+                row = json.loads(line)
+                texts[str(row["source_id"])] = row["note_text"]
 
     records = [
         json.loads(line) for line in args.annotations.read_text().splitlines() if line.strip()
@@ -645,7 +746,10 @@ def main() -> None:
     conversions: list[dict[str, Any]] = []
     excluded: list[dict[str, Any]] = []
     migrated = [
-        migrate_record(r, question_groups, tally, manual, conversions, excluded) for r in records
+        migrate_record(
+            r, question_groups, tally, manual, conversions, excluded, texts.get(str(r["source_id"]))
+        )
+        for r in records
     ]
 
     args.out.mkdir(parents=True, exist_ok=True)
