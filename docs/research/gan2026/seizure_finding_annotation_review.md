@@ -1,8 +1,31 @@
 # Seizure-finding annotation workflow and review
 
 Canonical owner of annotation execution, both reviewers' checks and finding matching.
-Workflow revision: simplified Pro review and source-only test annotation, 2026-09-16; annotation conventions are v0.6 (native quarter support). Apply with the [annotation guide](seizure_finding_annotation_guide.md).
+Workflow revision: v0.7 lean review, 2026-09-16. Apply with the [annotation guide](seizure_finding_annotation_guide.md).
 The [study protocol](one_shot_paper_protocol.md) owns the separate Gan answer endpoint.
+
+## v0.7 review procedure (2026-09-16)
+
+Under guide v0.7 the review unit is the letter, not the candidate statement. For
+each letter one independent reviewer rereads the full source, then records either
+`agree` or the corrected record with a one-line reason per changed finding. There
+are no candidate ledgers, `source_checks`, `finding_context`, relations, A01–A09
+tables or C01–C08 comparison groups; the offline checker covers source identity,
+schema, exact quotation occurrence and state consistency. Cross-letter consistency
+is checked by searching the annotation file for identical qualitative values,
+event labels and evidence phrases and comparing their structured values; record
+only the differences found and how they were resolved. `needs_review` letters are
+excluded from finding scoring; report their count out of 750.
+
+Matching under v0.7 follows the rules below with three changes: a prediction
+matches a reference when its evidence span overlaps the reference span; the
+`approximate` flag, inclusivity flags and any relation fields are ignored; and
+`timing` values other than `current`/`historical` in a prediction are compared as
+`current`.
+
+The detailed procedure that follows describes the v0.6 workflow. It remains the
+record of how the saved dev750 and test450 artifacts were produced and reviewed;
+it is not applied to v0.7 work.
 
 The user authorised source annotation and self-review by Gemini through AGY on
 2026-09-14, then replaced Gemini with Grok 4.6 as the annotator on 2026-09-15.
