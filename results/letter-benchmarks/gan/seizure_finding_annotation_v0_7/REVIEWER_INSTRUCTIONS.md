@@ -69,7 +69,10 @@ schedules; diagnostic, aetiological or classification uncertainty.
   when the event label is absent from the measurement sentence. Copy characters
   exactly (dashes, quotes, spacing).
 - Repeats: identical measurement, label, timing, period and condition within a letter
-  is one finding; keep the first occurrence. A correction keeps only the corrected value.
+  is one finding; keep the first occurrence. A restatement of the same measurement for
+  the same label that only adds or drops an observation window (a Plan-section "remains
+  at 2 per month" after "2 per month over the past year") is also a repeat; keep the
+  occurrence that carries the window. A correction keeps only the corrected value.
 - `document_dates`: explicit clinic/letter dates with role, time, form and exact
   evidence. Not findings. Keep the candidate's unless wrong.
 

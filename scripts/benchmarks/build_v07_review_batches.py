@@ -48,12 +48,51 @@ def build(candidate: Path, sources: Path, out: Path, size: int) -> None:
     print(f"{len(manifest)} batches of up to {size} letters under {out}")
 
 
+def merge_restatements(record: dict[str, Any]) -> int:
+    """Apply the repeat rule uniformly: same label/measurement/timing/condition differing
+    only by the presence of an observation window is one finding; keep the windowed one."""
+
+    def key(f: dict[str, Any]) -> str:
+        return json.dumps(
+            {
+                "label": f["event"]["type"].lower().strip(),
+                "status": f["event"].get("seizure_status", "stated"),
+                "measurement": f["measurement"],
+                "timing": f.get("timing", "current"),
+                "condition": (f.get("condition") or "").lower().strip(),
+            },
+            sort_keys=True,
+        )
+
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for finding in record["findings"]:
+        groups.setdefault(key(finding), []).append(finding)
+    keep: list[dict[str, Any]] = []
+    removed = 0
+    for members in groups.values():
+        windowed = [m for m in members if m.get("period")]
+        unwindowed = [m for m in members if not m.get("period")]
+        if windowed and unwindowed:
+            keep.extend(windowed)
+            removed += len(unwindowed)
+        else:
+            keep.extend(members)
+    if removed:
+        order = {id(f): i for i, f in enumerate(record["findings"])}
+        keep.sort(key=lambda f: order[id(f)])
+        for index, finding in enumerate(keep, start=1):
+            finding["id"] = f"f{index}"
+        record["findings"] = keep
+    return removed
+
+
 def assemble(out: Path, snapshot: Path, log: Path) -> None:
     manifest = json.loads((out / "manifest.json").read_text())
     rows: list[dict[str, Any]] = []
     reviews: list[dict[str, Any]] = []
     missing: list[str] = []
     verdicts: Counter[str] = Counter()
+    merged = 0
     for entry in manifest:
         path = out / entry["batch"] / "reviewed.jsonl"
         if not path.exists():
@@ -67,6 +106,16 @@ def assemble(out: Path, snapshot: Path, log: Path) -> None:
         for row in reviewed:
             review = row.pop("review", None) or {"verdict": "unknown", "changes": []}
             verdicts[review["verdict"]] += 1
+            dropped = merge_restatements(row)
+            if dropped:
+                merged += dropped
+                review = {
+                    **review,
+                    "changes": [
+                        *review.get("changes", []),
+                        f"assemble: merged {dropped} restatement(s)",
+                    ],
+                }
             reviews.append({"source_id": str(row["source_id"]), "batch": entry["batch"], **review})
             rows.append(row)
     rows.sort(key=lambda r: r["source_row_index"])
@@ -78,6 +127,7 @@ def assemble(out: Path, snapshot: Path, log: Path) -> None:
         "missing": missing,
         "records": len(rows),
         "verdicts": dict(verdicts),
+        "restatements_merged": merged,
     }
     print(json.dumps(summary, indent=2))
     if missing:
