@@ -1,0 +1,17 @@
+{
+  "guide_version": "seizure_finding_annotation_v0.7",
+  "canonical_owners": [
+    "docs/research/gan2026/seizure_finding_annotation_guide.md",
+    "docs/research/gan2026/seizure_finding_annotation_review.md"
+  ],
+  "owner_sha256": {
+    "docs/research/gan2026/seizure_finding_annotation_guide.md": "42867e0d047498c9ab84cfb9bf8f0ac0a24773b7cb895101388de6b6e750ece9",
+    "docs/research/gan2026/seizure_finding_annotation_review.md": "9c0b7c1b3640d8ac85d1cb58786b5ef8885746f062df8b77676776e83d5d2d5f"
+  },
+  "r8_source_sha256": "5d750862b259ffbf5c0ebe46eac867ae53461ecc7172cc972d62b40830698013",
+  "checker": "scripts/benchmarks/check_annotations_v07.py",
+  "files": {
+    "REVIEWER_INSTRUCTIONS.md": "eafc658920c1c809fa1551fbba5ae1c70533e0b2d41ba2e1f388a817e2a95f27",
+    "annotation.schema.json": "fcacb26ccaa59c5adcf65a2544e8f825955c7bf4065fcee8f4e95fe165b3e6de"
+  }
+}

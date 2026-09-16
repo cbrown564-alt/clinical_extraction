@@ -1,0 +1,86 @@
+{
+  "version": "one_shot_frequency_v2_measurements_r8",
+  "revision": "guide_v07_v1",
+  "guide_version": "seizure_finding_annotation_v0.7",
+  "fixtures": [
+    {
+      "name": "cadence_range_is_rate",
+      "valid": true,
+      "findings": 1
+    },
+    {
+      "name": "singular_article_cadence_is_rate",
+      "valid": true,
+      "findings": 1
+    },
+    {
+      "name": "bounded_rate",
+      "valid": true,
+      "findings": 1
+    },
+    {
+      "name": "alternative_count_is_range",
+      "valid": true,
+      "findings": 1
+    },
+    {
+      "name": "seizure_days_count",
+      "valid": true,
+      "findings": 1
+    },
+    {
+      "name": "cluster_rate_with_size",
+      "valid": true,
+      "findings": 1
+    },
+    {
+      "name": "anchored_freedom_and_last_event",
+      "valid": true,
+      "findings": 2
+    },
+    {
+      "name": "bare_denials_excluded",
+      "valid": true,
+      "findings": 1
+    },
+    {
+      "name": "closed_vocabulary_and_historical",
+      "valid": true,
+      "findings": 2
+    },
+    {
+      "name": "uncertain_identity_with_vague_count",
+      "valid": true,
+      "findings": 1
+    },
+    {
+      "name": "combined_total_and_quarter",
+      "valid": true,
+      "findings": 1
+    },
+    {
+      "name": "document_dates_without_findings",
+      "valid": true,
+      "findings": 0
+    }
+  ],
+  "shared_with_r7": [
+    "task",
+    "instructions",
+    "label_forms",
+    "cases"
+  ],
+  "components": {
+    "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r8.py": "5d750862b259ffbf5c0ebe46eac867ae53461ecc7172cc972d62b40830698013",
+    "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r5.py": "53beb5707c8fccaa626a5ac7c0a97bd4a86a698e9674e5d57788cf53def36e37",
+    "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements.py": "a9cb300e9b800dfa1ce19bcb81c9501b1105946cbd0b665a54510bff4625ac08",
+    "/Users/cobro/code/clinical-extraction/scripts/benchmarks/prepare_one_shot_r8.py": "03ff2ea650d13001eb40f6fabcb75fc0572ff6a1cd5b262f6a57ec6130193e67"
+  },
+  "artifacts": {
+    "fictional_fixtures.json": "be7ca7d751a063d74b4eccfbb30cbd84fb9ec16888e37f47c9d9e6404dd2434e",
+    "r7_r8.diff": "b19594378485c31d8b23ce85e59f9a85d47c9f3f8ff9da8bbbc3817cdec8cdf0",
+    "rich.messages.json": "0859c8fe04c94f2c6ac974ec075fea39fa02d9f862527837b9b422bf822498de",
+    "rich.schema.json": "20702dbd30d0d23d8e6d3348034b94a6271b11b118f6da62a515133530275bfa"
+  },
+  "model_calls": 0
+}
