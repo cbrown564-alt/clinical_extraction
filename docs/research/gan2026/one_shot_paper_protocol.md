@@ -19,6 +19,31 @@ of task-relevant seizure findings read from each full source letter. Annotators 
 not limit their inventory to r5 outputs or to the existing selected answer. The
 existing Gan answer reference remains separate and retains its scoring semantics.
 
+### Source-only test450 annotation
+
+On 2026-09-15, Conor requested a separate ChatGPT 6 Pro task to annotate all
+450 synthetic test letters after the dev750 review completes. This explicitly
+authorises preparation of a source-only annotation export and subsequent annotation;
+it does not authorise sealed prediction/failure inspection or extraction development
+on test450. Preserve the existing native answers and evaluation restrictions.
+
+The package is preserved locally at
+`runs/seizure_finding_annotation_test450_6pro_2026-09-15/`. It includes all 450
+sources, including 20 row_ok=False records, and excludes native labels, selected
+references and predictions. The later simplified workflow authorised initial
+annotation with frozen v0.6 rules while unresolved development conventions remained
+explicit questions. The execution record owns package hashes and completion evidence.
+
+A fresh conversation performed initial annotation with an immediate source check
+under the lean workflow in the annotation review document. This replaced the
+planned separately recorded full-source self-review and A/C check tables; those
+stages must not be claimed as completed. All450 outputs are now locally received
+and mechanically verified. Independent semantic review remains pending.
+Keep new test-source policy ambiguities unresolved for domain adjudication; do not
+use them to tune extraction prompts, schemas, scorers or semantic repairs. Record
+annotation exposure in later reports; this work does not establish untouched-holdout
+generalisation. The execution record owns the results and verification artifacts.
+
 ## Prove seizure annotation, then extend all four families
 
 If the seizure annotation approach works well, extend the same process to the

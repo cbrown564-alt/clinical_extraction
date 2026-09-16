@@ -1,7 +1,7 @@
 # Seizure-finding annotation workflow and review
 
 Canonical owner of annotation execution, both reviewers' checks and finding matching.
-Workflow revision: Grok handover, 2026-09-15; annotation conventions are v0.6 (native quarter support). Apply with the [annotation guide](seizure_finding_annotation_guide.md).
+Workflow revision: simplified Pro review and source-only test annotation, 2026-09-16; annotation conventions are v0.6 (native quarter support). Apply with the [annotation guide](seizure_finding_annotation_guide.md).
 The [study protocol](one_shot_paper_protocol.md) owns the separate Gan answer endpoint.
 
 The user authorised source annotation and self-review by Gemini through AGY on
@@ -15,6 +15,30 @@ Gemini AGY route or effort flag applies to Grok. The execution record owns readi
 Codex may assess the pilot/batch checkpoint against the written criteria and
 continue when it passes; only unresolved clinical or consequential new policy
 questions require Conor/domain input.
+
+## Simplified ChatGPT review continuation — 2026-09-15
+
+After the first 50-source Pro review took 130 minutes, Conor requested completing
+the remaining 700 in the next turn with substantially less procedural overhead.
+For this Pro continuation, read each full source alongside its baseline annotation
+and record substantive omissions, unsupported claims, incorrect values/scope/time,
+inadequate evidence and unresolved questions. The clinical guide remains unchanged.
+
+Return one compact source-level verdict with evidence-linked issues, a short
+summary and exact reviewed/pending IDs. Separate candidate files, nine saved checks
+per source, exhaustive group/page/member accounting, version-migration proposals,
+replacement snapshots and repeated post-correction cycles are not required for
+this continuation. Compare recurring semantic problems through targeted searches
+and source rereads where warranted. Full reading and truthful coverage remain
+required; do not manufacture completion to meet the one-turn target.
+
+Preserve the first-50 artifacts and attribute the changed review method. Codex
+handles supported correction application and mechanical verification locally.
+Skipped procedural checks must not be reported as completed, and the Pro output
+alone does not establish an accepted reference. The exact continuation instructions
+are saved under the local Pro package as `SIMPLIFIED_CONTINUATION.txt`.
+The detailed procedure below describes the earlier workflow and other review
+stages; this amendment takes precedence for the remaining-700 Pro pass.
 
 ## Working procedure
 
@@ -355,3 +379,34 @@ and failure counts with each result. Save row-level pairings only for permitted
 development data. Use the protocol's existing sampling-unit and interval rules;
 freeze implementation and seed before evaluation. No finding metrics are established
 by the fictional examples or by this guide alone.
+
+### 2026-09-16: recovered Pro coverage and lean test450 initial annotation
+
+The user's latest instruction requests Codex completion of the outstanding review,
+pattern-based adjudication of Pro feedback, a random 100-record agreement check,
+grouped CB questions, and a fresh web 6 Pro test450 annotation task after feedback
+has been digested. This supersedes the staged package's requirement to finish all
+dev750 adjudication before starting the initial test annotation. It does not settle
+open rules or permit tuning against test annotations or evaluated predictions.
+
+The initially downloaded simplified Pro artifact contained473 unique records, not
+650; Pro retracted the larger claim because177 records had not been saved. The
+first50 archive and a fresh177 continuation have since been received: all700 Pro
+reviews are locally accounted for, alongside Codex's final50 source reviews.
+Local evidence is under `reviews/codex/pro_final/` in the active annotation run.
+The random100 selection uses seed20260916 over the originally recovered473 reviews;
+it does not represent the subsequently recovered227. Pattern inspection is distinct
+from full-source review, and neither establishes an accepted reference. The execution
+record owns merged coverage, corrections, unresolved counts and verification.
+
+For the separately authorised source-only test450 task, use the frozen v0.6 schema
+and semantic rules with the lean execution instructions in
+`runs/seizure_finding_annotation_test450_6pro_2026-09-15/execution_package_2026-09-16/`.
+Read each full source, author its inventory, and immediately check it against the
+source. Keep canonical within-record evidence/context/issues/source_checks, but
+omit separate candidate ledgers, A/C check tables, comparison groups, independent
+self-review claims and repeated checkpoint ZIPs. Save incrementally and derive
+actual coverage from the delivered JSONL. This produces initial annotations for
+later review, not an accepted reference. Open policy questions stay unresolved;
+no new general rule may be inferred from test sources. Preserve the earlier staged
+package and all immutable source bytes.

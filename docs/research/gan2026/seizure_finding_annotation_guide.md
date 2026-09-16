@@ -285,3 +285,22 @@ Earlier v0.5 annotations that preserved quarterly recurrence qualitatively remai
 valid historical outputs. Reclassification is a separately attributed semantic
 change to a v0.6 reviewed snapshot, never an overwrite of an immutable initial.
 No native benchmark label/scorer conversion is changed by this annotation decision.
+
+## CB review clarifications (2026-09-16; development adjudication)
+
+CB confirmed these conventions during the dev750 review:
+
+- Include independently recurring or explicitly seizure-identified auras. Retain
+  bare “no auras” and “no associated myoclonus” as unresolved when the source
+  does not distinguish an event from a feature. Classification uncertainty alone
+  does not downgrade explicitly stated seizure identity.
+- Keep singular-article cadence qualitative: “an absence seizure every night”
+  does not supply a numeric one/night rate. The same applies to a bare subtype
+  label such as “focal seizure monthly”. Explicit “once” or “one” still supplies
+  a number when the counted unit is clear; an individually observed event is
+  distinct from recurrence phrasing.
+
+Nine development issues were resolved by the cadence decision. This clarification
+was not inserted into the already running, frozen source-only test450 task. Its
+application to a later annotation snapshot must remain separately attributed.
+CB has not yet answered the separately proposed average-versus-approximation rule.
