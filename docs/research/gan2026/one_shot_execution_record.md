@@ -717,3 +717,95 @@ to their original snapshot. The propagation search contains 133 candidates in 11
 dev750 letters, not a completed full-set semantic review. The remaining 726 letters
 and both full-set reviews are pending; execution remains paused. No model calls,
 locked rows or real-patient data were used.
+
+## 2026-09-16: Pro recovery, Codex review and test450 launch
+
+Initial checkpoint; subsequent recovery and receipt updates follow below.
+
+Grok's completed dev750 baseline is now the input for review. The downloaded Pro
+continuation contains 473 unique records, not the claimed650. Pro retracted that
+claim: a further177 had not been saved. The first50 archive is separately reported
+complete but has not arrived locally. A fresh Pro continuation is reviewing the
+missing177; do not count its unsaved progress as reviewed coverage.
+
+Codex completed full-source review of positions701–750: 50 records,36 corrected,
+three retaining questions. Codex also read a random100 full letters from the473
+recovered reviews (seed20260916; not blinded). Main-decision judgments are57 agree,
+31 partial and12 missed correction. These are review judgments, not extraction
+accuracy or clinical validation. Applied corrections affect81 sampled records and
+242 additional records from source-backed pattern review. Originals remain immutable.
+
+The local evidence owner is
+`runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/codex/pro_final/REVIEW.md`.
+Before/after files, random IDs, reversals after guide rereading, proposal dispositions
+and checker outputs are alongside it. The working750 candidate contains152 open
+issue objects in124 records, grouped into eight CB question categories. The full
+reference is not accepted: first50 receipt, missing177 completion, remaining
+evidence/source-check reconciliation and CB decisions are outstanding. Untouched
+older guide declarations have not been relabelled as reviewed migrations.
+
+A new visible GPT6Pro web annotation task was launched at
+https://chatgpt.com/c/6aaa0c04-067c-83ed-ab2d-9d81b42c9c11 using
+`runs/seizure_finding_annotation_test450_6pro_2026-09-15/gan_test450_6pro_lean_2026-09-16.zip`.
+It contains450 unique source-only letters (20 row_ok=false retained), the frozen
+v0.6 guide/schema/examples/checker and lean instructions. Package SHA256:
+`44e1f8fa5bfefdb85a391fd8d3d6557ffc7e848b20537a39a6924fb2eef17b41`.
+The launch record preserves model visibility, destination and package details.
+This is initial annotation, not test scoring or accepted reference production.
+The web task is still running; no annotation output has yet been downloaded or
+verified. No test labels, evaluated predictions, or test-driven rule changes were used.
+
+### 2026-09-16 — recovered review outputs and merged development candidate
+
+The user saved `review_missing177.jsonl` and
+`gan_dev750_section_01_preserved_recovered.zip` to Downloads. Both were preserved
+under `runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/codex/pro_final/`.
+`coverage.json` records SHA-256 hashes and checks the first50, original473 and
+new177 against their expected source-ID sets: all700 Pro reviews are now locally
+accounted for, disjoint from the final50 reviewed by Codex. The original473 file
+has a different internal ordering from the manifest; membership and uniqueness
+match. The new177 order also matches the manifest.
+
+The first50 archive supplied47 replacements. All205 new177 proposals have recorded
+dispositions; the two newly imported sets changed168 candidate records. CB's
+confirmed qualitative singular-article cadence resolved nine issues; the approved
+event/feature convention retains source ambiguities. Source-check commentary was
+reconciled in ten records. Seven remaining guide-version migrations were inspected
+against full sources. A random six-letter acceptance spot-check from otherwise
+unchanged new177 records required two qualifier/evidence repairs; two additional
+targeted evidence repairs were applied. These checks do not replace or enlarge the
+earlier100-letter sample (57 agree,31 partial,12 missed corrections, sampled from473,
+not blinded). Individual change logs retain before/after annotations.
+
+The merged `working750_candidate.jsonl` passes the supplied v0.6 checker for all750:
+zero schema, source-hash, exact-quote or reference-link errors. This is mechanical
+verification, not clinical validation. There remain170 issue objects across136
+records, grouped in the regenerated `CB_QUESTIONS.md` and `.jsonl`; resolved cadence
+questions are removed. Some ambiguities may remain under the approved convention.
+The full candidate is not yet an accepted reference. No benchmark scoring or model
+calls were run for this artifact-only integration.
+
+The separate source-only test450 web task continued after its initial runtime limit.
+It verified371 unique saved records before resuming missing IDs under its frozen
+v0.6 instructions. Completion and downloaded output remain to be checked locally.
+No test labels, predictions or model failures informed these development changes.
+
+### 2026-09-16 — test450 output received and mechanically verified
+
+The user downloaded all three final outputs from the source-only annotation task.
+Original files are preserved under
+`runs/seizure_finding_annotation_test450_6pro_2026-09-15/received_completed450/`.
+The annotation SHA-256 is
+`2e4c87c33fc5475aa49b62289d6a1483a53d3bda2526b511d5a265c1b3313b1d`;
+the annotation and frozen source hashes match the delivered coverage report.
+Local verification using the frozen execution package's checker passes with zero
+errors:450 records,450 expected unique IDs,1754 findings,339 complete and111
+needs_review. All131 issue references in the grouped report match saved issues
+exactly once. `import_summary.json` and `local_verification.json` retain the checks.
+
+These are initial annotations, not an accepted reference. Independent semantic
+review remains pending. The original371-record preservation claim is reported by
+Pro; the separate partial file has not been imported for a local byte comparison.
+No labels, predictions or scores were accessed, no extraction rules were changed,
+and no benchmark evaluation was performed. Only artifact checks and documentation
+whitespace checks were needed; the repository test suite was not run.
