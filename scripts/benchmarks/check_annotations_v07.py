@@ -36,8 +36,21 @@ def check(
     for row in annotations:
         sid = str(row.get("source_id"))
         seen[sid] += 1
+        review = row.get("review")
+        if review is not None and not (
+            isinstance(review, dict)
+            and review.get("verdict") in {"agree", "corrected"}
+            and isinstance(review.get("changes"), list)
+        ):
+            errors.append(
+                {
+                    "source_id": sid,
+                    "check": "review",
+                    "detail": "review needs verdict agree|corrected and changes list",
+                }
+            )
         try:
-            record = r8.Annotation.model_validate(row)
+            record = r8.Annotation.model_validate({k: v for k, v in row.items() if k != "review"})
         except ValidationError as exc:
             errors.append(
                 {"source_id": sid, "check": "schema", "detail": str(exc).splitlines()[:6]}
