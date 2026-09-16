@@ -120,7 +120,9 @@ Match rich/simple note text, model and revision, decoding, runtime, label and
 selection definitions, uncertainty convention, evidence obligation and examples'
 clinical content. Record exact paired edits to scope instructions and schema-shaped
 example outputs. Use the same development-chosen output cap and timeout, generous
-enough for rich output; report truncation and realised costs. Keep the constrained
+enough for rich output; report truncation and realised costs. From 2026-09-16 the
+default request timeout for new runners is 600 seconds; completed runs keep their
+recorded timeouts, and each plan records the value used. Keep the constrained
 decoding policy fixed while recording each condition's schema. This contrast
 changes scope and output together; any selection-basis field must be recorded as
 part of that intervention. Additional component ablations are not required.

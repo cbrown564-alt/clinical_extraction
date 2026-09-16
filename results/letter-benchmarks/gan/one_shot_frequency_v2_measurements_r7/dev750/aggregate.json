@@ -1,0 +1,104 @@
+{
+  "identity": {
+    "version": "r7_dev750_timeout600_v1",
+    "prompt_version": "one_shot_frequency_v2_measurements_r7",
+    "revision": "simplified_dates_v1",
+    "dataset": "Gan 2026 synthetic",
+    "split": "dev750",
+    "row_policy": "all development rows including row_ok=False; failures retained",
+    "dataset_sha256": "cf13b498609079d37ba7ccd4cb9886b7d8a60a8bcd75e48ab5b4debb939b1c21",
+    "manifest_sha256": "c5f512d8744261916bd6d92562430489a3ba0494b0bf7c6575bfaa9e58680143",
+    "components": {
+      "/Users/cobro/code/clinical-extraction/scripts/benchmarks/run_r7_dev750.py": "a52eb57646aaa15b8335f7eb37886e7c2d31fc1ba994e8ac6faca2a585e8e5dd",
+      "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r7.py": "86dfe196d11856f7c1e79795d5d4a689d49cd70bb222043cdb72529d335a75f5",
+      "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r5.py": "53beb5707c8fccaa626a5ac7c0a97bd4a86a698e9674e5d57788cf53def36e37",
+      "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements.py": "a9cb300e9b800dfa1ce19bcb81c9501b1105946cbd0b665a54510bff4625ac08",
+      "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_contract.py": "bba300034226f8b47c70977d486c2f61ce42d448bd9b6cfb16abf0f5b565805f"
+    },
+    "model": "deepseek-flash",
+    "provider_documented_version": "DeepSeek-V4.1-Flash",
+    "thinking": "enabled",
+    "reasoning_effort": "low",
+    "temperature_submitted": 0,
+    "temperature_effective": "ignored by provider in thinking mode",
+    "max_tokens": 24000,
+    "timeout_seconds": 600,
+    "concurrency": 12,
+    "budget_usd": 100.0,
+    "prior_charge_upper_usd": 29.1822888,
+    "retry_policy": "none; saved first response; no automatic JSONAdapter fallback",
+    "repair_policy": "none",
+    "scoring": "native Purist/Pragmatic; independent declared answer plus whole-record strict",
+    "scope": "synthetic development; not held-out generalization"
+  },
+  "condition": {
+    "n": 750,
+    "record_valid": 578,
+    "answer_valid": 592,
+    "failures": {
+      "no_response": 151,
+      "invalid_schema": 21,
+      "invalid_target_label": 7
+    },
+    "answer_failures": {
+      "no_response": 151,
+      "invalid_target_label": 7
+    },
+    "answer": {
+      "purist": {
+        "correct": 526,
+        "n": 750,
+        "agreement": 0.7013333333333334,
+        "ci95": [
+          0.6676201692128778,
+          0.7329945707517393
+        ]
+      },
+      "pragmatic": {
+        "correct": 537,
+        "n": 750,
+        "agreement": 0.716,
+        "ci95": [
+          0.6826902780310123,
+          0.7471083171628153
+        ]
+      }
+    },
+    "strict": {
+      "purist": {
+        "correct": 508,
+        "n": 750,
+        "agreement": 0.6773333333333333,
+        "ci95": [
+          0.6430451209075373,
+          0.7098142195910989
+        ]
+      },
+      "pragmatic": {
+        "correct": 516,
+        "n": 750,
+        "agreement": 0.688,
+        "ci95": [
+          0.653954651520628,
+          0.7201293109628886
+        ]
+      }
+    }
+  },
+  "calls_finished": 750,
+  "response_models": {
+    "None": 35,
+    "deepseek-flash": 601
+  },
+  "transport_failures": {
+    "http_503": 2,
+    "ReadTimeout": 108,
+    "RemoteProtocolError": 1,
+    "ReadError": 3
+  },
+  "charge_upper_usd": 13.0313082,
+  "total_study_charge_upper_usd": 42.213597,
+  "complete": true,
+  "replay_mode": "saved first responses",
+  "scope": "synthetic development; not held-out generalization"
+}

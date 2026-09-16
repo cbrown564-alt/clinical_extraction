@@ -1,5 +1,71 @@
 # One-call study execution record
 
+## R7 rich dev750 first attempt and no-response reruns (2026-09-14 to 2026-09-16)
+
+`scripts/benchmarks/run_r7_dev750.py` (`prepare`, `run`, `replay`) executed the
+finalised R7 rich candidate (`one_shot_frequency_v2_measurements_r7`, revision
+`simplified_dates_v1`) on all 750 synthetic dev750 rows with DeepSeek V4.1 Flash,
+thinking enabled/low, 24,000-token limit, concurrency 12, a 600-second request
+timeout and no retries or repairs. The run was prepared on 2026-09-14 at 19:37 and
+finished on 2026-09-15 at 07:11; it was executed before this record was written,
+and the 2026-09-15 status line "r7 has no benchmark evaluation" was stale from that
+point. Scoring is the native Purist/Pragmatic answer measure plus the whole-record
+strict view (record schema-valid and answer correct).
+
+First attempt: Purist answer 526/750 (70.13%), Pragmatic 537/750 (71.60%); strict
+Purist 508/750 (67.73%), strict Pragmatic 516/750 (68.80%). Failures: 151 no
+response, 21 invalid schema, seven invalid target labels; all count as wrong.
+The 151 no-response rows were 108 client `ReadTimeout`, 35 provider error payloads
+("unable to start processing your request within the 900-second timeout limit"),
+two HTTP 503, three `ReadError`, one `RemoteProtocolError` and two returned
+completions with empty content after reasoning. Successful requests took a mean of
+29.9 seconds (maximum 70.5); the `ReadTimeout` requests hung for 1,683 to 7,308
+seconds before failing, so provider capacity on the night of 2026-09-14, not the
+600-second limit, caused the failures. Conservative first-attempt charge:
+US$13.0313082; cumulative study charges US$42.213597 of US$100. Offline replay was
+byte-identical for the aggregate and diagnostics.
+
+On 2026-09-16 Conor authorised one rerun of the failed requests at 600 seconds.
+`scripts/benchmarks/rerun_r7_no_response.py` (`prepare`, `run`, `replay`; run as
+`python -m scripts.benchmarks.rerun_r7_no_response`) verifies the frozen r7 identity
+and saved request bodies, hashes the six original artifacts, and reruns only the
+149 requests that returned no model output: the transport errors and provider error
+payloads. The two empty-content completions are returned outputs and were not
+rerun, matching the r4/r5 rule that returned failures stay as they are. Request
+bodies, model settings, scorer and no-repair policy are unchanged. All 149 finished
+in about 7.5 minutes; 146 returned and three failed again with `ReadError`. Mean
+rerun request time was 32.6 seconds. Conservative rerun charge: US$1.8573933;
+cumulative study charges US$44.0709903 of US$100. No attempts were outstanding.
+
+Mixed-attempt view (original usable responses plus single reruns; all 750 rows):
+
+| View | Purist answer | Pragmatic answer | Strict Purist | Strict Pragmatic |
+| --- | --- | --- | --- | --- |
+| r7 rich, first attempt | 526/750 (70.13%) | 537/750 (71.60%) | 508/750 (67.73%) | 516/750 (68.80%) |
+| r7 rich, no-response reruns | 650/750 (86.67%) | 668/750 (89.07%) | 619/750 (82.53%) | 634/750 (84.53%) |
+
+Residual failures in the mixed view: 36 invalid schema, five no response (three
+`ReadError`, two empty completions) and seven invalid target labels. The 31-row
+gap between the answer and strict views comes from schema-invalid records whose
+declared answer was correct; 36 records were schema-invalid in total, against two
+in the r5 rich mixed view. This is a mixed-attempt development view under a changed
+schema, not a fresh first-pass run and not a matched comparison with the r4/r5
+timeout-completed views, whose reruns selected `ReadTimeout` only. Classification
+of the schema failures and rich/simple disagreements remains the pending roadmap
+step; no rows were repaired, and no locked-test rows were used.
+
+Raw first-attempt artifacts: `runs/one_shot_frequency_v2_measurements_r7/dev750/`;
+reruns and original-request links: `.../dev750/timeout600/` with the merged view in
+`timeout_completed/`. Reviewed aggregates:
+[first attempt](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7/dev750/)
+and [mixed view with per-request timing](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7/dev750_timeout600/).
+Replay of both views was byte-identical.
+
+Execution default: from 2026-09-16 the request timeout for new one-call runners is
+600 seconds. Frozen modules keep their recorded values (`one_shot_study` 180 s,
+`one_shot_thinking` 300 s) because their identities are checked against saved plans;
+new runners set 600 seconds explicitly and record it in their plan.
+
 ## Grok batches 013–146 initials under v0.6 (2026-09-15)
 
 Grok 4.6 (`cursor-grok-4.6`, no AGY effort flag) saved first valid initials for
