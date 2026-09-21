@@ -2,10 +2,29 @@
 
 Canonical owner of representation versions, prompt audits and their rationale.
 Reorganised 2026-09-14 from the [study protocol](one_shot_paper_protocol.md).
-R7 is the latest representation decision below. Earlier dated sections describe
+R8 is the latest development representation below. Earlier dated sections describe
 their named versions; their uses of “current” refer to that decision date.
 They do not override the [source annotation guide](seizure_finding_annotation_guide.md).
 Execution results and authorisations belong to the [execution record](one_shot_execution_record.md).
+
+## R8 vague seizure-free duration (2026-09-21)
+
+Conor approved retaining vague absence durations verbatim instead of excluding
+otherwise anchored seizure freedom. R8 revision `guide_v07_v2_vague_absence`
+extends only `seizure_free.duration` with
+`{"type": "qualitative", "quantity": "several months"}`. The string retains the
+complete duration phrase, including its unit. Named intervals such as "In October"
+use the same representation; do not infer a full numeric month, a date, or a
+`since` anchor. Rate denominators remain numeric, range or bound durations.
+
+The existing qualitative-value comparison supports this string form. The matching
+check now verifies that it cannot match an invented numeric duration or a phrase
+with a different unit. The shared annotation schema is generated from the R8
+model. [No-call artifacts](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r8_no_call/)
+and the [portable annotation package](../../../results/letter-benchmarks/gan/seizure_finding_annotation_v0_7/)
+record the revised schema, rendered instructions and source hashes. R7 requests,
+scorers and saved outputs remain frozen. This preparation does not authorise an
+R8 benchmark run; the execution record owns the development annotation review.
 
 ## Minimal correction, then disagreement review
 

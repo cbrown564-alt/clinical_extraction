@@ -37,6 +37,18 @@ schedules; diagnostic, aetiological or classification uncertainty.
 
 ## Fixed defaults
 
+Development clarification, 2026-09-21: preserve vague seizure-free durations.
+"Seizure-free for several months" uses measurement
+`{"type":"seizure_free","duration":{"type":"qualitative","quantity":"several months"}}`.
+Copy the entire duration phrase verbatim, with no numeric inference or separate
+unit. This extension is specific to `seizure_free.duration`; numeric durations and
+rate denominators retain their existing structures. Do not exclude an otherwise
+in-scope absence solely because its duration is vague.
+An explicitly stated observation interval such as "this month", "In October" or
+"during this interval" also stays verbatim in the qualitative duration structure;
+do not infer a full numeric month or invent a `since` anchor. Relative `since`
+expressions stay relative even when another statement supplies a calendar date.
+
 - `event.type`: the source's words for the measured event. One finding per quantified
   statement under its own label. Never merge, sum, distribute or link findings because
   two labels might name the same events.
@@ -69,10 +81,9 @@ schedules; diagnostic, aetiological or classification uncertainty.
   when the event label is absent from the measurement sentence. Copy characters
   exactly (dashes, quotes, spacing).
 - Repeats: identical measurement, label, timing, period and condition within a letter
-  is one finding; keep the first occurrence. A restatement of the same measurement for
-  the same label that only adds or drops an observation window (a Plan-section "remains
-  at 2 per month" after "2 per month over the past year") is also a repeat; keep the
-  occurrence that carries the window. A correction keeps only the corrected value.
+  is one finding; keep the first occurrence. An added or omitted observation window
+  is a different period: do not merge those findings automatically. A correction
+  keeps only the corrected value.
 - `document_dates`: explicit clinic/letter dates with role, time, form and exact
   evidence. Not findings. Keep the candidate's unless wrong.
 

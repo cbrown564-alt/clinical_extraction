@@ -833,6 +833,7 @@
                 "mapping": {
                   "bound": "#/$defs/BoundDuration",
                   "number": "#/$defs/NumberDuration",
+                  "qualitative": "#/$defs/VerbatimDuration",
                   "range": "#/$defs/RangeDuration"
                 },
                 "propertyName": "type"
@@ -846,6 +847,9 @@
                 },
                 {
                   "$ref": "#/$defs/BoundDuration"
+                },
+                {
+                  "$ref": "#/$defs/VerbatimDuration"
                 }
               ]
             },
@@ -898,6 +902,29 @@
         "form"
       ],
       "title": "TimePoint",
+      "type": "object"
+    },
+    "VerbatimDuration": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "qualitative",
+          "title": "Type",
+          "type": "string"
+        },
+        "quantity": {
+          "description": "The complete source duration phrase, such as several months; never infer a number.",
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Quantity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "quantity"
+      ],
+      "title": "VerbatimDuration",
       "type": "object"
     }
   },

@@ -98,6 +98,19 @@ def test_value_timing_and_type_differences_are_fp_and_fn() -> None:
     assert diffs["p2"] == ["timing"]
     assert diffs["p3"] == ["measurement_type"]
 
+    # Vague absence durations stay source text and cannot match invented numbers.
+    vague = {
+        "type": "seizure_free",
+        "duration": {"type": "qualitative", "quantity": "several months"},
+    }
+    assert r8.SeizureFree.model_validate(vague).model_dump(exclude_none=True) == vague
+    assert fm.measurement_equal(vague, vague)
+    for duration in (
+        {"type": "number", "value": 3, "unit": "month"},
+        {"type": "qualitative", "quantity": "several weeks"},
+    ):
+        assert not fm.measurement_equal(vague, {"type": "seizure_free", "duration": duration})
+
 
 def test_duplicate_prediction_matches_once_and_specific_label_does_not_match_generic() -> None:
     pred = [

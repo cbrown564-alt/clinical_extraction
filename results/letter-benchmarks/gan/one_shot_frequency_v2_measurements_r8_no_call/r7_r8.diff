@@ -204,7 +204,55 @@
            "type": {
              "const": "seizure_free",
              "title": "Type",
-@@ -1538,19 +1486,20 @@
+@@ -1431,6 +1379,7 @@
+                   "mapping": {
+                     "bound": "#/$defs/BoundDuration",
+                     "number": "#/$defs/NumberDuration",
++                    "qualitative": "#/$defs/VerbatimDuration",
+                     "range": "#/$defs/RangeDuration"
+                   },
+                   "propertyName": "type"
+@@ -1444,6 +1393,9 @@
+                   },
+                   {
+                     "$ref": "#/$defs/BoundDuration"
++                  },
++                  {
++                    "$ref": "#/$defs/VerbatimDuration"
+                   }
+                 ]
+               },
+@@ -1496,6 +1448,29 @@
+           "form"
+         ],
+         "title": "TimePoint",
++        "type": "object"
++      },
++      "VerbatimDuration": {
++        "additionalProperties": false,
++        "properties": {
++          "type": {
++            "const": "qualitative",
++            "title": "Type",
++            "type": "string"
++          },
++          "quantity": {
++            "description": "The complete source duration phrase, such as several months; never infer a number.",
++            "minLength": 1,
++            "pattern": "\\S",
++            "title": "Quantity",
++            "type": "string"
++          }
++        },
++        "required": [
++          "type",
++          "quantity"
++        ],
++        "title": "VerbatimDuration",
+         "type": "object"
+       }
+     },
+@@ -1538,19 +1513,20 @@
    },
    "schema_instructions": [
      "The cases show intermediate facts and selections, not the response schema. Their raw_value/evidence preserve source text; normalised_label illustrates label conversion. Populate answer.label with the case's answer label, or the selected fact's normalised_label when no new label is given. Always declare answer.label, including unknown and no seizure frequency reference. Copy its supporting quotation into answer.evidence. Only no-reference has null answer.evidence. Map fact_id to id and selected_fact_ids to selected_ids.",
@@ -226,9 +274,9 @@
 +    "Rate is recurrence per time. Read cadence as a rate of one per interval: every 4-6 weeks is count 1 per range 4-6 week; an absence every night, daily, weekly, q2wk and a focal seizure monthly are all count 1 per 1 unit; a median interval of six weeks is 1 per 6 weeks; up to 3 a week is a bound at_most 3 per 1 week; several per week keeps qualitative quantity several. Keep the stated unit, including quarter; never convert units.",
 +    "Count is events in a stated window or on a date, kept as a count with period or occurred_at; never divide it into a rate. Read N or M as the range N-M. Affected-period counts such as seizure days 8/30 this month are counts whose event type is seizure days.",
 +    "Cluster keeps the cluster unit: monthly clusters of 3-4 is rate 1 per 1 month with seizures_per_cluster range 3-4; clusters spaced five days apart is rate 1 per 5 day; two clusters this month is count 2 with the period. Clusters with no cadence, count or size are not findings. Observed cluster counts require period or occurred_at.",
-+    "Seizure_free requires duration or since: seizure-free for 14 months, none since March, no seizures in the past year. Absence of one event type is not absence of all seizures. Last_seizure requires occurred_at and is used only when the source calls the event the latest or last; a dated event without that is a count.",
++    "Seizure_free requires duration or since: seizure-free for 14 months, none since March, no seizures in the past year. Preserve a vague absence duration verbatim: several months becomes duration {type: qualitative, quantity: several months}, without a numeric value or a separate unit. Named absence intervals such as this month or In October use the same verbatim duration structure; do not invent a full month or a since anchor. Absence of one event type is not absence of all seizures. Last_seizure requires occurred_at and is used only when the source calls the event the latest or last; a dated event without that is a count.",
 +    "Qualitative frequency must be one of rare, occasional, frequent, increased, decreased, unchanged, variable or unknown. Map infrequent, intermittent and sporadic to occasional; most days and near-daily to frequent; more frequent and worsening frequency to increased; less frequent and reduced to decreased; not documented or unable to quantify to unknown. Use increased, decreased or unchanged only when the sentence is about frequency.",
-+    "Quantities are number, range, bound (at_least, more_than, at_most, less_than) or qualitative quantity. There is no approximate flag and no inclusivity flag: the quotation carries about, roughly and on average. Durations use number, range or bound with a unit.",
++    "Quantities are number, range, bound (at_least, more_than, at_most, less_than) or qualitative quantity. There is no approximate flag and no inclusivity flag: the quotation carries about, roughly and on average. Durations use number, range or bound with a unit; seizure_free.duration also allows a qualitative duration phrase copied verbatim.",
 +    "Event.type is the source's words for the measured event; each quantified statement is one finding under its own label. Never merge, sum, distribute or link findings because two labels might name the same events. Scope is specific when the label itself names a seizure type, combined only for an explicit joint total, otherwise unspecified. Seizure_status is stated unless the source explicitly questions whether the events are seizures (uncertain) or excludes it (non_seizure); uncertain subtype, aetiology or classification does not change it.",
 +    "Timing is current by default and historical only when the source explicitly marks a superseded period (previously, before treatment, in 2015). Period and time points copy the source expression; add a numeric duration only when stated. Do not resolve relative dates, infer years or compute durations; annotate an impossible date literally.",
 +    "Condition is only a stated circumstance that restricts when the events occur (sleep or wake, time of day, a named trigger). Reporter, recording scope and hedges such as reported, witnessed, diary, typically and usually are not conditions; strip a leading hedge and keep the circumstance.",

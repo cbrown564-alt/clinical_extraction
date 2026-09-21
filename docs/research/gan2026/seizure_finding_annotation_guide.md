@@ -7,8 +7,8 @@ the [annotation workflow and review](seizure_finding_annotation_review.md).
 The [study protocol](one_shot_paper_protocol.md) owns benchmark endpoints and permissions.
 
 v0.7 replaces v0.6 and its layered v0.3–v0.6 amendments with one integrated rule set.
-v0.6 remains the guide version of every saved dev750 and test450 artifact; those files
-are not rewritten. The frozen v0.6 text is in Git history and in the run folders'
+Original v0.6 dev750 and test450 artifacts retain their recorded guide version;
+those files are not rewritten. The frozen v0.6 text is in Git history and in the run folders'
 `guide_versions/`. Migration of existing annotations is described at the end.
 
 ## Why v0.7 is narrower
@@ -95,8 +95,31 @@ raising an issue.
 - Historical findings are kept and scored like current findings; results are
   reported by timing.
 - Repeats: identical measurement, label, timing, period and condition within a
-  letter is one finding; keep the first occurrence. A correction ("in fact five,
+  letter is one finding; keep the first occurrence. Adding or omitting an
+  observation window changes the period; do not automatically merge those findings.
+  A correction ("in fact five,
   not four") keeps only the corrected value.
+
+### Development review clarification (2026-09-21)
+
+Conor approved preserving vague seizure-free durations rather than excluding them.
+For "seizure-free for several months", use `seizure_free` with
+`duration: {"type": "qualitative", "quantity": "several months"}`. Copy the complete
+duration phrase, including its time unit, without inventing a number or a `since`
+anchor. This extension applies to `seizure_free.duration`; numeric durations and
+rate denominators retain their existing structures. Approximate but numeric
+durations such as "about six months" keep numeric 6 month and the exact evidence.
+An explicitly named observation interval with no numeric duration ("this month",
+"In October", "during this interval") uses the same verbatim duration structure;
+do not turn it into a full numeric month or a `since` anchor. Keep relative `since`
+expressions relative even when another statement supplies a possible calendar date.
+
+The Cursor reviewer instructions and assembler had introduced a broader repeat
+rule that ignored an added or omitted observation window. That change was not in
+this guide and is withdrawn. Assembly must preserve reviewed findings without
+semantic merging. Preserve previously completed review files; apply any supported
+corrections in a separate, attributed snapshot. These development clarifications
+do not rewrite the frozen test450 annotations or authorise test-derived tuning.
 
 ## When to refuse
 

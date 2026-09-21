@@ -1,5 +1,55 @@
 # One-call study execution record
 
+## V0.7 dev750 reread completed (2026-09-21)
+
+Conor authorised resuming the 49 missing development batches, preserving the 26
+saved Cursor batches, assembling the reference and checking cross-letter
+consistency. Cursor history ended on 17 September after usage limits, with batches
+001–022, 024–026 and 029 saved. Three authorised Codex reviewers completed the
+remaining 490 full-source rereads. All 75 batches now cover 750 distinct letters.
+
+Final reference: 2,094 findings; 734 complete letters containing 2,030 findings;
+16 `needs_review` letters containing 64 findings excluded from finding scoring.
+All 42 empty inventories are complete. Ten unresolved letters contain source
+ambiguity, and six have vague recurrence denominators that the numeric-only rate
+schema cannot preserve. They remain explicit rather than accepting a qualitative
+substitution. The [annotation review](seizure_finding_annotation_review.md) owns
+the workflow; this is a reviewed development reference, not clinical validation.
+
+Conor approved retaining vague absence durations verbatim. The guide and R8
+revision `guide_v07_v2_vague_absence` now support qualitative absence durations
+and named intervals without inferred numbers or dates. Rate denominators are
+unchanged. The Cursor period-insensitive repeat rule conflicted with the guide;
+reviewer instructions now follow the period-sensitive rule and the assembler
+performs no semantic merging. Frozen R7 and test450 artifacts are unchanged.
+
+The cross-letter search covered all sources, recurring evidence, event labels,
+qualitative values, counting units, observation windows and duration wording.
+Source rereads support 129 separate correction records: 39 in the original260
+segment and 90 in the resumed490. All original batch reviews remain unchanged.
+Resolved search differences and remaining source/representation issues are recorded
+under the local evidence owner:
+`runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/claude_v07/continuation_2026-09-21/`.
+Use `reviewed_750.jsonl` with its annotation states; `REVIEW.md`, `coverage.json`,
+`reference_corrections.jsonl`, `unresolved.json` and `verification.json` provide
+coverage, provenance, decisions and reproducible checks.
+
+Dataset/split: Gan2026 synthetic dev750, all750 manifest rows including any
+`row_ok=False`. Model attribution: saved Cursor segment and three named Codex
+reviewer segments; exact model/effort identifiers were not independently captured.
+Program/guide hashes are in coverage. Scorer: structural annotation checker only,
+no model-performance result. Replay: deterministic local assembly. Repair: no
+prediction repair; source-based annotation corrections remain separately attributed.
+No R8 evaluation, paid extraction call or test450 source inspection occurred.
+
+All batch and final750 checks passed with zero errors. All176 pre-existing JSONLs,
+including the26 Cursor review files, match their starting hashes. Seven derived
+artifacts replay byte-identically. Verification:13 fictional schema fixtures,
+rendered instructions,836 always-on tests (one existing Starlette/httpx warning),
+four focused matching tests repeated after the final prompt edit, Ruff and mypy
+(422 source files). R7 schema-failure/disagreement classification remains separate
+pending work; the16 unresolved references require adjudication before inclusion.
+
 ## R7 rich dev750 first attempt and no-response reruns (2026-09-14 to 2026-09-16)
 
 `scripts/benchmarks/run_r7_dev750.py` (`prepare`, `run`, `replay`) executed the

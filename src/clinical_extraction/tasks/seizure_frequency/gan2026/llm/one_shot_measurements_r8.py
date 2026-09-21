@@ -20,7 +20,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import one_shot_mea
 
 r4 = r5.r4
 VERSION = "one_shot_frequency_v2_measurements_r8"
-REVISION = "guide_v07_v1"
+REVISION = "guide_v07_v2_vague_absence"
 GUIDE_VERSION = "seizure_finding_annotation_v0.7"
 Record = r4.v1.StrictRecord
 Unit = Literal["second", "minute", "hour", "day", "week", "month", "quarter", "year"]
@@ -106,6 +106,20 @@ class BoundDuration(Bound):
 Duration = Annotated[NumberDuration | RangeDuration | BoundDuration, Field(discriminator="type")]
 
 
+class VerbatimDuration(Record):
+    type: Literal["qualitative"]
+    quantity: r4.Text = Field(
+        description=(
+            "The complete source duration phrase, such as several months; never infer a number."
+        )
+    )
+
+
+AbsenceDuration = Annotated[
+    NumberDuration | RangeDuration | BoundDuration | VerbatimDuration, Field(discriminator="type")
+]
+
+
 class TimePoint(Record):
     time: r4.Text = Field(description="The source time expression; do not resolve relative dates.")
     form: Literal["calendar", "relative"]
@@ -160,7 +174,7 @@ class Cluster(Record):
 
 class SeizureFree(Record):
     type: Literal["seizure_free"]
-    duration: Duration | None = None
+    duration: AbsenceDuration | None = None
     since: TimePoint | None = None
 
     @model_validator(mode="after")
@@ -292,7 +306,11 @@ SCHEMA_INSTRUCTIONS = [
     "clusters this month is count 2 with the period. Clusters with no cadence, count or size "
     "are not findings. Observed cluster counts require period or occurred_at.",
     "Seizure_free requires duration or since: seizure-free for 14 months, none since March, no "
-    "seizures in the past year. Absence of one event type is not absence of all seizures. "
+    "seizures in the past year. Preserve a vague absence duration verbatim: several months "
+    "becomes duration {type: qualitative, quantity: several months}, without a numeric value "
+    "or a separate unit. Named absence intervals such as this month or In October use the "
+    "same verbatim duration structure; do not invent a full month or a since anchor. "
+    "Absence of one event type is not absence of all seizures. "
     "Last_seizure requires occurred_at and is used only when the source calls the event the "
     "latest or last; a dated event without that is a count.",
     "Qualitative frequency must be one of rare, occasional, frequent, increased, decreased, "
@@ -302,7 +320,8 @@ SCHEMA_INSTRUCTIONS = [
     "Use increased, decreased or unchanged only when the sentence is about frequency.",
     "Quantities are number, range, bound (at_least, more_than, at_most, less_than) or "
     "qualitative quantity. There is no approximate flag and no inclusivity flag: the quotation "
-    "carries about, roughly and on average. Durations use number, range or bound with a unit.",
+    "carries about, roughly and on average. Durations use number, range or bound with a unit; "
+    "seizure_free.duration also allows a qualitative duration phrase copied verbatim.",
     "Event.type is the source's words for the measured event; each quantified statement is one "
     "finding under its own label. Never merge, sum, distribute or link findings because two "
     "labels might name the same events. Scope is specific when the label itself names a seizure "
@@ -577,6 +596,20 @@ def fictional_cases() -> list[dict[str, Any]]:
                     "time": "14 September 2026",
                     "form": "calendar",
                     "evidence": "Clinic Date: 14 September 2026",
+                }
+            ],
+        ),
+        _case(
+            "vague_absence_duration_is_preserved",
+            "She has been seizure-free for several months.",
+            [
+                {
+                    "event": {"type": "seizure"},
+                    "measurement": {
+                        "type": "seizure_free",
+                        "duration": {"type": "qualitative", "quantity": "several months"},
+                    },
+                    "evidence": "She has been seizure-free for several months.",
                 }
             ],
         ),

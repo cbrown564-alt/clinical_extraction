@@ -1,6 +1,6 @@
 {
   "version": "one_shot_frequency_v2_measurements_r8",
-  "revision": "guide_v07_v1",
+  "revision": "guide_v07_v2_vague_absence",
   "guide_version": "seizure_finding_annotation_v0.7",
   "fixtures": [
     {
@@ -62,6 +62,11 @@
       "name": "document_dates_without_findings",
       "valid": true,
       "findings": 0
+    },
+    {
+      "name": "vague_absence_duration_is_preserved",
+      "valid": true,
+      "findings": 1
     }
   ],
   "shared_with_r7": [
@@ -71,16 +76,16 @@
     "cases"
   ],
   "components": {
-    "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r8.py": "5d750862b259ffbf5c0ebe46eac867ae53461ecc7172cc972d62b40830698013",
+    "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r8.py": "88c352c9dbd3db7fae98c0ab822675ec43d9778b63ce7da104c138844b449bfe",
     "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r5.py": "53beb5707c8fccaa626a5ac7c0a97bd4a86a698e9674e5d57788cf53def36e37",
     "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements.py": "a9cb300e9b800dfa1ce19bcb81c9501b1105946cbd0b665a54510bff4625ac08",
     "/Users/cobro/code/clinical-extraction/scripts/benchmarks/prepare_one_shot_r8.py": "03ff2ea650d13001eb40f6fabcb75fc0572ff6a1cd5b262f6a57ec6130193e67"
   },
   "artifacts": {
-    "fictional_fixtures.json": "be7ca7d751a063d74b4eccfbb30cbd84fb9ec16888e37f47c9d9e6404dd2434e",
-    "r7_r8.diff": "b19594378485c31d8b23ce85e59f9a85d47c9f3f8ff9da8bbbc3817cdec8cdf0",
-    "rich.messages.json": "0859c8fe04c94f2c6ac974ec075fea39fa02d9f862527837b9b422bf822498de",
-    "rich.schema.json": "20702dbd30d0d23d8e6d3348034b94a6271b11b118f6da62a515133530275bfa"
+    "fictional_fixtures.json": "ead866fef712f63fcb9ba1c99aceae6c4a4c793e18e82e99a6cdfc046affe3cf",
+    "r7_r8.diff": "a2a88720afe631d3c747d69faf122a8f4be8fd85369b86934bdb347f331249d3",
+    "rich.messages.json": "a5ef0dd554b0bb4c5424340cb99e115bb892f192b104951114c83d540049f2a9",
+    "rich.schema.json": "7563afa01362dbed3a51a3dcb24e0fc9dacbd6f9c0eaeff5afdbaf21b59851cf"
   },
   "model_calls": 0
 }

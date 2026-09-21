@@ -465,5 +465,38 @@
         }
       ]
     }
+  },
+  {
+    "name": "vague_absence_duration_is_preserved",
+    "note_text": "She has been seizure-free for several months.",
+    "scope": "representation only; answer placeholder unless stated",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "She has been seizure-free for several months."
+      },
+      "findings": [
+        {
+          "event": {
+            "type": "seizure",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "seizure_free",
+            "duration": {
+              "type": "qualitative",
+              "quantity": "several months"
+            }
+          },
+          "evidence": "She has been seizure-free for several months.",
+          "id": "f1",
+          "timing": "current"
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
   }
 ]

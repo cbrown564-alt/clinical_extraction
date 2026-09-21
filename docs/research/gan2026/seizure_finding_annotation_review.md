@@ -1,7 +1,7 @@
 # Seizure-finding annotation workflow and review
 
 Canonical owner of annotation execution, both reviewers' checks and finding matching.
-Workflow revision: v0.7 lean review, 2026-09-16. Apply with the [annotation guide](seizure_finding_annotation_guide.md).
+Workflow revision: v0.7 lean review, updated 2026-09-21. Apply with the [annotation guide](seizure_finding_annotation_guide.md).
 The [study protocol](one_shot_paper_protocol.md) owns the separate Gan answer endpoint.
 
 ## v0.7 review procedure (2026-09-16)
@@ -16,6 +16,21 @@ is checked by searching the annotation file for identical qualitative values,
 event labels and evidence phrases and comparing their structured values; record
 only the differences found and how they were resolved. `needs_review` letters are
 excluded from finding scoring; report their count out of 750.
+
+For the resumed development review, preserve the 26 completed Cursor batch files
+and save the 49 missing batches separately in their existing assignments. Record
+source-based consistency corrections in an attributed overlay, with hashes of the
+review files they correct. Assembly checks coverage before writing and must not
+merge or otherwise reinterpret findings. The canonical repeat rule includes the
+observation period. A sentence can support more than one finding when it states
+distinct measurements, such as an explicit frequency trend and a numeric rate.
+
+Use the 2026-09-21 guide clarification and matching schema to preserve vague
+seizure-free durations and named observation intervals verbatim. This does not
+extend numeric rate denominators. Record reviewer segments, source and program
+hashes, unresolved letters and assembly replay in the local evidence report. The
+[execution record](one_shot_execution_record.md) owns completed coverage and checks;
+the frozen test450 reference is outside this continuation.
 
 Matching under v0.7 follows the rules below with three changes: a prediction
 matches a reference when its evidence span overlaps the reference span; the

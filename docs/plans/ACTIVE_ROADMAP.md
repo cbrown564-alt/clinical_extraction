@@ -1,13 +1,15 @@
 # Paper roadmap
 
-Updated: 2026-09-14. Owner: Conor Brown.
+Updated: 2026-09-21. Owner: Conor Brown.
 
 ## Current focus
 
 Exclusive focus for this period is the one-call seizure-frequency paper.
 Longitudinal prototype development, cohort expansion, clinical review of that
-prototype, research-paper tables and optimizer experiments are postponed. The main next research step is a complete seizure-finding annotation of dev750,
-starting with annotation guidelines. Prove this approach before extending annotation
+prototype, research-paper tables and optimizer experiments are postponed. The
+dev750 v0.7 reference is assembled after all 750 source rereads and cross-letter
+checks. Next resolve the 16 flagged references and classify R7 development failures
+and rich/simple disagreements. Prove this approach before extending annotation
 and extraction to medications, diagnoses and investigations, then explore its use
 with the real-letter annotators through Yujian Gan. Preserve
 their code, examples and saved results; none is a prerequisite for this paper.
@@ -32,8 +34,9 @@ priorities and the decisions below, without repeating either document.
   use conditions arrive through Conor's supervisor. Do not recreate it from memory.
 - Build a source-first seizure-finding reference for all dev750 letters to measure
   finding correctness and completeness separately from the existing answer label.
-  Codex defines the guidelines and coordinates Grok 4.6 for annotation and
-  self-review, replacing Gemini; Codex performs the independent secondary review.
+  Grok 4.6 supplied the v0.6 initials after replacing Gemini. Codex defines the
+  guidelines and coordinates the independent review; the v0.7 continuation used
+  three authorised parallel Codex reviewers after 26 saved Cursor batches.
   Model annotations are provisional until reviewed; clinical disagreements remain explicit.
 - Use one compact ExECT configuration example with native reference semantics.
   No longitudinal results, usability study, rule-authoring study, broad ExECT model
@@ -89,8 +92,8 @@ both conditions is an expectation to test, not a target for tuning.
 | --- | --- | --- |
 | 1 — complete | Evaluation contributor reran the 14 r4 simple and 40 r5 rich timeouts at 600 seconds. | All 54 returned; original attempts preserved and replay verified. Both conditions reached 658/750 Purist answer agreement; rich strict is 656/750. The execution record owns results, timing and costs. |
 | 2 — representation implemented; review pending | Implementation contributor makes the smallest demonstrated representation corrections, then reviews rich/simple disagreements. | Finalised r7 candidate covers cluster interval counts, compound bounds, agreed schema simplifications and document/event dates; 23 fictional fixtures and unchanged native task rules. R7 dev750 mixed view after authorised no-response reruns: 650/750 Purist answer, 619/750 strict, 36 schema-invalid records. Schema-failure and disagreement classification remains pending. Frozen timeout-rerun conditions are unchanged; new runners default to 600 seconds. |
-| 3 — authored; pilot secondary review complete | Codex defined [v0.6 annotation guidelines](../research/gan2026/seizure_finding_annotation_guide.md) in the standalone annotation guide. | Portable instructions/schema, source-first decisions, offline checks and shared full-set Gemini/Codex review procedures are written, with fictional examples and matching rules. Codex completed secondary review of 24 pilot letters; CB subsequently adjudicated the four open cases under v0.5. All 24 are complete, and staged continuation is accepted. The execution record owns review scope and evidence; clinical validation remains separate. |
-| 4 — 84 initials saved; 666 remaining | Grok 4.6 is annotator and primary self-reviewer; Codex coordinates and performs independent secondary review. Preserve model attribution and frozen five-letter assignments. | All 102 review corrections for batches 003–012 are implemented: 50 letters/165 findings, 47 adjudicable letters and three retained source ambiguities under CB decisions. Across reviewed pieces, 81 letters/264 findings are adjudicable; the earlier accepted 34-letter set remains separately recorded. Native quarter support and source531 reclassification use v0.6. Both full-set review passes and wider correction propagation remain pending. The [execution record](../research/gan2026/one_shot_execution_record.md#batches-008012-corrections-and-current-totals-2026-09-15) owns results and verification; the local manifest owns assignment and corrected snapshot paths. |
+| 3 — v0.7 authored and checked | Codex maintains the [annotation guide](../research/gan2026/seizure_finding_annotation_guide.md), portable schema and lean review procedure. | Conor approved verbatim vague absence durations on 21 September; R8 no-call revision and 13 fictional fixtures support the shared annotation schema. The canonical repeat rule includes period, and assembly performs no semantic merging. Earlier guide versions and outputs remain preserved. |
+| 4 — full reread and consistency check complete; 16 flagged | Preserve the 26 Cursor batches; three authorised Codex reviewers completed the 49 missing batches. Codex assembled the reference and coordinated consistency corrections. | All 750 letters reviewed; 2,094 findings. The 734 complete letters contain 2,030 findings; 16 unresolved letters are excluded from finding scoring. All checks passed, original reviews remain unchanged, and assembly replay is byte-identical. The [execution record](../research/gan2026/one_shot_execution_record.md#v07-dev750-reread-completed-2026-09-21) owns coverage and provenance. Resolve remaining flags before including those letters; clinical validation remains separate. |
 | 5 | If the seizure annotation process works well, extend it to medications, diagnoses and investigations. Conor and Codex define the extension and review its annotations. | Reviewed four-family development reference and a frozen paired comparison of seizure-only versus all-four-family extraction on the original frequency-label endpoint. |
 | 6 | Conor provides the reviewed dataset and guidelines to Yujian Gan and asks whether the King's College London Hospital annotators are willing to apply the expanded annotation to real patient letters. | Collaborator feedback and agreed clinical annotation scope, permissions and review procedure; no willingness or real annotation assumed in advance. |
 | 7 | Conor/custodian and evaluation collaborator freeze and execute the authorised real-letter study; manuscript contributor completes the paper. | Separate real and synthetic results, finding measures supported by the references actually obtained, native answer agreement, time per letter and declared limitations. |
