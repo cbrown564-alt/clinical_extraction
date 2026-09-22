@@ -48,6 +48,17 @@ and the method are in
 [finding_score.json](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7/dev750_timeout600/finding_score.json).
 Reproduce with `.venv/bin/python scripts/benchmarks/score_r7_findings.py`.
 
+The low inventory score is not one extraction failure. Of the reference
+findings, 900 share a quotation with a prediction and still fail a field, 196
+share no quotation, 125 use a duration or unit R7 cannot emit, and 134 sit in
+an unusable inventory. The 900 are mostly a later v0.7 convention scored
+against an earlier R7 prompt: closed qualitative wording, a copied period, a
+stated-by-default seizure status, and the sentence's own event words. About
+261 predictions that share no reference quotation are bare denials or
+unquantified clusters, which R7 requested and v0.7 excludes. The
+[error analysis](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7/dev750_timeout600/finding_error_analysis.md)
+owns the examples and the class counts. They do not replace the primary score.
+
 ## R7 development failure and disagreement classification (2026-09-22)
 
 The frozen R7 rich mixed view on synthetic dev750 is 650/750 Purist and 619/750
