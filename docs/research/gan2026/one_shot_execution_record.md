@@ -1,5 +1,53 @@
 # One-call study execution record
 
+## R7 finding correctness and completeness (2026-09-22)
+
+The saved R7 rich mixed view was scored against the completed v0.7 dev750
+reference. No model was called, no output was repaired, and test450 was not
+opened. The matcher is the frozen `finding_matching_v07_v1`. A schema-invalid or
+absent inventory is unusable: no true positives, every reference finding is a
+false negative, and the predicted count is unknown. Findings inside an invalid
+record are not salvaged. An illegal answer label does not by itself reject a
+schema-valid inventory.
+
+All 750 letters are complete references, with 2,097 findings and 42 empty
+inventories. Usable R7 inventories: 709. Unusable: 41, the 36 schema-invalid
+records and five no-response rows.
+
+| Measure | Count | Rate |
+| --- | --- | --- |
+| Precision, usable inventories only | 742 / (742 + 1,455) | 0.338 |
+| Recall, all reference findings | 742 / 2,097 | 0.354 |
+| F1 | 1,484 / 4,294 | 0.346 |
+| Exact inventory | 75 / 750 | 0.100 |
+| Correct empty inventory | 27 / 42 | 0.643 |
+
+Recall restricted to the 709 usable inventories is 742 / 1,963 (0.378). That
+secondary figure is not the primary recall. The 15 non-empty predictions on
+reviewed empty letters are false positives, not correct empty inventories.
+
+False negatives partition as 134 on unusable inventories, 125 reference findings
+the frozen R7 schema cannot represent, and 1,096 representable findings that
+were not matched. The 126 unrepresentable findings are 121 qualitative durations
+and five `quarter` units. None matched. They do not explain the score. Of the
+1,096 representable misses, 585 differ from the closest prediction in one
+attribute (value 142, period 120, event 101, seizure status 97, measurement type
+72, timing 47, evidence 6) and 511 differ in more than one. Those attribute
+mentions are not false-negative totals.
+
+Matched reference findings by measurement: rate 214/354, count 289/567,
+last seizure 46/75, seizure-free 119/432, cluster 27/123, qualitative 47/546.
+Timing: current 670/1,898, historical 72/199.
+
+The frozen matcher compares event label, seizure status, timing, measurement
+components, period or date, and exact evidence overlap. It does not compare
+condition, approximation, or inclusivity. Document dates are not findings. This
+is a synthetic development score, not clinical validation and not a holdout
+result. The answer agreement of 650/750 is a different endpoint. Row pairings
+and the method are in
+[finding_score.json](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7/dev750_timeout600/finding_score.json).
+Reproduce with `.venv/bin/python scripts/benchmarks/score_r7_findings.py`.
+
 ## R7 development failure and disagreement classification (2026-09-22)
 
 The frozen R7 rich mixed view on synthetic dev750 is 650/750 Purist and 619/750

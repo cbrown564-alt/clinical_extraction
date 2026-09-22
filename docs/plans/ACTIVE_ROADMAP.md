@@ -9,10 +9,11 @@ Longitudinal prototype development, cohort expansion, clinical review of that
 prototype, research-paper tables and optimizer experiments are postponed. The
 dev750 v0.7 reference is assembled after all 750 source rereads and cross-letter
 checks. The eight source-ambiguous references are resolved. The R7 development
-failures and rich/simple disagreements are classified. Prove this approach before
-extending annotation and extraction to medications, diagnoses and investigations,
-then explore its use
-with the real-letter annotators through Yujian Gan. Preserve
+failures and rich/simple disagreements are classified. Saved R7 inventories match
+742 of 2,097 reviewed findings, so the seizure record is not yet shown to be
+worth extending. Do not extend annotation or extraction to medications,
+diagnoses and investigations until that inventory gap is understood. Use with
+the real-letter annotators through Yujian Gan comes after that. Preserve
 their code, examples and saved results; none is a prerequisite for this paper.
 
 The [paper outline](../../publications/jamia-one-shot/README.md) owns the argument
