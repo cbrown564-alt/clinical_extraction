@@ -1,0 +1,135 @@
+{
+  "scope": "Saved R8 rich dev750. Exact score remains finding_matching_v07. The band sketch is not an adopted scorer.",
+  "exact_tp": 1032,
+  "band_sketch": {
+    "rule": "Keep an exact match. Also match an unused pair when evidence overlaps, event labels are equivalent, timing agrees, and the projected Purist band agrees. Period text, seizure status, and exact quantity spelling are not required. Every seizure-free finding projects to currently_no_seizure.",
+    "tp": 1202,
+    "fp": 590,
+    "fn": 895,
+    "added_by_band": 170,
+    "added_only_because_seizure_free_collapses": 106,
+    "precision": 0.6707589285714286,
+    "recall": 0.5731998092513114
+  },
+  "added_pair_kinds": {
+    "rate seizure_freq_more1mon_less1week": 15,
+    "rate seizure_freq_more1per6mon_less1mon": 6,
+    "rate seizure_freq_more1week_less1day": 26,
+    "seizure_free_collapsed currently_no_seizure": 106,
+    "rate seizure_freq_1_per_week": 1,
+    "rate seizure_freq_1ormore_daily": 10,
+    "rate seizure_freq_1_per_mon": 2,
+    "rate seizure_freq_1_per_6mon": 2,
+    "cluster_rate_without_size seizure_freq_more1mon_less1week": 1,
+    "rate seizure_freq_1_per_yr": 1
+  },
+  "same_evidence_different_band": {
+    "seizure_freq_more1per6mon_less1mon vs seizure_freq_more1mon_less1week": 2,
+    "seizure_freq_1_per_mon vs seizure_freq_more1week_less1day": 2,
+    "seizure_freq_more1per6mon_less1mon vs seizure_freq_more1week_less1day": 2,
+    "seizure_freq_more1per6mon_less1mon vs seizure_freq_1ormore_daily": 2,
+    "seizure_freq_1_per_mon vs seizure_freq_more1mon_less1week": 1,
+    "seizure_freq_1ormore_daily vs currently_no_seizure": 1,
+    "seizure_freq_more1mon_less1week vs seizure_freq_1ormore_daily": 1,
+    "seizure_freq_more1mon_less1week vs seizure_freq_more1week_less1day": 1
+  },
+  "unmatched_reference_with_overlap_unprojectable_or_blocked": {
+    "unparsed:qualitative": 150,
+    "no_shared_evidence": 228,
+    "unparsed:count_without_numeric_window": 233,
+    "unparsed:rate_unprojectable": 19,
+    "unparsed:cluster_unprojectable": 46,
+    "unparsed:rate": 1,
+    "unparsed:last_seizure": 6
+  },
+  "same_band_blocked_by_event_or_timing": 85,
+  "exact_miss_subclasses": {
+    "unusable_inventory": 115,
+    "exact_match": 1032,
+    "not_a_purist_rate": 202,
+    "single_measurement_value": 57,
+    "same_measurement_event_timing": 223,
+    "period_only": 186,
+    "single_measurement_type": 82,
+    "same_band": 52,
+    "no_shared_evidence": 228,
+    "different_band": 8,
+    "status_only": 25,
+    "event_label": 169,
+    "single_event": 97,
+    "timing": 68,
+    "different_band_seizure_free_collapsed": 1,
+    "same_band_seizure_free_collapsed": 37,
+    "single_timing": 37
+  },
+  "examples": {
+    "same_band": [
+      {
+        "row": 103,
+        "prediction": "1 per 1 to 2 week",
+        "reference": "1 per 1 to 2 week",
+        "band": "seizure_freq_more1mon_less1week",
+        "pred_evidence": "prior to this period the seizures were occurring every 1 or 2 weeks",
+        "ref_evidence": "By way of comparison, prior to this period the seizures were occurring every 1 or 2 weeks."
+      },
+      {
+        "row": 103,
+        "prediction": "2 to 4 per year",
+        "reference": "2 to 4 per year",
+        "band": "seizure_freq_more1per6mon_less1mon",
+        "pred_evidence": "Over the past year, however, the patient and family report that events have become markedly infrequent, such that the current pattern is \u2264 t",
+        "ref_evidence": "Over the past year, however, the patient and family report that events have become markedly infrequent, such that the current pattern is \u2264 t"
+      },
+      {
+        "row": 156,
+        "prediction": "1 per 6 day",
+        "reference": "1 per 6 day",
+        "band": "seizure_freq_more1week_less1day",
+        "pred_evidence": "Patient reports seizures every 6 days",
+        "ref_evidence": "Patient reports seizures every 6 days, typically brief focal aware episodes with auditory distortion and right-sided facial tingling. Family"
+      },
+      {
+        "row": 182,
+        "prediction": "1 per 2 day",
+        "reference": "1 per 2 day",
+        "band": "seizure_freq_more1week_less1day",
+        "pred_evidence": "seizures are occurring every 2 days on average",
+        "ref_evidence": "The carer reports that seizures are occurring every 2 days on average, based on a written diary and a smartphone log that have been kept con"
+      }
+    ],
+    "seizure_free_collapsed": [
+      {
+        "row": 190,
+        "prediction": "seizure free",
+        "reference": "seizure free",
+        "band": "currently_no_seizure",
+        "pred_evidence": "His last generalised tonic\u2013clonic seizure was in May 2025 after a night of sleep deprivation, and there have been none since.",
+        "ref_evidence": "His last generalised tonic\u2013clonic seizure was in May 2025 after a night of sleep deprivation, and there have been none since."
+      },
+      {
+        "row": 466,
+        "prediction": "seizure free",
+        "reference": "seizure free",
+        "band": "currently_no_seizure",
+        "pred_evidence": "No generalised tonic\u2013clonic seizures documented in the past six months",
+        "ref_evidence": "No generalised tonic\u2013clonic seizures documented in the past six months."
+      },
+      {
+        "row": 1591,
+        "prediction": "seizure free",
+        "reference": "seizure free",
+        "band": "currently_no_seizure",
+        "pred_evidence": "There were no generalised tonic\u2013clonic seizures reported in the same interval.",
+        "ref_evidence": "There were no generalised tonic\u2013clonic seizures reported in the same interval."
+      },
+      {
+        "row": 1695,
+        "prediction": "seizure free",
+        "reference": "seizure free",
+        "band": "currently_no_seizure",
+        "pred_evidence": "In the current month to date, no events have been recorded.",
+        "ref_evidence": "In the current month to date, no events have been recorded."
+      }
+    ]
+  }
+}

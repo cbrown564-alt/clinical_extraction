@@ -9,7 +9,9 @@ Current focus: the one-call seizure-frequency paper. Longitudinal work is paused
 | Data, comparisons, outcomes and execution readiness | [Evaluation protocol](research/gan2026/one_shot_paper_protocol.md) |
 | Seizure-finding annotation guidelines and matching | [Annotation guide v0.7](research/gan2026/seizure_finding_annotation_guide.md) |
 | Annotation workflow, review and matching | [Annotation review](research/gan2026/seizure_finding_annotation_review.md) |
+| Planned inventory score | [Finding Purist match](research/gan2026/finding_purist_match.md) |
 | Prompt/schema versions and rationale | [Schema decisions](research/gan2026/one_shot_schema_decisions.md) |
+| Jev supplementary experiment design | [Evaluation protocol](research/gan2026/one_shot_paper_protocol.md#jev-fictional-comparison) |
 | Run authorisations and completed comparisons | [Execution record](research/gan2026/one_shot_execution_record.md) |
 | Repository setup and commands | [README](../README.md) |
 | Current task state | [Project status](../PROJECT_STATUS.md), local-only |

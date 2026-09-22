@@ -177,9 +177,12 @@ source-first dev750 inventory reference and review of emitted findings so that
 finding correctness and completeness can be measured separately. Until that
 reference and its matching rules are reviewed, schema validity, quotation occurrence
 and finding counts remain technical/descriptive measures, not clinical finding
-precision or recall. The dev750 reference and frozen matcher now support that
+precision or recall. The dev750 reference and frozen exact matcher now support that
 development score; the [execution record](one_shot_execution_record.md#r7-finding-correctness-and-completeness-2026-09-22)
-owns the saved R7 result. It is not clinical validation or a holdout result.
+owns the saved R7 result and the [R8 run](one_shot_execution_record.md#r8-rich-dev750-finding-score-2026-09-22).
+Exact field agreement is not the planned inventory endpoint. Finding Purist,
+defined in the [finding-match note](finding_purist_match.md), is the next
+scoring phase. It is not clinical validation or a holdout result.
 Real finding measures still depend on the clinical annotations actually obtained. Sealed failure reporting remains mechanical and aggregate-only;
 the development annotation plan does not permit inspection of sealed failures.
 

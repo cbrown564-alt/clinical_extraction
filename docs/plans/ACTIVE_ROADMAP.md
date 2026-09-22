@@ -11,9 +11,11 @@ dev750 v0.7 reference is assembled after all 750 source rereads and cross-letter
 checks. The eight source-ambiguous references are resolved. The R7 development
 failures and rich/simple disagreements are classified. One R8 rich dev750 pass,
 scored with the same matcher, matches 1,032 of 2,097 reviewed findings. That is
-higher than R7 and still about half the reference, so the seizure inventory is
-not yet shown to be worth extending. Do not extend annotation or extraction to
-medications, diagnoses and investigations until that gap is understood. Use with
+higher than R7 and still about half the reference. The exact finding score is
+not the inventory endpoint. The next phase is a separately named Finding Purist
+score, outlined in the [finding-match note](../research/gan2026/finding_purist_match.md).
+Do not extend annotation or extraction to medications, diagnoses and
+investigations until that score exists. Use with
 the real-letter annotators through Yujian Gan comes after that. Preserve
 their code, examples and saved results; none is a prerequisite for this paper.
 
@@ -133,9 +135,10 @@ both conditions is an expectation to test, not a target for tuning.
 | 2 — complete | Implementation contributor makes the smallest demonstrated representation corrections, then reviews rich/simple disagreements. | R7 dev750 mixed view: 650/750 Purist answer, 619/750 strict, 36 schema-invalid records. Classification, 2026-09-22: schema failures are serialization against existing slots; 74 of 100 Purist misses are shared with r4 simple. The execution record owns the causes. Frozen timeout-rerun conditions are unchanged. |
 | 3 — v0.7 authored and checked | Codex maintains the [annotation guide](../research/gan2026/seizure_finding_annotation_guide.md), portable schema and lean review procedure. | Conor approved verbatim vague absence durations and recurrence denominators on 21 September, and bimonthly = one per two months on 22 September, retaining exact evidence. R8 no-call revision and 16 fictional fixtures support these conventions. The canonical repeat rule includes period, and assembly performs no semantic merging. Earlier guide versions and outputs remain preserved. |
 | 4 — complete | Preserve the 26 Cursor batches; three authorised Codex reviewers completed the 49 missing batches. Codex assembled the reference and coordinated consistency corrections. | All 750 letters reviewed. Conor resolved the remaining source ambiguities, ending with 15672: one to two per year applies to generalised tonic–clonic seizures only. The reference has 2,097 findings, all in complete letters, including 42 empty inventories. The [execution record](../research/gan2026/one_shot_execution_record.md#source-15672-annual-rate-adjudicated-2026-09-22) owns coverage and provenance. Clinical validation remains separate. |
-| 5 | If the seizure annotation process works well, extend it to medications, diagnoses and investigations. Conor and Codex define the extension and review its annotations. | Reviewed four-family development reference and a frozen paired comparison of seizure-only versus all-four-family extraction on the original frequency-label endpoint. |
-| 6 | Conor provides the reviewed dataset and guidelines to Yujian Gan and asks whether the King's College London Hospital annotators are willing to apply the expanded annotation to real patient letters. | Collaborator feedback and agreed clinical annotation scope, permissions and review procedure; no willingness or real annotation assumed in advance. |
-| 7 | Conor/custodian and evaluation collaborator freeze and execute the authorised real-letter study; manuscript contributor completes the paper. | Separate real and synthetic results, finding measures supported by the references actually obtained, native answer agreement, time per letter and declared limitations. |
+| 5 — next | Freeze and implement Finding Purist beside the exact matcher, then rescore the saved R7 and R8 dev750 inventories. No new model call. | A named scorer, fictional fixtures for same-band, different-band, period, status, qualitative, seizure-free duration, event, and timing cases, and both scores recorded for the saved outputs. The [finding-match note](../research/gan2026/finding_purist_match.md) owns the rule. |
+| 6 | If the seizure annotation process works well, extend it to medications, diagnoses and investigations. Conor and Codex define the extension and review its annotations. | Reviewed four-family development reference and a frozen paired comparison of seizure-only versus all-four-family extraction on the original frequency-label endpoint. |
+| 7 | Conor provides the reviewed dataset and guidelines to Yujian Gan and asks whether the King's College London Hospital annotators are willing to apply the expanded annotation to real patient letters. | Collaborator feedback and agreed clinical annotation scope, permissions and review procedure; no willingness or real annotation assumed in advance. |
+| 8 | Conor/custodian and evaluation collaborator freeze and execute the authorised real-letter study; manuscript contributor completes the paper. | Separate real and synthetic results, finding measures supported by the references actually obtained, native answer agreement, time per letter and declared limitations. |
 
 Draft the manuscript alongside this work. Real-data permissions and exposure
 metadata can be resolved in parallel; they do not block synthetic guideline work.

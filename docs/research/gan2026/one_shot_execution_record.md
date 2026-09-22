@@ -39,7 +39,10 @@ and not a holdout result. It is not a simultaneous comparison with R7 or with
 r4 simple. Under the same matcher, the saved R7 inventory was 742/2,197
 precision and 742/2,097 recall, with 75/750 exact inventories and 650/750
 Purist answers. R8 raises the inventory score and lowers the answer score by
-12 Purist letters. The inventory is still about half the reference.
+12 Purist letters. The inventory is still about half the reference. The exact
+finding score is not the planned inventory endpoint. The next phase rescores
+these saved outputs with a separately named Finding Purist rule. That rule is
+not yet implemented; the [finding-match note](finding_purist_match.md) owns it.
 
 ## R7 finding correctness and completeness (2026-09-22)
 
