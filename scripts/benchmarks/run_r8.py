@@ -49,18 +49,21 @@ PRIOR_LEDGERS = (
     Path("runs/one_shot_thinking_r4_r5_r6/dev750/timeout600/attempts.jsonl"),
     Path("runs/one_shot_original_r6/test450_timeout600/attempts.jsonl"),
     Path("runs/one_shot_frequency_v2_measurements_r7/dev750/attempts.jsonl"),
+    Path("runs/one_shot_frequency_v2_measurements_r7/dev750/timeout600/attempts.jsonl"),
     Path("runs/one_shot_frequency_v2_measurements_r8/dev750/attempts.jsonl"),
     Path("runs/one_shot_frequency_v2_measurements_r8/test450/attempts.jsonl"),
 )
 SPLITS = {"dev750": ("validation", 750), "test450": ("test", 450)}
 
 
-def root(split: str) -> Path:
-    return Path("runs/one_shot_frequency_v2_measurements_r8") / split
+def root(split: str, *, rich_only: bool = False) -> Path:
+    name = "dev750_rich_only" if rich_only else split
+    return Path("runs/one_shot_frequency_v2_measurements_r8") / name
 
 
-def results(split: str) -> Path:
-    return Path("results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r8") / split
+def results(split: str, *, rich_only: bool = False) -> Path:
+    name = "dev750_rich_only" if rich_only else split
+    return Path("results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r8") / name
 
 
 def body(record: GanFrequencyRecord, condition: str) -> dict[str, Any]:
@@ -129,8 +132,8 @@ def inspect(
     return result
 
 
-def prior_charge(split: str) -> float:
-    own = root(split) / "attempts.jsonl"
+def prior_charge(split: str, *, rich_only: bool = False) -> float:
+    own = root(split, rich_only=rich_only) / "attempts.jsonl"
     return sum(study.old.charged(study.old.read_lines(p)) for p in PRIOR_LEDGERS if p != own)
 
 
@@ -142,10 +145,11 @@ def records(split: str) -> list[GanFrequencyRecord]:
     return sorted(loaded, key=lambda r: r.source_row_index)
 
 
-def tasks(split: str) -> list[dict[str, Any]]:
+def tasks(split: str, *, rich_only: bool = False) -> list[dict[str, Any]]:
     jobs = []
+    active = ("r8_rich",) if rich_only else CONDITIONS
     for i, record in enumerate(records(split)):
-        order = CONDITIONS if i % 2 == 0 else CONDITIONS[::-1]
+        order = active if i % 2 == 0 else active[::-1]
         for condition in order:
             request = body(record, condition)
             rid = study.old.digest(
@@ -165,7 +169,7 @@ def tasks(split: str) -> list[dict[str, Any]]:
     return jobs
 
 
-def identity(split: str, reference: Path) -> dict[str, Any]:
+def identity(split: str, reference: Path, *, rich_only: bool = False) -> dict[str, Any]:
     paths = [
         Path(__file__),
         Path(r8.__file__),
@@ -173,9 +177,10 @@ def identity(split: str, reference: Path) -> dict[str, Any]:
         Path(r8.r5.__file__),
         Path(r8.r4.__file__),
     ]
+    active = ("r8_rich",) if rich_only else CONDITIONS
     return {
-        "version": "r8_paired_timeout600_v1",
-        "conditions": CONDITIONS,
+        "version": "r8_rich_only_timeout600_v1" if rich_only else "r8_paired_timeout600_v1",
+        "conditions": active,
         "prompt_version": r8.VERSION,
         "revision": r8.REVISION,
         "guide_version": r8.GUIDE_VERSION,
@@ -198,12 +203,18 @@ def identity(split: str, reference: Path) -> dict[str, Any]:
         "timeout_seconds": TIMEOUT,
         "concurrency": study.CONCURRENCY,
         "budget_usd": BUDGET,
-        "prior_charge_upper_usd": prior_charge(split),
+        "prior_charge_upper_usd": prior_charge(split, rich_only=rich_only),
         "retry_policy": "none; saved first response; no automatic JSONAdapter fallback",
         "repair_policy": "none",
         "scoring": (
-            "native Purist/Pragmatic answer agreement per condition with paired bootstrap; "
-            "finding precision/recall/F1 on adjudicable v0.7 reference letters (r8_rich only)"
+            "native Purist/Pragmatic answer agreement; "
+            "finding precision/recall/F1 on complete v0.7 reference letters with "
+            "finding_matching_v07. Rich-only runs do not repeat r4 simple."
+            if rich_only
+            else (
+                "native Purist/Pragmatic answer agreement per condition with paired bootstrap; "
+                "finding precision/recall/F1 on adjudicable v0.7 reference letters (r8_rich only)"
+            )
         ),
         "row_level_outputs": "dev750 only; test450 aggregate-only",
         "scope": "synthetic development"
@@ -251,13 +262,19 @@ def paired_bootstrap(rich: list[bool], simple: list[bool]) -> dict[str, Any]:
 
 
 def analyze(
-    split: str, jobs: list[dict[str, Any]], plan: dict[str, Any], reference: Path
+    split: str,
+    jobs: list[dict[str, Any]],
+    plan: dict[str, Any],
+    reference: Path,
+    *,
+    rich_only: bool = False,
 ) -> dict[str, Any]:
-    out = root(split)
+    active = tuple(plan["conditions"])
+    out = root(split, rich_only=rich_only)
     responses = {row["request_id"]: row for row in study.old.read_lines(out / "responses.jsonl")}
     selected = records(split)
     refs = load_reference(reference, selected)
-    per_condition: dict[str, dict[int, dict[str, Any]]] = {c: {} for c in CONDITIONS}
+    per_condition: dict[str, dict[int, dict[str, Any]]] = {c: {} for c in active}
     models: Counter[str] = Counter()
     for job in jobs:
         saved = responses.get(job["request_id"], {})
@@ -268,7 +285,7 @@ def analyze(
             models[str(saved["response"].get("model"))] += 1
     n = len(selected)
     summary: dict[str, Any] = {}
-    for condition in CONDITIONS:
+    for condition in active:
         rows = [per_condition[condition][r.source_row_index] for r in selected]
         block: dict[str, Any] = {
             "n": n,
@@ -291,17 +308,19 @@ def analyze(
                     "ci95": wilson(count, n),
                 }
         summary[condition] = block
-    paired = {}
-    for method in ("purist", "pragmatic"):
-        rich = [
-            bool(per_condition["r8_rich"][r.source_row_index].get(method + "_correct"))
-            for r in selected
-        ]
-        simple = [
-            bool(per_condition["r4_simple"][r.source_row_index].get(method + "_correct"))
-            for r in selected
-        ]
-        paired[method] = paired_bootstrap(rich, simple)
+    paired = None
+    if "r4_simple" in active:
+        paired = {}
+        for method in ("purist", "pragmatic"):
+            rich = [
+                bool(per_condition["r8_rich"][r.source_row_index].get(method + "_correct"))
+                for r in selected
+            ]
+            simple = [
+                bool(per_condition["r4_simple"][r.source_row_index].get(method + "_correct"))
+                for r in selected
+            ]
+            paired[method] = paired_bootstrap(rich, simple)
 
     letters = []
     diagnostics = []
@@ -326,14 +345,14 @@ def analyze(
             {
                 "source_row_index": record.source_row_index,
                 "answers": {
-                    c: per_condition[c][record.source_row_index]["label"] for c in CONDITIONS
+                    c: per_condition[c][record.source_row_index]["label"] for c in active
                 },
                 "answer_correct": {
                     c: {
                         m: per_condition[c][record.source_row_index].get(m + "_correct")
                         for m in ("purist", "pragmatic")
                     }
-                    for c in CONDITIONS
+                    for c in active
                 },
                 "findings": scored,
             }
@@ -361,8 +380,8 @@ def analyze(
     study.old.write_json(out / "aggregate.json", report)
     if split == "dev750":
         study.old.write_json(out / "diagnostics.json", diagnostics)
-    results(split).mkdir(parents=True, exist_ok=True)
-    study.old.write_json(results(split) / "aggregate.json", report)
+    results(split, rich_only=rich_only).mkdir(parents=True, exist_ok=True)
+    study.old.write_json(results(split, rich_only=rich_only) / "aggregate.json", report)
     print(
         json.dumps(
             {
@@ -385,14 +404,19 @@ def analyze(
 
 
 async def run(
-    split: str, jobs: list[dict[str, Any]], plan: dict[str, Any], reference: Path
+    split: str,
+    jobs: list[dict[str, Any]],
+    plan: dict[str, Any],
+    reference: Path,
+    *,
+    rich_only: bool = False,
 ) -> None:
     from dotenv import dotenv_values
 
     key = os.getenv("DEEPSEEK_API_KEY") or dotenv_values(".env").get("DEEPSEEK_API_KEY")
     if not key:
         raise ValueError("API key unavailable")
-    out = root(split)
+    out = root(split, rich_only=rich_only)
     ledger = study.old.read_lines(out / "attempts.jsonl")
     started = {event["request_id"] for event in ledger}
     pending = [job for job in jobs if job["request_id"] not in started]
@@ -488,7 +512,7 @@ async def run(
                     )
 
         await asyncio.gather(*(call(job) for job in pending))
-    analyze(split, jobs, plan, reference)
+    analyze(split, jobs, plan, reference, rich_only=rich_only)
 
 
 def main() -> None:
@@ -496,10 +520,19 @@ def main() -> None:
     parser.add_argument("command", choices=["prepare", "run", "replay"])
     parser.add_argument("--split", choices=sorted(SPLITS), required=True)
     parser.add_argument("--reference", type=Path, required=True)
+    parser.add_argument(
+        "--rich-only",
+        action="store_true",
+        help="Dev750 R8 rich only. Does not repeat r4 simple and refuses test450.",
+    )
     args = parser.parse_args()
-    jobs = tasks(args.split)
-    plan = json.loads(json.dumps(identity(args.split, args.reference)))
-    out = root(args.split)
+    if args.rich_only and args.split != "dev750":
+        raise ValueError("Rich-only R8 is dev750 only")
+    jobs = tasks(args.split, rich_only=args.rich_only)
+    plan = json.loads(
+        json.dumps(identity(args.split, args.reference, rich_only=args.rich_only))
+    )
+    out = root(args.split, rich_only=args.rich_only)
     out.mkdir(parents=True, exist_ok=True)
     target = out / "plan.json"
     if args.command == "prepare":
@@ -514,9 +547,11 @@ def main() -> None:
     if study.old.read_json(target) != plan:
         raise ValueError("Prepared identity changed")
     if args.command == "run":
-        asyncio.run(run(args.split, jobs, plan, args.reference))
+        asyncio.run(
+            run(args.split, jobs, plan, args.reference, rich_only=args.rich_only)
+        )
     else:
-        analyze(args.split, jobs, plan, args.reference)
+        analyze(args.split, jobs, plan, args.reference, rich_only=args.rich_only)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,46 @@
 # One-call study execution record
 
+## R8 rich dev750 finding score (2026-09-22)
+
+Conor authorised one R8 rich pass over synthetic dev750, scored with the frozen
+`finding_matching_v07_v1` matcher and the completed v0.7 reference. r4 simple was
+not repeated. Test450 was not opened. No output was repaired.
+
+`scripts/benchmarks/run_r8.py run --split dev750 --rich-only` called DeepSeek
+V4.1 Flash (`deepseek-flash`) with thinking enabled/low, a 24,000-token limit,
+a 600-second timeout, and concurrency 12. All 750 requests finished. There were
+no transport errors. Mean request time was 33.2 seconds and the maximum was
+99.1. Charge upper bound: US$9.2850318. Cumulative study charges:
+US$53.3560221 of US$100. The raw run is
+`runs/one_shot_frequency_v2_measurements_r8/dev750_rich_only/`. The aggregate is
+[dev750_rich_only](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r8/dev750_rich_only/aggregate.json).
+
+Answer agreement, all 750 letters, unusable output incorrect: Purist 638/750
+(0.851), Pragmatic 662/750 (0.883). Strict, requiring a schema-valid record as
+well: Purist 610/750, Pragmatic 632/750. Failures: 31 invalid schema, 6 invalid
+target labels, 3 no response, 1 invalid envelope, 1 truncation. Usable
+inventories: 714. The 31 schema-invalid records include 28 whose declared
+answer was already Purist-correct.
+
+Finding score against all 2,097 reference findings in 750 complete letters:
+
+| Measure | Count | Rate |
+| --- | --- | --- |
+| Precision, usable inventories only | 1,032 / (1,032 + 760) | 0.576 |
+| Recall, all reference findings | 1,032 / 2,097 | 0.492 |
+| F1 | 2,064 / 3,889 | 0.531 |
+| Exact inventory | 185 / 750 | 0.247 |
+| Correct empty inventory | 27 / 42 | 0.643 |
+
+The 36 unusable inventories hold 115 reference findings, all false negatives.
+On usable inventories, current findings matched 967/1,796 and historical
+findings 65/186. This is a synthetic development score, not clinical validation
+and not a holdout result. It is not a simultaneous comparison with R7 or with
+r4 simple. Under the same matcher, the saved R7 inventory was 742/2,197
+precision and 742/2,097 recall, with 75/750 exact inventories and 650/750
+Purist answers. R8 raises the inventory score and lowers the answer score by
+12 Purist letters. The inventory is still about half the reference.
+
 ## R7 finding correctness and completeness (2026-09-22)
 
 The saved R7 rich mixed view was scored against the completed v0.7 dev750

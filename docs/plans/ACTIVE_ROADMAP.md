@@ -9,10 +9,11 @@ Longitudinal prototype development, cohort expansion, clinical review of that
 prototype, research-paper tables and optimizer experiments are postponed. The
 dev750 v0.7 reference is assembled after all 750 source rereads and cross-letter
 checks. The eight source-ambiguous references are resolved. The R7 development
-failures and rich/simple disagreements are classified. Saved R7 inventories match
-742 of 2,097 reviewed findings, so the seizure record is not yet shown to be
-worth extending. Do not extend annotation or extraction to medications,
-diagnoses and investigations until that inventory gap is understood. Use with
+failures and rich/simple disagreements are classified. One R8 rich dev750 pass,
+scored with the same matcher, matches 1,032 of 2,097 reviewed findings. That is
+higher than R7 and still about half the reference, so the seizure inventory is
+not yet shown to be worth extending. Do not extend annotation or extraction to
+medications, diagnoses and investigations until that gap is understood. Use with
 the real-letter annotators through Yujian Gan comes after that. Preserve
 their code, examples and saved results; none is a prerequisite for this paper.
 
