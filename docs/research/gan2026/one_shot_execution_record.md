@@ -53,6 +53,67 @@ and
 [R7 finding_purist_score.json](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7/dev750_timeout600/finding_purist_score.json).
 Reproduce with `.venv/bin/python scripts/benchmarks/score_finding_purist.py`.
 
+## R8 Finding Purist misses (2026-09-22)
+
+The saved R8 rich inventories still miss 871 of 2,097 reference findings under
+`finding_purist_v1`. This is a reading of those saved outputs, not a new scorer
+and not a model run. Five patterns cover most of the misses. A missing period
+string or a different seizure status is not among them: once the measurement
+agrees, those differences match. Letters are synthetic.
+
+**The finding is never quoted — 228.** Nothing the model quotes overlaps the
+reference quotation. Among the 227 with no overlapping quote, 124 are
+qualitative and 62 are seizure-free. In source 725 the reference has a seizure-free finding for
+"No clusters, injuries, or burns this month." No R8 quotation overlaps that
+sentence. In source 704 the reference quotes "Frequency is now reported as twice
+a month." The model quotes the description of the episodes instead, so the rate
+sentence never overlaps.
+
+**The same sentence is given the wrong event name — 169.** In source 725 both
+sides use the rate once a day, and the quoted words are "events occur daily."
+The reference event is "events." The model names "focal impaired-awareness
+episodes," taken from elsewhere in the letter. A weekly rate for a different
+event is a different finding.
+
+**The kind of measurement is wrong — 113.** The usual swaps are a qualitative
+word against a rate (35) and a seizure-free interval against a count (32). In
+source 103 the sentence says events have become markedly infrequent and are now
+two to four per year. The reference keeps the trend, `decreased`. The model
+keeps the number, 2–4 per year. In source 190 the sentence says the last
+generalised tonic–clonic seizure was in May 2025 and there have been none since.
+The reference stores seizure-free since May. The model stores a last seizure in
+May 2025.
+
+**The same kind of measurement still disagrees — 116.** Event, timing and
+measurement type agree, but the finding still does not match. These values do
+not land in a Purist band, so the band rule never forgives the period. Fifty-eight
+differ in both the value and the period, 26 in the period only, and 19 in the
+value only. In source 869 the sentence is "several events spread across most
+months." The reference stores several per one month. The model stores several
+per "most months." In source 1249 both sides store the count 2–4. The reference
+window is a numeric one week. The model keeps only the words "this week."
+
+**Current is marked historical, or the reverse — 68.** In source 816 both sides
+store four seizures, from "only four brief seizures recorded in 2017 so far."
+The reference calls that current. The model calls it historical. In source 2762
+the sentence says the pattern "prior to current therapy" was monthly. The
+reference calls that historical. The model calls it current.
+
+Two smaller patterns are frequency disagreements rather than bookkeeping. A
+different seizure-free anchor accounts for 48 misses. In source 1695 both sides
+quote "no events have been recorded," but one stores the duration "the current
+month to date" and the other stores "current month to date." A wrong closed-list
+word accounts for 9. In source 79 "rarer generalised tonic–clonic seizures" is
+`rare` in the reference and `decreased` in the model. "Rarer" is not in the
+short synonym list, which does map "less frequent" to `decreased`. A genuinely
+different Purist band accounts for 5. In source 190 both sides read clusters
+every 4 weeks. The model also stores "multiple" seizures per cluster, and that
+multiplication moves the band from about once a month to more than once a month.
+
+A further 115 misses sit in letters whose whole inventory was unusable. Those
+letters contribute every reference finding as a miss. The 228, 169, 113, 116,
+68, 48, 9, 5 and 115 classes sum to the 871 false negatives.
+
 ## R8 rich dev750 finding score (2026-09-22)
 
 Conor authorised one R8 rich pass over synthetic dev750, scored with the frozen

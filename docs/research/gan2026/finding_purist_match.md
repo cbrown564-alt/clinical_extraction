@@ -130,7 +130,9 @@ rename, and a timing swap. Prose-only count windows stay unmatched. The scorer
 is `finding_purist.py`, beside the exact matcher. Saved R7 and R8 dev750
 inventories were rescored with no model call. Both scores are in the execution
 record. Finding Purist is the inventory endpoint for later writing. The exact
-score remains the description of field-level agreement.
+score remains the description of field-level agreement. The common R8 misses
+are described in the
+[execution record](one_shot_execution_record.md#r8-finding-purist-misses-2026-09-22).
 
 The seizure-free collapsed companion is reported separately. It is not the
 inventory endpoint. This phase does not extend annotation to medications,
