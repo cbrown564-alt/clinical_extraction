@@ -1,6 +1,6 @@
 # Paper roadmap
 
-Updated: 2026-09-21. Owner: Conor Brown.
+Updated: 2026-09-22. Owner: Conor Brown.
 
 ## Current focus
 
@@ -8,9 +8,10 @@ Exclusive focus for this period is the one-call seizure-frequency paper.
 Longitudinal prototype development, cohort expansion, clinical review of that
 prototype, research-paper tables and optimizer experiments are postponed. The
 dev750 v0.7 reference is assembled after all 750 source rereads and cross-letter
-checks. Next resolve the 16 flagged references and classify R7 development failures
-and rich/simple disagreements. Prove this approach before extending annotation
-and extraction to medications, diagnoses and investigations, then explore its use
+checks. The eight source-ambiguous references are resolved. The R7 development
+failures and rich/simple disagreements are classified. Prove this approach before
+extending annotation and extraction to medications, diagnoses and investigations,
+then explore its use
 with the real-letter annotators through Yujian Gan. Preserve
 their code, examples and saved results; none is a prerequisite for this paper.
 
@@ -81,6 +82,42 @@ are complete. The next steps are minimal representation corrections and disagree
 review, followed by the full seizure-finding annotation programme below. The
 separately authorised r6 test450 replication remains aggregate-only.
 
+## Bounded Jev exploration (2026-09-21)
+
+Conor approved recording and prototyping the Jev exploration developed in the
+[ChatGPT conversation](https://chatgpt.com/c/6aacde68-12a0-83eb-b035-6794b02456c0)
+and the 18 September TypeSafe research report. This is a supplementary,
+fictional-development comparison, separate from the paper's primary one-call
+method and from the proposed ModernBERT/LFM2.5 trained baselines in PR #14.
+The annotation reference and R7 disagreement review retain priority.
+
+First compare Jev and a generative model on identical source text, candidates and
+bounded semantic questions. Build candidates from source alone, bind each field
+to a named candidate, retain missing/unsupported answers, and score selection and
+attributes separately. Prove the offline loop before authorising paid execution
+or extending to dev750. The [protocol](../research/gan2026/one_shot_paper_protocol.md#jev-fictional-comparison)
+owns the experimental limits; the execution record owns verification.
+
+The [completed v2 pilot](../../results/letter-benchmarks/gan/jev_fictional_v2/README.md)
+on 22 related fictional conditions found repeated Jev quantity-binding and field-
+applicability errors: 9/22 complete answers versus 22/22 for DeepSeek, despite both
+models matching all 67 role labels. **Do not expand the current Jev design to
+dev750.** The subsequently completed
+[v3 classification/verification pilot](../../results/letter-benchmarks/gan/jev_fictional_v3/README.md)
+used eight development and eight reserved fictional letters. On reserved cases,
+Jev matched 84/100 classifications versus DeepSeek's 99/100. Its verifier accepted
+one deliberately wrong tuple and deferred 11/45 correct actual proposals across
+both splits. The sole DeepSeek discrepancy is a pre-adjudicated reference ambiguity,
+so the apparent verification benefit is weak. **Stop this Jev candidate; no dev750
+extension or further live Jev run is active.** Return priority to the paper's
+source-ambiguity adjudication and R7 failure/disagreement review. Any future Jev
+work needs a distinct question, not another broad run of the same design.
+
+The tested LLM-plus-Jev verifier has two clinical calls and must not be counted
+as the paper's one-call method.
+The report's architectural recommendations are research proposals, not instructions
+to replace the current study. No test450 or patient-data access is authorised here.
+
 ## Work ahead
 
 Conor confirmed this order after reviewing the r5 dev750 findings on 2026-09-14.
@@ -91,9 +128,9 @@ both conditions is an expectation to test, not a target for tuning.
 | Order | Work and owner | Completion evidence |
 | --- | --- | --- |
 | 1 — complete | Evaluation contributor reran the 14 r4 simple and 40 r5 rich timeouts at 600 seconds. | All 54 returned; original attempts preserved and replay verified. Both conditions reached 658/750 Purist answer agreement; rich strict is 656/750. The execution record owns results, timing and costs. |
-| 2 — representation implemented; review pending | Implementation contributor makes the smallest demonstrated representation corrections, then reviews rich/simple disagreements. | Finalised r7 candidate covers cluster interval counts, compound bounds, agreed schema simplifications and document/event dates; 23 fictional fixtures and unchanged native task rules. R7 dev750 mixed view after authorised no-response reruns: 650/750 Purist answer, 619/750 strict, 36 schema-invalid records. Schema-failure and disagreement classification remains pending. Frozen timeout-rerun conditions are unchanged; new runners default to 600 seconds. |
-| 3 — v0.7 authored and checked | Codex maintains the [annotation guide](../research/gan2026/seizure_finding_annotation_guide.md), portable schema and lean review procedure. | Conor approved verbatim vague absence durations on 21 September; R8 no-call revision and 13 fictional fixtures support the shared annotation schema. The canonical repeat rule includes period, and assembly performs no semantic merging. Earlier guide versions and outputs remain preserved. |
-| 4 — full reread and consistency check complete; 16 flagged | Preserve the 26 Cursor batches; three authorised Codex reviewers completed the 49 missing batches. Codex assembled the reference and coordinated consistency corrections. | All 750 letters reviewed; 2,094 findings. The 734 complete letters contain 2,030 findings; 16 unresolved letters are excluded from finding scoring. All checks passed, original reviews remain unchanged, and assembly replay is byte-identical. The [execution record](../research/gan2026/one_shot_execution_record.md#v07-dev750-reread-completed-2026-09-21) owns coverage and provenance. Resolve remaining flags before including those letters; clinical validation remains separate. |
+| 2 — complete | Implementation contributor makes the smallest demonstrated representation corrections, then reviews rich/simple disagreements. | R7 dev750 mixed view: 650/750 Purist answer, 619/750 strict, 36 schema-invalid records. Classification, 2026-09-22: schema failures are serialization against existing slots; 74 of 100 Purist misses are shared with r4 simple. The execution record owns the causes. Frozen timeout-rerun conditions are unchanged. |
+| 3 — v0.7 authored and checked | Codex maintains the [annotation guide](../research/gan2026/seizure_finding_annotation_guide.md), portable schema and lean review procedure. | Conor approved verbatim vague absence durations and recurrence denominators on 21 September, and bimonthly = one per two months on 22 September, retaining exact evidence. R8 no-call revision and 16 fictional fixtures support these conventions. The canonical repeat rule includes period, and assembly performs no semantic merging. Earlier guide versions and outputs remain preserved. |
+| 4 — complete | Preserve the 26 Cursor batches; three authorised Codex reviewers completed the 49 missing batches. Codex assembled the reference and coordinated consistency corrections. | All 750 letters reviewed. Conor resolved the remaining source ambiguities, ending with 15672: one to two per year applies to generalised tonic–clonic seizures only. The reference has 2,097 findings, all in complete letters, including 42 empty inventories. The [execution record](../research/gan2026/one_shot_execution_record.md#source-15672-annual-rate-adjudicated-2026-09-22) owns coverage and provenance. Clinical validation remains separate. |
 | 5 | If the seizure annotation process works well, extend it to medications, diagnoses and investigations. Conor and Codex define the extension and review its annotations. | Reviewed four-family development reference and a frozen paired comparison of seizure-only versus all-four-family extraction on the original frequency-label endpoint. |
 | 6 | Conor provides the reviewed dataset and guidelines to Yujian Gan and asks whether the King's College London Hospital annotators are willing to apply the expanded annotation to real patient letters. | Collaborator feedback and agreed clinical annotation scope, permissions and review procedure; no willingness or real annotation assumed in advance. |
 | 7 | Conor/custodian and evaluation collaborator freeze and execute the authorised real-letter study; manuscript contributor completes the paper. | Separate real and synthetic results, finding measures supported by the references actually obtained, native answer agreement, time per letter and declared limitations. |

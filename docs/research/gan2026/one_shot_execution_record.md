@@ -1,5 +1,431 @@
 # One-call study execution record
 
+## R7 development failure and disagreement classification (2026-09-22)
+
+The frozen R7 rich mixed view on synthetic dev750 is 650/750 Purist and 619/750
+strict. This review classifies those saved outputs. It does not repair them, rerun
+them, or open test450. The simple side is the earlier r4 simple timeout-completed
+view (658/750 Purist), not a simultaneous R7 simple run. R7 kept the r5 task
+wording and changed the rich schema and its population instructions. Paired Purist
+on these saved views: both correct 632, rich only 18, simple only 26, both wrong
+74. Rich is eight answers behind that simple view. That is a development
+description, not a superiority or non-inferiority result.
+
+Of 100 Purist misses, 74 are also missed by r4 simple. The 26 rich-only misses are
+17 schema-valid misses (15 answer selection, one source extraction, one benchmark
+convention), four no-response rows, two illegal labels, and three schema-invalid
+rows whose declared answer was also wrong.
+
+| Recorded failure | Rows | Reading |
+| --- | --- | --- |
+| No response | 5 | Three `ReadError` and two empty completions. Not a clinical class. |
+| Invalid target label | 7 | Representation. Two mixed durations (`1 year 4 month`, `1 year 6 month`) where the label grammar allows one unit and the gold uses months. Four hourly rates (`4`, `9`, `9`, and `10 per hour`) where the measurement schema allows `hour` but the answer grammar does not; gold is `multiple per day`. One cluster label omitted the required `cluster` token. |
+| Invalid schema | 36 | Representation, and the legal slot already exists. Twenty-two put a quantity object, `{type: number, value: N}`, where a bound value must be a bare number or a range. Twelve put `period` on the count or cluster measurement instead of on the finding. One used the retired `number_duration` tag. One cluster count had neither `period` nor `occurred_at`. Thirty-one of the 36 declared answers were already Purist-correct, which is the whole strict gap. |
+| Schema-valid Purist miss | 83 | Forty-seven benchmark convention, 30 answer selection, six source extraction. |
+
+The 47 benchmark-convention misses are the gold unknown label promoted to a rate
+or a seizure-free interval (32), a year-to-date count labeled per year rather than
+per the elapsed months (eight), and seven other normalisations of the quoted
+passage, including last month's clusters when this month is unclear and
+`multiple` versus a stated cluster size. Forty-six of the 47 are also wrong under
+r4 simple. The exception is source 14002, where simple kept `unknown`.
+
+The 30 answer-selection misses quote a relevant passage and declare a different
+current label: another window, a cluster read as individual events, or an absence
+left as `unknown`. Fifteen of those 30 are rich-only. The six source-extraction
+misses do not quote the gold statement; one of them, source 743, is rich-only.
+Source 1357 quotes the gold sentence "1 tonic-clonic seizures yesterday" and
+answers `1 per 18 month`, while simple answers `1 per day`.
+
+Rich and simple declared labels differ, or exactly one side is usable, on 149
+rows:
+
+| Disagreement | Rows | Cause |
+| --- | --- | --- |
+| Plural or `per 1 unit` versus `per unit` | 32 | Representation. Same Purist category. |
+| One side unusable | 15 | Five rich no-response rows and ten representation failures: seven rich illegal labels, one simple illegal label, two simple invalid envelopes. |
+| Both seizure-free, different duration | 22 | Benchmark convention. Purist scores every seizure-free label as no current seizures, so the duration difference is unscored. |
+| Unknown versus no-reference, or cluster size on an unknown rate | 5 | Benchmark convention. Same unknown bin. |
+| Same Purist bin, different reading | 33 | Thirty answer selection and three source extraction, split by whether the answer quotations overlap. Overlap is a substring test, not entailment. |
+| Different Purist bin | 42 | Twenty answer selection and 22 source extraction, by the same overlap test. |
+
+No frozen request, scorer, or prompt changed. The 22 bound-shape errors and 12
+period-placement errors are not a missing clinical field. This review does not
+authorise an R8 run or a schema edit. Row assignments and the method are in
+[classification.json](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7/dev750_timeout600/classification.json).
+Reproduce with `.venv/bin/python scripts/benchmarks/classify_r7_development.py`.
+
+## Source 15672 annual rate adjudicated (2026-09-22)
+
+Conor selected generalised tonic–clonic seizures only for "atonic seizures,
+drop attacks and generalised tonic–clonic seizures one to two times per year"
+in development source 15672. The rate follows the last item, and the sentence
+does not say the list totals one to two a year. Atonic seizures and drop attacks
+in that clause get no rate. The phrase occurs in no other dev750 source, and the
+guide is unchanged.
+
+The historical finding keeps one to two per year and changes only its event
+label. Evidence, the seizure-free interval of several years, the later findings
+and the other 749 records are unchanged. The letter is complete. No development
+letter remains `needs_review`.
+
+The development gold label is "1 per day", from the current almost-daily
+clusters. It does not choose this historical rate. Only this development row was
+inspected. No locked-test source was opened.
+
+Current reference: 750 letters and 2,097 findings, all complete, including 42
+empty inventories. None are excluded from finding scoring for source ambiguity.
+
+Local evidence owner:
+`runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/claude_v07/continuation_2026-09-21/source_15672_2026-09-22/`.
+Its `reviewed_750.jsonl` is the current reference. The preceding snapshot and
+all 75 batch reviews remain preserved. Schema revision remains
+`guide_v07_v4_bimonthly_default`. Five assembled artifacts replay byte-identically.
+Structural, source-hash and exact-evidence checks report zero errors. The
+assembler passes Ruff. No model call, pytest, mypy or test450 inspection was
+required, because no source, schema, prompt or scorer changed.
+
+Dataset/split: Gan2026 synthetic dev750, all manifest rows. Scoring: structural
+checks only. Replay: deterministic local assembly. Repair: one attributed
+reference replacement, no prediction repair. This is reviewed development
+evidence, not clinical validation. R7 schema-failure and rich/simple disagreement
+classification remains pending.
+
+## Sources 12484, 12502 and 12506 monthly clusters adjudicated (2026-09-22)
+
+Conor selected one cluster per month for "clusters of myoclonic jerks and
+occasional tonic seizures, these occur roughly once a month" in development
+sources 12484, 12502 and 12506. The monthly cadence quantifies the clusters.
+Occasional already quantifies the tonic seizures, and that finding stays. The
+sentence occurs in no other dev750 source, and the guide is unchanged.
+
+Each letter gains one finding: clusters of myoclonic jerks, rate one per month,
+with no cluster size. "Roughly" remains in the quotation. Every earlier finding
+and the other 747 records are unchanged. All three letters are now complete.
+
+The development gold labels are the daily absence rates: 3 to 4 per day in
+12484, and 4 per day in 12502 and 12506. The check analyses do not agree on
+this clause. Only these three development rows were inspected. No locked-test
+source was opened.
+
+Current reference: 750 letters and 2,097 findings; 749 complete letters with
+2,089 findings, and one needs_review letter, 15672, with 8 findings excluded
+from finding scoring. All 42 empty inventories are complete.
+
+Local evidence owner:
+`runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/claude_v07/continuation_2026-09-21/sources_12484_12502_12506_2026-09-22/`.
+Its `reviewed_750.jsonl` is the current reference. The preceding snapshot and
+all 75 batch reviews remain preserved. Schema revision remains
+`guide_v07_v4_bimonthly_default`. Five assembled artifacts replay byte-identically.
+Structural, source-hash and exact-evidence checks report zero errors. The
+assembler passes Ruff. No model call, pytest, mypy or test450 inspection was
+required, because no source, schema, prompt or scorer changed.
+
+Dataset/split: Gan2026 synthetic dev750, all manifest rows. Scoring: structural
+checks only. Replay: deterministic local assembly. Repair: three attributed
+reference replacements, no prediction repair. The next owner walkthrough is
+source 15672. R7 failure and rich/simple disagreement classification remains
+pending.
+
+## Sources 10481 and 10487 historical clusters adjudicated (2026-09-22)
+
+Conor selected one cluster per month for "Previously monthly; now … clusters
+this month" in development sources 10481 and 10487. One individual seizure per
+month was the other defensible reading. The before/after names clusters as the
+counted unit. The same wording does not occur in any other dev750 source, and
+the guide is unchanged.
+
+Each historical finding changes from a seizure rate of one per month to a
+cluster rate of one per month. No historical cluster size is added. The current
+count of four clusters this month is unchanged, including the 2–3 seizures per
+cluster stated only in 10481. Evidence and the other 748 records are unchanged.
+Both letters are now complete.
+
+Both development gold labels are "4 cluster per month, multiple per cluster".
+They describe the current count and do not choose the historical unit. Only
+these two development rows were inspected. No locked-test source was opened.
+
+Current reference: 750 letters and 2,094 findings; 746 complete letters with
+2,067 findings, and four needs_review letters with 27 findings excluded from
+finding scoring. All 42 empty inventories are complete. Remaining IDs: 12484,
+12502, 12506 and 15672.
+
+Local evidence owner:
+`runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/claude_v07/continuation_2026-09-21/sources_10481_10487_2026-09-22/`.
+Its `reviewed_750.jsonl` is the current reference. The preceding 8674 snapshot
+and all 75 batch reviews remain preserved. Schema revision remains
+`guide_v07_v4_bimonthly_default`. Five assembled artifacts replay byte-identically.
+Structural, source-hash and exact-evidence checks report zero errors. The
+assembler passes Ruff. No model call, pytest, mypy or test450 inspection was
+required, because no source, schema, prompt or scorer changed.
+
+Dataset/split: Gan2026 synthetic dev750, all manifest rows. Scoring: structural
+checks only. Replay: deterministic local assembly. Repair: two attributed
+reference replacements, no prediction repair. The next owner walkthrough is the
+shared wording in sources 12484, 12502 and 12506. R7 failure and rich/simple
+disagreement classification remains pending.
+
+## Source 8674 qod gloss adjudicated (2026-09-22)
+
+Conor selected the parenthetical "every other week" for "qod (every other week)"
+in development source 8674. Standard qod means every other day, so the
+abbreviation and the gloss conflict. The letter's gloss wins for this letter
+only. It is not a rule for other abbreviations. The sentence occurs in no other
+dev750 source, and the guide is unchanged.
+
+The reviewed finding was already a historical rate of one per two weeks. Only
+`annotation_state` changes to `complete`, and `review_reason` is removed.
+Findings, evidence and the other 749 records are unchanged. Both wordings stay
+in the quotation. The events remain marked non-seizure, as the letter excludes
+epilepsy.
+
+The development gold label for this row is "seizure free for multiple month".
+It quotes the conflicting cadence and does not choose it. Only this development
+row was inspected. No locked-test source was opened.
+
+Current reference: 750 letters and 2,094 findings; 744 complete letters with
+2,059 findings, and six needs_review letters with 35 findings excluded from
+finding scoring. All 42 empty inventories are complete. Remaining IDs: 10481,
+10487, 12484, 12502, 12506 and 15672.
+
+Local evidence owner:
+`runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/claude_v07/continuation_2026-09-21/source_8674_2026-09-22/`.
+Its `reviewed_750.jsonl` is the current reference. The preceding 7615 snapshot
+and all 75 batch reviews remain preserved. Schema revision remains
+`guide_v07_v4_bimonthly_default`. Five assembled artifacts replay byte-identically.
+Structural, source-hash and exact-evidence checks report zero errors. The
+assembler passes Ruff. No model call, pytest, mypy or test450 inspection was
+required, because no source, schema, prompt or scorer changed.
+
+Dataset/split: Gan2026 synthetic dev750, all manifest rows. Scoring: structural
+checks only. Replay: deterministic local assembly. Repair: one attributed
+review-state replacement, no prediction repair. The next owner walkthrough is
+the shared wording in sources 10481 and 10487. R7 failure and rich/simple
+disagreement classification remains pending.
+
+## Source 7615 outside-window denominator adjudicated (2026-09-22)
+
+Conor selected per cycle as the denominator of "none or at most one isolated
+episode outside it" in development source 7615. A total of at most one across
+the six recorded cycles was the other defensible reading: the sentence does not
+repeat "per cycle" on that conjunct. This is a one-letter decision. The sentence
+occurs in no other dev750 source, and the guide is unchanged.
+
+The outside-window finding remains its own count, at most 1, with period
+"per cycle outside that 5-day perimenstrual window". It is not added to the
+in-window count of 3–6 brief episodes per cycle. The two generalised
+tonic-clonic seizures this year are unchanged. Evidence and the other 749
+records are unchanged. Source 7615 is now complete.
+
+The development gold check for this row reads the outside bound as per cycle
+and sums the two counts to the answer label "3 to 7 per month". That sum stays
+on the answer label. Only this development row was inspected. No locked-test
+source was opened.
+
+Current reference: 750 letters and 2,094 findings; 743 complete letters with
+2,057 findings, and seven needs_review letters with 37 findings excluded from
+finding scoring. All 42 empty inventories are complete. Remaining IDs: 8674,
+10481, 10487, 12484, 12502, 12506 and 15672.
+
+Local evidence owner:
+`runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/claude_v07/continuation_2026-09-21/source_7615_2026-09-22/`.
+Its `reviewed_750.jsonl` is the current reference. `adjudications.jsonl` records
+the replacement. `gold_checks.json` records the development label. The preceding
+bimonthly snapshot and all 75 batch reviews remain preserved. Schema revision
+remains `guide_v07_v4_bimonthly_default`. Five assembled artifacts replay
+byte-identically. Structural, source-hash and exact-evidence checks report zero
+errors. No model call, pytest, mypy or test450 inspection was required, because
+no source, schema, prompt or scorer changed.
+
+Dataset/split: Gan2026 synthetic dev750, all manifest rows. Scoring: structural
+checks only. Replay: deterministic local assembly. Repair: one attributed
+reference replacement, no prediction repair. The next owner walkthrough is
+source 8674. R7 failure and rich/simple disagreement classification remains
+pending.
+
+## Jev v3 classification and verification completed (2026-09-22 London)
+
+Conor authorised the narrower three-condition pilot after v2. Dataset
+`jev_classification_verification_v3`: 16 invented letters, eight development and
+eight reserved, split before question implementation. All prompts, references,
+source-derived candidates and scorer code were frozen before evaluation. Both
+splits include every planned row and missing/invalid outputs remain wrong or
+deferred. No dev750, locked-test or patient data was used. This is not clinical
+validation or an untouched-holdout result.
+
+The standalone task classifies role, measurement kind and outer/inner field
+applicability plus coverage. It does not evaluate numeric extraction or native Gan
+answers. DeepSeek V4 Pro independently reviewed the reference in a fresh source-only
+context: 191/192 fields agreed; one future-cluster applicability label was
+adjudicated under the written definition before comparator outputs were seen.
+Jev model: `jev-1.13.0`; comparator: `deepseek-flash`, thinking low, 24,000 output
+cap and JSON-object output. One attempt per job, 600-second timeout, no repairs.
+The hybrid adds Jev verification and defers unsupported tuples without changing them.
+
+Development: Jev 91/100 decisions and 5/8 exact candidate-task answers; DeepSeek
+100/100 and 8/8. Reserved: Jev 84/100 and 2/8; DeepSeek 99/100 and 7/8.
+Jev verification deferred the sole incorrect actual DeepSeek tuple, but also
+11/45 correct tuples. It accepted 1/48 deliberately incorrect seeded tuples:
+inner applicability was marked no despite an explicitly quantified grouped-seizure
+source. Current-finding automatic-release recall declined from DeepSeek's 17/19
+to hybrid 16/19; omitted candidates remain in the denominator.
+
+The sole DeepSeek mismatch is the pre-adjudicated applicability field. Under the
+reviewer's alternative, DeepSeek would be 200/200 and every actual verifier deferral
+would concern a correct tuple. This explicitly post-hoc sensitivity does not alter
+the main reference. It weakens any claim of verifier benefit; the independent seeded
+false acceptance and recurrent classification failures still support stopping.
+
+65 network calls completed without provider failures or retries. A local concurrent
+accounting-file read failed before a standalone Jev request started; subsequent runs
+were serial. This is recorded as an operational failure, not a model attempt.
+Measured-token peak-rate cost estimate US$0.092622798, including review, against
+US$2 cap and US$0.797638866 full reservation. Mean request times: Jev classification
+0.768 s, DeepSeek 6.141 s, verifier adds 0.596 s. These are small-run observations
+and conservative rate estimates, not invoices or general latency benchmarks.
+
+[Full results and failure examples](../../../results/letter-benchmarks/gan/jev_fictional_v3/README.md)
+link the immutable freeze, references, adjudication, report, sensitivity and every
+verifier verdict. Raw attempts are local under `runs/jev_fictional_v3/`. Offline
+replay was byte-identical; frozen v2/v3 inputs unchanged. Source-isolation, exact
+span, oracle-scoring, missing-candidate/verification and no-new-call resume checks
+passed, plus 836 always-on tests, Ruff, mypy (422 files) and documentation hygiene.
+
+Decision: do not extend this candidate to dev750 or add Jev verification to the
+primary method. No further Jev live run is active. Return priority to the existing
+paper's source-ambiguity adjudication and R7 failure/disagreement analysis. A future
+Jev experiment would need a distinct research question and a new freeze.
+
+## Jev fictional v2 live pilot completed (2026-09-21)
+
+Conor authorised reference review, the paired live pilot, robustness testing and a
+decision about dev750. All 22 conditions completed once on Jev `jev-1.13.0` and
+DeepSeek `deepseek-flash`, plus one source-only reference review on `deepseek-v4-pro`.
+The review agreed with the author keys on 14 distinct fictional letters before
+comparison outputs were seen. This is model-reviewed fixture evidence, not clinical
+validation. The earlier v1 preparation remains unchanged.
+
+Dataset/split: `fictional_jev_v2`, fictional-development; all 22 related conditions,
+157 scored decisions, 357 requested questions per provider. Program/scorer:
+`jev_candidate_comparison_v2`, using the frozen v1 choice-scoring function.
+DeepSeek: thinking enabled/low, temperature 0, 24,000-token maximum, JSON-object
+output. Jev: pinned request version 1.13.0. Each provider ran sequentially with
+600-second timeouts, one attempt, no retry and no repair. The returned DeepSeek
+identifier was the alias, so an immutable backend checkpoint is not claimed.
+
+Jev: 142/157 correct decisions, 20/22 primary selections and 9/22 complete
+selection-plus-attribute answers. DeepSeek: 157/157, 22/22 and 22/22 respectively.
+Both achieved 67/67 sentence-role decisions and returned valid choices for all
+357 requested questions. Both correctly abstained for missing candidates and
+complementary current findings. Jev repeatedly confused outer/inner quantities,
+filled non-applicable inner counts and twice selected the no-current-information
+sentence instead of the no-current sentinel. One quantity change caused count/rate
+confusion. All seven order pairs retained identical scored choices for each model.
+
+Mean observed request times: Jev 0.678 s, DeepSeek 10.352 s. Measured-token peak-rate
+upper costs: Jev US$0.002868558, DeepSeek US$0.0804552, independent model review
+US$0.02276604; combined US$0.106089798. These are conservative rate-based estimates,
+not invoices. The US$2 pilot cap and US$0.86298273 full reservation were respected;
+no previous study ledger was modified. Raw attempts and usage remain local under
+`runs/jev_fictional_v2/`.
+
+[Detailed results, limitations and decision](../../../results/letter-benchmarks/gan/jev_fictional_v2/README.md)
+include the frozen inputs, machine report, field errors and response hashes.
+Six Jev probability maps sum to 0.99 at returned precision; they are preserved
+unchanged, and no calibration claim is made. No evaluation-driven prompt/key changes
+were made. Offline replay was byte-identical; frozen hashes, mocked runner guards,
+836 always-on tests, Ruff, mypy (422 source files), links and documentation hygiene
+passed. One existing Starlette/httpx deprecation warning remains.
+
+Decision: do not expand this Jev question design to dev750. Repeated applicability
+and quantity-binding failures warrant a separate fictional candidate before a
+larger comparison. Jev's role classification supports considering a narrower
+classification component, not an extraction replacement claim. Any conditional
+field masking is semantic logic and must be attributed. The roadmap owns this
+priority decision; the protocol owns subsequent evaluation conditions.
+
+## Bimonthly default adjudicated (2026-09-22)
+
+Conor selected one per two months as the default interpretation of "bimonthly"
+for annotation and scoring, preserving the exact evidence for later
+reinterpretation. An explicit definition in the source takes precedence. This is
+an owner-approved convention, not a claim that the wording has only one meaning.
+The original gold reference fields confirm `1 per 2 month` for all three matching
+dev750 sources: 959, 960 and 987. Only development rows were inspected.
+
+Codex reread 959 and 960 in full. Both findings already held the approved numeric
+rate; the attributed replacements change only `annotation_state` to `complete`
+and remove `review_reason`. All findings, evidence and the other 748 records stay
+unchanged. Source 987 was already complete with the same rate. Current reference:
+750 letters and 2,094 findings; 742 complete letters with 2,054 findings, and eight
+needs_review letters with 40 findings excluded from finding scoring. All 42 empty
+inventories are complete.
+
+Local evidence owner:
+`runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/claude_v07/continuation_2026-09-21/bimonthly_2026-09-22/`.
+Its `gold_checks.json` records the three original references; `adjudications.jsonl`
+records the two state changes; `reviewed_750.jsonl` is the current reference.
+The preceding 740-complete snapshot, original 26 Cursor batches and all 49 resumed
+batches remain preserved. `inputs.json`, `coverage.json` and `prior_package/`
+retain hashes, review provenance and the preceding code/guide/package version.
+
+R8 revision `guide_v07_v4_bimonthly_default` states the default in finding
+instructions. The schema, finding matcher and native answer scorer are unchanged.
+Sixteen fictional fixtures include the default and an explicitly defined
+twice-monthly exception; they verify representation, not extraction performance.
+The rendered instructions were inspected. All 750 records pass structural,
+source-hash and exact-evidence checks; the 176 original files and 75 raw reviews
+match their saved hashes. Five assembled artifacts replay byte-identically.
+Verification: 836 always-on tests passed with one existing Starlette/httpx warning;
+Ruff and mypy (422 source files) passed. Deep tests were unnecessary for this
+prompt/default change.
+
+Dataset/split: Gan2026 synthetic dev750, all manifest rows. Scoring: structural
+checks only, no new model-performance score. Replay: deterministic local assembly.
+Repair: two attributed reference-state changes, no prediction repair. No model
+calls, locked-test source inspection or locked annotation changes occurred. The
+remaining owner walkthrough starts with source 7615; R7 failure/disagreement
+classification remains pending.
+
+## Vague rate denominators adjudicated (2026-09-21, preceding snapshot)
+
+Conor approved preserving vague recurrence denominators verbatim, separately from
+the preceding absence-duration decision. R8 revision `guide_v07_v3_verbatim_rates`
+extends ordinary `rate.per` and `cluster.rate.per` with the existing source-duration
+structure. "Every few weeks" is one per the literal phrase `few weeks`; no numeric
+range, monthly conversion or qualitative frequency substitute is introduced.
+Observation durations remain numeric. The existing matching implementation is
+unchanged and distinguishes these strings from numeric/range denominators.
+
+Codex reread the six affected development sources in full: 8160, 9103, 9937,
+12584, 15834 and 16450. Seven provisional qualitative findings become six event
+rates and one cluster rate; both explicitly measured labels in 12584 retain their
+own findings. All six letters are now complete. Current reference: 750 letters,
+2,094 findings; 740 complete letters contain 2,052 findings, and ten source-ambiguous
+letters contain 42 findings excluded from scoring. All 42 empty inventories are
+complete. The remaining 744 records are unchanged.
+
+The previous reference and all 75 batch reviews are preserved. The local evidence
+owner is `runs/seizure_finding_annotation_v0_2/agy_gemini38_high/reviews/claude_v07/continuation_2026-09-21/verbatim_rates_2026-09-21/`.
+Its `reviewed_750.jsonl` is the current snapshot; `adjudications.jsonl` records the
+six source replacements and reasons, and `coverage.json` links the earlier
+reference, reviewer segments and program/source hashes. `assemble.py` reproduces
+the snapshot from those preserved inputs; five derived artifacts replay identically.
+
+Dataset/split: Gan2026 synthetic dev750, all 750 manifest rows. Scorer: structural
+annotation checker only; no model-performance score. Replay: local deterministic
+assembly. Repair: no prediction repair; attributed reference adjudication only.
+Model/provider settings inherit the recorded review provenance; no extraction
+model was called. No test450 source or annotation was inspected or changed.
+
+Verification: all 750 records pass structural/source/evidence checks with zero
+errors; all 176 original files and 75 batch reviews match their saved hashes.
+All seven vague denominators occur verbatim in evidence. Fifteen fictional schema
+fixtures and rendered instructions pass; matching rejects invented numeric values,
+ranges and changed units. The full always-on suite passed 836 tests in 32.28 seconds
+with one existing Starlette/httpx deprecation warning; Ruff and mypy (422 source
+files) passed. The next owner decisions concern the ten remaining source ambiguities.
+
 ## V0.7 dev750 reread completed (2026-09-21)
 
 Conor authorised resuming the 49 missing development batches, preserving the 26
@@ -49,6 +475,45 @@ rendered instructions,836 always-on tests (one existing Starlette/httpx warning)
 four focused matching tests repeated after the final prompt edit, Ruff and mypy
 (422 source files). R7 schema-failure/disagreement classification remains separate
 pending work; the16 unresolved references require adjudication before inclusion.
+
+## Jev fictional comparison prepared (2026-09-21)
+
+Conor authorised documenting and prototyping the Jev direction after review of
+`Jev_Typesafe_Research_Report.pdf` (18 September 2026, local user-supplied report)
+and the [Generate Seizure Extraction Data conversation](https://chatgpt.com/c/6aacde68-12a0-83eb-b035-6794b02456c0).
+The conversation reports an earlier one-letter pack with offline checks, but its
+claimed files and checks were not imported or independently reproduced here.
+The intermediate invented `number` question type is superseded by the conversation's
+correction and the official Choice/Score documentation. The new repository pack
+uses Choice only. The PDF's proposed pipeline is context, not a study amendment.
+
+Implemented a separate source-only builder and offline scorer at
+`scripts/benchmarks/prepare_jev_comparison.py`, with six invented letters and
+provisional keys in `examples/jev_comparison/`. The seventh condition removes the
+correct cluster candidate while retaining its source text. No benchmark rows,
+patient letters, existing annotations, extraction modules or scorers were used or
+changed. The [protocol](one_shot_paper_protocol.md#jev-fictional-comparison) owns
+scope; the [fixture README](../../../examples/jev_comparison/README.md) owns commands.
+
+Prepared artifact:
+[jev_fictional_v1](../../../results/letter-benchmarks/gan/jev_fictional_v1/).
+Dataset/split: `fictional_jev_v1` / fictional-development, all seven conditions;
+48 scored decisions. Program/scorer: `jev_candidate_comparison_v1`.
+Jev request model: `jev-1.13.0`; no model was executed, and the paired generative
+model/runtime remain unselected. Replay: offline saved responses only, requiring
+prepared requests to match the builder/model. Repair: none. Cost/model calls: zero.
+Source/request hashes are saved per pack; scoring records reference and response
+hashes. These artifacts are machinery checks, not model performance.
+
+Offline checks passed for exact source offsets, matched Jev/LLM task payloads,
+missing/malformed outputs, wrong allowed values, omitted-candidate refusal and
+deterministic rebuild. The CLI scored an empty response set as 0/48, retaining
+all seven rows. Rendered model-facing JSON and messages were inspected. Standalone
+script lint, repository Ruff, mypy (422 source files) and documentation hygiene
+passed. Full always-on pytest: 836 passed in 123.07 seconds, with one existing
+Starlette/httpx deprecation warning. Local links in the changed documents and
+`git diff --check` passed. No new always-on or deep tests were added; prototype
+checks run through its standalone preparation command.
 
 ## R7 rich dev750 first attempt and no-response reruns (2026-09-14 to 2026-09-16)
 
@@ -100,9 +565,9 @@ gap between the answer and strict views comes from schema-invalid records whose
 declared answer was correct; 36 records were schema-invalid in total, against two
 in the r5 rich mixed view. This is a mixed-attempt development view under a changed
 schema, not a fresh first-pass run and not a matched comparison with the r4/r5
-timeout-completed views, whose reruns selected `ReadTimeout` only. Classification
-of the schema failures and rich/simple disagreements remains the pending roadmap
-step; no rows were repaired, and no locked-test rows were used.
+timeout-completed views, whose reruns selected `ReadTimeout` only. The schema failures and rich/simple
+disagreements are classified in the 2026-09-22 section above. No rows were
+repaired, and no locked-test rows were used.
 
 Raw first-attempt artifacts: `runs/one_shot_frequency_v2_measurements_r7/dev750/`;
 reruns and original-request links: `.../dev750/timeout600/` with the merged view in

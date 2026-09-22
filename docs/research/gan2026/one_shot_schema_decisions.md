@@ -7,7 +7,37 @@ their named versions; their uses of “current” refer to that decision date.
 They do not override the [source annotation guide](seizure_finding_annotation_guide.md).
 Execution results and authorisations belong to the [execution record](one_shot_execution_record.md).
 
-## R8 vague seizure-free duration (2026-09-21)
+## R8 bimonthly default (2026-09-22)
+
+Conor selected one per two months as the default interpretation of "bimonthly",
+consistent with the original development gold labels. Exact evidence retains the
+word for possible later reinterpretation. An explicit source definition takes
+precedence. R8 revision `guide_v07_v4_bimonthly_default` makes this semantic default
+explicit in finding instructions; the JSON schema and native answer scorer are
+unchanged. A fictional fixture covers the default and an explicit twice-monthly
+definition. Saved predictions and earlier references are preserved; no output
+repair or benchmark rerun is introduced. The annotation guide owns this convention;
+the execution record owns the source checks and adjudication results.
+
+## R8 verbatim recurrence intervals (2026-09-21, preceding revision)
+
+Conor approved preserving vague rate denominators after reviewing the six remaining
+representation flags. R8 revision `guide_v07_v3_verbatim_rates` uses the same source
+duration structure for `rate.per`, `cluster.rate.per` and `seizure_free.duration`.
+"Once every few weeks" retains count 1 with
+`per: {"type": "qualitative", "quantity": "few weeks"}`. "Several months apart"
+retains count 1 per `"several months"`. Neither creates a numeric interval or a
+monthly conversion. Observation `period.duration` remains numeric.
+
+The existing finding matcher already compares these duration strings and requires
+the measurement type and counting unit to match. Its implementation is unchanged;
+the existing test now checks ordinary and cluster rates against invented numbers,
+ranges and different units. Fictional fixtures cover both forms. Six development
+letters are reissued in an attributed adjudication snapshot; prior reference and
+batch files remain preserved. No model run or test-derived decision is authorised
+by this schema change. The execution record owns the updated reference counts.
+
+## R8 vague seizure-free duration (2026-09-21, preceding revision)
 
 Conor approved retaining vague absence durations verbatim instead of excluding
 otherwise anchored seizure freedom. R8 revision `guide_v07_v2_vague_absence`
@@ -15,7 +45,8 @@ extends only `seizure_free.duration` with
 `{"type": "qualitative", "quantity": "several months"}`. The string retains the
 complete duration phrase, including its unit. Named intervals such as "In October"
 use the same representation; do not infer a full numeric month, a date, or a
-`since` anchor. Rate denominators remain numeric, range or bound durations.
+`since` anchor. At that revision, rate denominators remained numeric, range or bound
+durations; the later approved recurrence extension is described above.
 
 The existing qualitative-value comparison supports this string form. The matching
 check now verifies that it cannot match an invented numeric duration or a phrase
@@ -35,6 +66,12 @@ separately from semantic changes. Use representative fictional checks before
 spreading changes. Then review permitted rich/simple development disagreements,
 distinguishing source extraction, representation, answer selection and benchmark
 convention. No correction modifies the frozen requests used for timeout reruns.
+
+Reviewed on 2026-09-22 from the saved R7 rich mixed view and the earlier r4
+simple timeout-completed view. The [execution record](one_shot_execution_record.md#r7-development-failure-and-disagreement-classification-2026-09-22)
+owns the counts. Schema failures are serialization against slots the schema
+already has. No frozen request was modified, and this review does not authorise
+an R8 run.
 
 ## Native quarter R7 candidate (2026-09-15)
 
