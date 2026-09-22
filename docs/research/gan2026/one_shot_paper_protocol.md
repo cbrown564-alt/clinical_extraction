@@ -180,9 +180,10 @@ and finding counts remain technical/descriptive measures, not clinical finding
 precision or recall. The dev750 reference and frozen exact matcher now support that
 development score; the [execution record](one_shot_execution_record.md#r7-finding-correctness-and-completeness-2026-09-22)
 owns the saved R7 result and the [R8 run](one_shot_execution_record.md#r8-rich-dev750-finding-score-2026-09-22).
-Exact field agreement is not the planned inventory endpoint. Finding Purist,
-defined in the [finding-match note](finding_purist_match.md), is the next
-scoring phase. It is not clinical validation or a holdout result.
+Exact field agreement is not the inventory endpoint. Finding Purist,
+defined in the [finding-match note](finding_purist_match.md) and scored in the
+[execution record](one_shot_execution_record.md#finding-purist-dev750-rescore-2026-09-22),
+is that endpoint. It is not clinical validation or a holdout result.
 Real finding measures still depend on the clinical annotations actually obtained. Sealed failure reporting remains mechanical and aggregate-only;
 the development annotation plan does not permit inspection of sealed failures.
 

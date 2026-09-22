@@ -344,8 +344,9 @@ reviewed development reference, not independent clinical validation.
 
 The scoring unit is a distinct source finding, not a quotation, field or selected
 answer. The rule below is the frozen exact matcher, `finding_matching_v07`.
-It stays in place. The planned inventory endpoint is the separately named
-Finding Purist score in the [finding-match note](finding_purist_match.md).
+It stays in place as the field-level description. The inventory endpoint is the
+separately named Finding Purist score in the
+[finding-match note](finding_purist_match.md).
 Use only reviewed references and freeze matching decisions before comparing
 conditions. Construct candidate pairs within the same letter; a whole match needs
 all source-required attributes: event scope and seizure status, measurement type,

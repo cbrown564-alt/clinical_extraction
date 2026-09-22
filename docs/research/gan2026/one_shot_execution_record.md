@@ -1,5 +1,58 @@
 # One-call study execution record
 
+## Finding Purist dev750 rescore (2026-09-22)
+
+Saved R7 and R8 rich inventories were rescored with `finding_purist_v1`. No model
+was called, no output was repaired, and test450 was not opened. The exact matcher
+`finding_matching_v07_v1` was run again on the same inventories and reproduced the
+published counts: R7 742/2,197 precision and 742/2,097 recall; R8 1,032/1,792
+precision and 1,032/2,097 recall. Unusable inventories stay unusable. Reference
+is the completed v0.7 dev750 file, 2,097 findings in 750 complete letters.
+
+Finding Purist is the inventory endpoint. The exact score remains the field-level
+description. A seizure-free collapsed companion is named below and is not the
+endpoint.
+
+| Run | Precision | Recall | F1 | Exact inventory | Usable recall |
+| --- | --- | --- | --- | --- | --- |
+| R8 Finding Purist | 1,226 / 1,792 (0.684) | 1,226 / 2,097 (0.585) | 2,452 / 3,889 (0.630) | 238 / 750 | 1,226 / 1,982 (0.619) |
+| R8 exact, reproduced | 1,032 / 1,792 (0.576) | 1,032 / 2,097 (0.492) | 2,064 / 3,889 (0.531) | 185 / 750 | — |
+| R7 Finding Purist | 993 / 2,197 (0.452) | 993 / 2,097 (0.474) | 1,986 / 4,294 (0.463) | 108 / 750 | 993 / 1,963 (0.506) |
+| R7 exact, reproduced | 742 / 2,197 (0.338) | 742 / 2,097 (0.354) | 1,484 / 4,294 (0.346) | 75 / 750 | — |
+
+Correct empty inventories stay 27/42 on both runs and both scores. Usable
+inventories stay 714 for R8 and 709 for R7. Precision remains conditional on
+usable inventories. The 115 R8 and 134 R7 reference findings in unusable
+inventories stay false negatives.
+
+No letter's true-positive count fell. The edge set contains every exact match,
+and maximum matching may reassign a pair: 1,030 of 1,226 R8 pairs are still
+exact, and 741 of 993 R7 pairs are still exact. The pairs that are not exact are
+mostly a period string or a seizure status the exact matcher required and this
+rule does not, once the measurement already agrees.
+
+On R8, those 196 pairs are 64 same-band (47 period only, and only 2 a different
+quantity inside the band), 64 qualitative findings whose closed-list value
+already agreed, 67 seizure-free findings whose duration or since anchor agreed,
+and 1 last-seizure time. The same-band quantity forgiveness therefore moves this
+run very little. Ignoring period and status, after the measurement agrees,
+accounts for almost all of the 194 extra true positives (1,226 − 1,032).
+
+On R7, the 252 pairs that are not exact include 106 qualitative findings, 68 of
+which differ in the qualitative value itself. That is the closed-list map, which
+R7 did not use. Same-band pairs are 71, seizure-free anchors 70, and last-seizure
+times 5.
+
+The collapsed companion, which treats different seizure-free durations as equal,
+scores 1,267 R8 and 1,098 R7 true positives. The extra 41 and 105 matches are
+exactly the duration distinction the inventory endpoint keeps. This is a
+synthetic development score, not clinical validation and not a holdout result.
+Row pairings and the class table are in
+[R8 finding_purist_score.json](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r8/dev750_rich_only/finding_purist_score.json)
+and
+[R7 finding_purist_score.json](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r7/dev750_timeout600/finding_purist_score.json).
+Reproduce with `.venv/bin/python scripts/benchmarks/score_finding_purist.py`.
+
 ## R8 rich dev750 finding score (2026-09-22)
 
 Conor authorised one R8 rich pass over synthetic dev750, scored with the frozen
@@ -39,10 +92,9 @@ and not a holdout result. It is not a simultaneous comparison with R7 or with
 r4 simple. Under the same matcher, the saved R7 inventory was 742/2,197
 precision and 742/2,097 recall, with 75/750 exact inventories and 650/750
 Purist answers. R8 raises the inventory score and lowers the answer score by
-12 Purist letters. The inventory is still about half the reference. The exact
-finding score is not the planned inventory endpoint. The next phase rescores
-these saved outputs with a separately named Finding Purist rule. That rule is
-not yet implemented; the [finding-match note](finding_purist_match.md) owns it.
+12 Purist letters. The exact finding score is not the inventory endpoint. The
+Finding Purist rescore of these saved outputs is the section above. The
+[finding-match note](finding_purist_match.md) owns the rule.
 
 ## R7 finding correctness and completeness (2026-09-22)
 

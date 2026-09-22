@@ -1,9 +1,10 @@
 # Finding Purist match
 
-Owner of the planned inventory score. The frozen exact matcher remains
-`finding_matching_v07`. This note does not adopt a new scorer and does not
-authorise a model run. Counts are from the saved R8 rich dev750 outputs against
-the completed v0.7 reference.
+Owner of the Finding Purist inventory score. The frozen exact matcher remains
+`finding_matching_v07`. The scorer is `finding_purist_v1`. It rescores saved
+outputs only and does not authorise a model run. The dev750 counts are in the
+[execution record](one_shot_execution_record.md#finding-purist-dev750-rescore-2026-09-22).
+Reproduce with `.venv/bin/python scripts/benchmarks/score_finding_purist.py`.
 
 Reproduce the diagnostic with
 `.venv/bin/python scripts/benchmarks/analyze_r8_purist_finding_bands.py`.
@@ -120,16 +121,18 @@ reference finding as a false negative and does not contribute false positives.
 Empty inventories stay empty. One-to-one maximum matching stays. Evidence
 overlap stays. The exact score continues to be reported beside the band score.
 
-## What this phase produces
+## What this phase produced
 
-Freeze the rule on fictional fixtures that cover a same-band rate, a
+The rule is frozen in `tests/test_finding_purist.py`: a same-band rate, a
 different-band rate, a period omission, a status difference, a qualitative
 synonym, a qualitative contradiction, two seizure-free durations, an event
-rename, and a timing swap. Implement the scorer beside the exact matcher.
-Rescore the saved R7 and R8 dev750 inventories. Record both scores in the
-execution record. The band score becomes the inventory endpoint for later
-writing. The exact score remains the description of field-level agreement.
+rename, and a timing swap. Prose-only count windows stay unmatched. The scorer
+is `finding_purist.py`, beside the exact matcher. Saved R7 and R8 dev750
+inventories were rescored with no model call. Both scores are in the execution
+record. Finding Purist is the inventory endpoint for later writing. The exact
+score remains the description of field-level agreement.
 
-This phase does not extend annotation to medications, diagnoses, or
-investigations. It does not authorise an R8 rerun. It does not change the
-answer endpoint.
+The seizure-free collapsed companion is reported separately. It is not the
+inventory endpoint. This phase does not extend annotation to medications,
+diagnoses, or investigations. It does not authorise an R8 rerun. It does not
+change the answer endpoint.
