@@ -192,3 +192,47 @@ ignores a `since` anchor when both sides state a seizure-free duration; it
 still requires the duration, source overlap, event label and timing. This is a
 changed synthetic-development target, not a new model run. The workbench
 version selector can display **v0.8.2 claim units**.
+
+## v0.8.3 owner batch decisions (23 September 2026)
+
+The owner resolved four question groups from the full development audit:
+
+- Give a mixed diary **one overall count of individual seizures** when its
+  components can be added without counting a subset twice. Retain separate
+  named subtype and cluster findings. In source 5995, the January–September
+  diary has two generalised convulsions and an absence cluster containing three
+  events: five individual seizures overall. The cluster is one cluster, not one
+  additional individual seizure; zero months establish the observation interval
+  but are not separate seizure-free findings. Do not infer a total when cluster
+  size or overlap is unclear. Sources 15982 and 16041 have clear combined
+  daytime and nocturnal counts; a zero subtype alone does not justify an
+  otherwise identical duplicate overall count (15992).
+- A broad seizure-free summary can be **one additional scored finding** beside
+  subtype-specific absence claims with different anchors. In source 9190,
+  absence of focal impaired-awareness events or convulsions since February,
+  absence of auras since April, and the broader no-clinical-seizures summary
+  each have a distinct scope or interval. A second broad restatement, a vague
+  prior `occasional auras` description, and another observer's corroboration
+  of the February absence remain context. Preserve both named types in the
+  February combined absence label.
+- A **recurring grouped-event pattern** supports a cluster measurement even
+  without the source word `cluster` (for example 15442, with recurring days of
+  multiple tonic seizures after seizure-free days). Name the counted unit as
+  `clusters` or `clusters of [named subtype]`. An isolated multiple-event day
+  does not by itself establish a recurring cluster cadence. Existing explicit
+  single-cluster count/size findings remain separately reviewable under the
+  earlier count-versus-cluster rule.
+- An uncertain symptom is unscored unless the clinician identifies it as a
+  seizure/event in scope or explicitly links it to an established seizure type.
+  Non-specific nocturnal restlessness (4694, 7093), prior collapse later
+  assessed as non-epileptic (5092), a possible isolated brief event (7195),
+  and bed-disarray inference without a witnessed event (15783) are unscored.
+  A brief aura described elsewhere as the patient's focal aura (8144) remains
+  in scope; uncertainty wording alone does not erase that clinical link.
+
+The additive v0.8.3 producer is `scripts/benchmarks/revise_findings_v083.py`.
+Its local adjudication manifest records every changed finding with source
+identity, evidence, and before/after values; it reads the frozen v0.8.2
+reference and saved R8 projection. The same v0.8.2 scorer is used, so any
+score change reflects reference representation rather than a new model run.
+The workbench **v0.8.3 owner decisions** view exposes the revised comparison.

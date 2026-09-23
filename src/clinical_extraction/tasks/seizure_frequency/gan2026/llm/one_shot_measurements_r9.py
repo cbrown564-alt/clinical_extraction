@@ -13,8 +13,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 )
 
 VERSION = "one_shot_frequency_v2_measurements_r9"
-REVISION = "guide_v081_concise_event_labels_candidate"
-GUIDE_VERSION = "seizure_finding_annotation_v0.8.1"
+REVISION = "guide_v083_owner_batch_decisions_candidate"
+GUIDE_VERSION = "seizure_finding_annotation_v0.8.3"
 Rich = r8.Rich
 
 
@@ -33,13 +33,18 @@ replace_instruction(
     "counted unit: 'absence seizures on two to three days per week' measures "
     "absence-seizure days, not two to three individual seizures. Add counts for "
     "the same event across named diary months or individually dated occurrences "
-    "into one count over the listed interval; do not combine distinct event types.",
+    "into one count over the listed interval. For a mixed-event diary, also "
+    "report one overall count of individual seizures when every part is "
+    "unambiguous; count events within a cluster once, preserve named subtype "
+    "and cluster findings, and do not sum a subset twice. If the overall unit "
+    "or arithmetic is unclear, do not invent a total.",
 )
 replace_instruction(
     "Cluster keeps",
     "For a simple count of clusters, use ordinary count with the counted event "
     "named as clusters. Use cluster measurement when the source states seizures "
-    "per cluster or a recurring cluster cadence; in that case name event.type "
+    "per cluster or a recurring pattern of grouped events, even when the word "
+    "'cluster' is absent; in that case name event.type "
     "'clusters' or 'clusters of [named subtype]' when a subtype is stated, and "
     "keep the cadence and seizures_per_cluster in measurement. "
     "Never treat a count of clusters as the same number of individual seizures.",
@@ -52,7 +57,10 @@ replace_instruction(
     "absence interval for the same event scope is one finding even if restated "
     "elsewhere. A single denial listing several named seizure types is one combined "
     "finding that retains the named types; do not broaden a limited list to all "
-    "events. When one source says that an event log corroborates the absence "
+    "events. A later broad seizure-free summary adds one scored finding when it "
+    "makes a broader claim than subtype-specific absences with different dates; "
+    "do not score repeated broad summaries twice. When one source says that an "
+    "event log corroborates the absence "
     "reported by a device for the same interval, score one absence finding "
     "under the directly named clinical event; for 'no convulsive activity' "
     "corroborated by 'no events requiring rescue measures', name convulsive "
