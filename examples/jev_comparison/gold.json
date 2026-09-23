@@ -1,0 +1,79 @@
+{
+  "cluster": {
+    "primary": "s1",
+    "roles": [
+      "historical",
+      "current",
+      "current",
+      "future",
+      "other"
+    ],
+    "selected": {
+      "structure": "cluster",
+      "outer_value": "2",
+      "denominator": "month",
+      "inner_value": "6"
+    }
+  },
+  "rate": {
+    "primary": "s1",
+    "roles": [
+      "historical",
+      "current",
+      "future"
+    ],
+    "selected": {
+      "structure": "rate",
+      "outer_value": "3",
+      "denominator": "week",
+      "inner_value": "not_applicable"
+    }
+  },
+  "count": {
+    "primary": "s0",
+    "roles": [
+      "current",
+      "other"
+    ],
+    "selected": {
+      "structure": "count",
+      "outer_value": "3",
+      "denominator": "not_applicable",
+      "inner_value": "not_applicable"
+    }
+  },
+  "absence": {
+    "primary": "s0",
+    "roles": [
+      "current",
+      "other"
+    ],
+    "selected": {
+      "structure": "seizure_free",
+      "outer_value": "not_applicable",
+      "denominator": "not_applicable",
+      "inner_value": "not_applicable"
+    }
+  },
+  "no_current": {
+    "primary": "no_current",
+    "roles": [
+      "historical",
+      "unknown",
+      "future"
+    ]
+  },
+  "qualitative": {
+    "primary": "s0",
+    "roles": [
+      "current",
+      "other"
+    ],
+    "selected": {
+      "structure": "qualitative",
+      "outer_value": "not_established",
+      "denominator": "not_established",
+      "inner_value": "not_applicable"
+    }
+  }
+}

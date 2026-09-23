@@ -1,0 +1,82 @@
+{
+  "jev": {
+    "order_pairs": [
+      {
+        "case": "cluster_reordered",
+        "scored_choices_equal": true
+      },
+      {
+        "case": "rate_reordered",
+        "scored_choices_equal": true
+      },
+      {
+        "case": "count_reordered",
+        "scored_choices_equal": true
+      },
+      {
+        "case": "absence_reordered",
+        "scored_choices_equal": true
+      },
+      {
+        "case": "no_current_reordered",
+        "scored_choices_equal": true
+      },
+      {
+        "case": "qualitative_reordered",
+        "scored_choices_equal": true
+      },
+      {
+        "case": "cluster_missing_candidate_reordered",
+        "scored_choices_equal": true
+      }
+    ],
+    "errors_by_field": {
+      "outer_value": 3,
+      "inner_value": 8,
+      "primary": 2,
+      "structure": 1,
+      "denominator": 1
+    }
+  },
+  "deepseek": {
+    "order_pairs": [
+      {
+        "case": "cluster_reordered",
+        "scored_choices_equal": true
+      },
+      {
+        "case": "rate_reordered",
+        "scored_choices_equal": true
+      },
+      {
+        "case": "count_reordered",
+        "scored_choices_equal": true
+      },
+      {
+        "case": "absence_reordered",
+        "scored_choices_equal": true
+      },
+      {
+        "case": "no_current_reordered",
+        "scored_choices_equal": true
+      },
+      {
+        "case": "qualitative_reordered",
+        "scored_choices_equal": true
+      },
+      {
+        "case": "cluster_missing_candidate_reordered",
+        "scored_choices_equal": true
+      }
+    ],
+    "errors_by_field": {}
+  },
+  "decision": {
+    "extend_current_design_to_dev750": false,
+    "reason": "Repeated Jev quantity binding, field applicability and no-current selection errors in fictional fixtures.",
+    "possible_followup": "Test applicability-first questions and source-value binding in a separately frozen fictional candidate. Any masking or repair must be labelled as semantic logic.",
+    "real_data_or_holdout_access": false
+  },
+  "review_charge_peak_upper_usd": 0.022766039999999998,
+  "total_charge_peak_upper_usd": 0.106089798
+}

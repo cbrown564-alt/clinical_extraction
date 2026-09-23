@@ -1,0 +1,438 @@
+[
+  {
+    "id": "d_multi",
+    "split": "development",
+    "phenomenon": "multiple_types",
+    "text": "Focal aware seizures currently occur 2 times per week.\nTonic-clonic seizures currently occur 1 time per month.\nThe patient takes 200 mg twice daily.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "current",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "current",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "d_cross",
+    "split": "development",
+    "phenomenon": "cross_sentence",
+    "text": "The attacks described next are confirmed focal impaired-awareness seizures.\nThey now occur 3 times each week.\nBefore the medication change they occurred 5 times each day.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "current",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "historical",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "d_range",
+    "split": "development",
+    "phenomenon": "range",
+    "text": "The current pattern is 2-4 seizures per week.\nThe diary records 3 isolated seizures over the last 2 months, separate from that recurring pattern.\nContact the clinic if the frequency rises above 6 per day.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "current",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "current",
+        "kind": "count",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "future",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "d_uncertain",
+    "split": "development",
+    "phenomenon": "uncertain",
+    "text": "Brief jerks occur 3 times per week; whether these are epileptic is unresolved.\nConfirmed functional non-epileptic attacks occur twice daily.\nThe patient has had no confirmed epileptic seizures for 4 months.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "uncertain",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "current",
+        "kind": "seizure_free",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "d_conflict",
+    "split": "development",
+    "phenomenon": "contradiction",
+    "text": "For this same current month, the patient reports 2 seizures per week.\nFor this same current month, the partner reports no seizures at all.\nThese accounts concern the same seizure type and cannot be reconciled at this visit.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "conflicting",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "conflicting",
+        "kind": "seizure_free",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "d_missing",
+    "split": "development",
+    "phenomenon": "missing_candidate",
+    "text": "Seizures occurred 6 times per day many years ago.\nCurrently the patient has 2 seizures per week.\nThe daily medication dose is 100 mg.",
+    "omitted": [
+      "s1"
+    ],
+    "gold": {
+      "s0": {
+        "role": "historical",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "current",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "d_cluster",
+    "split": "development",
+    "phenomenon": "cluster_applicability",
+    "text": "Currently there are 2 seizure clusters per month with 5-7 seizures per cluster.\nNo seizures occur between the clusters.\nPreviously isolated seizures occurred 4 times per day.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "current",
+        "kind": "cluster",
+        "outer_applicable": "yes",
+        "inner_applicable": "yes"
+      },
+      "s1": {
+        "role": "current",
+        "kind": "seizure_free",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "historical",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "d_unknown",
+    "split": "development",
+    "phenomenon": "no_current",
+    "text": "The old record gives 4 seizures per week in childhood.\nCurrent seizure burden was not discussed.\nIf seizures return at more than 2 per day, call the clinic.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "historical",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "future",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "r_multi",
+    "split": "reserved",
+    "phenomenon": "multiple_types",
+    "text": "At present, nocturnal tonic-clonic seizures occur 2 times per month.\nFocal aware seizures remain frequent without a numerical estimate.\nLamotrigine is prescribed twice daily.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "current",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "current",
+        "kind": "qualitative",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "r_cross",
+    "split": "reserved",
+    "phenomenon": "cross_sentence",
+    "text": "The following diary entries refer to established focal seizures.\nSince the preceding appointment, 7 have occurred over 3 months.\nNo recurring rate is asserted by this total.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "current",
+        "kind": "count",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "r_range",
+    "split": "reserved",
+    "phenomenon": "range",
+    "text": "The patient currently experiences 1-3 seizure clusters per week, each containing 4-8 seizures.\nThere were 2 isolated seizures over the last 10 days, separate from these clusters.\nIf clusters last more than 5 minutes, use rescue medication.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "current",
+        "kind": "cluster",
+        "outer_applicable": "yes",
+        "inner_applicable": "yes"
+      },
+      "s1": {
+        "role": "current",
+        "kind": "count",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "r_uncertain",
+    "split": "reserved",
+    "phenomenon": "uncertain",
+    "text": "Blackouts happen 1-2 times weekly, but an epileptic cause remains unconfirmed.\nThe sibling had 5 seizures last year.\nThe patient has had no established tonic-clonic seizures since January.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "uncertain",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "current",
+        "kind": "seizure_free",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "r_conflict",
+    "split": "reserved",
+    "phenomenon": "contradiction",
+    "text": "The diary states 3 seizures per day during the current week.\nThe patient says there have been no seizures during that same week.\nThe discrepancy refers to the same events and is unresolved.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "conflicting",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "conflicting",
+        "kind": "seizure_free",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "r_missing",
+    "split": "reserved",
+    "phenomenon": "missing_candidate",
+    "text": "The current focal aware seizure rate is 3 per month.\nCurrently tonic-clonic seizures occur 1 time per week.\nMedication is 300 mg daily.",
+    "omitted": [
+      "s1"
+    ],
+    "gold": {
+      "s0": {
+        "role": "current",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "current",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      }
+    }
+  },
+  {
+    "id": "r_cluster",
+    "split": "reserved",
+    "phenomenon": "cluster_applicability",
+    "text": "The current diary shows 4 days of grouped seizures per month, typically 9 seizures in 24 hours on each such day.\nIsolated seizures also occur 2 times per week.\nA review would be brought forward if grouped seizure days exceeded 5 per month.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "current",
+        "kind": "cluster",
+        "outer_applicable": "yes",
+        "inner_applicable": "yes"
+      },
+      "s1": {
+        "role": "current",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "future",
+        "kind": "cluster",
+        "outer_applicable": "yes",
+        "inner_applicable": "yes"
+      }
+    }
+  },
+  {
+    "id": "r_unknown",
+    "split": "reserved",
+    "phenomenon": "no_current",
+    "text": "The last documented rate, from 8 years ago, was 7 seizures per week.\nNo information about current seizure occurrence is available.\nThe patient was advised to call if seizures occur more than once a day.",
+    "omitted": [],
+    "gold": {
+      "s0": {
+        "role": "historical",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      },
+      "s1": {
+        "role": "other",
+        "kind": "none",
+        "outer_applicable": "no",
+        "inner_applicable": "no"
+      },
+      "s2": {
+        "role": "future",
+        "kind": "rate",
+        "outer_applicable": "yes",
+        "inner_applicable": "no"
+      }
+    }
+  }
+]

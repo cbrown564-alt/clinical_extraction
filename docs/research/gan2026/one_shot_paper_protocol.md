@@ -270,3 +270,157 @@ raw attempts, first-pass failures, repair policy, replay mode, exclusions,
 denominators and costs. Keep extraction, format handling and scoring separable.
 The outline's Figure 1 shows that path; Table 1 shows data/reference roles; Figure 2
 shows the configuration change. Fill tables only from reviewed run artifacts.
+
+## Jev fictional comparison
+
+Status: offline supplementary prototype, approved 2026-09-21. No model performance
+result and no change to the primary study. The experiment asks whether Jev and a
+generative model can select and classify the same source-derived candidates using
+identical bounded questions, without task-specific training.
+
+The [fixture pack](../../../examples/jev_comparison/README.md) owns runnable commands
+and limitations. The builder reads only fictional source text, never gold, and
+uses newline-delimited source sentences as candidates without clinical filtering.
+Each candidate has exact offsets. Every candidate receives the same role,
+measurement-structure, outer-quantity, inner-quantity and denominator questions.
+A separate whole-letter question selects the current burden or an explicit
+no-current, unsupported or ambiguous answer. Field questions identify their own
+candidate in their instructions; they do not depend on another parallel answer.
+Literal numeric options come only from that candidate. No arithmetic, semantic
+repair, native Gan mapping or R7/R8 record conversion is performed.
+
+Both providers receive exactly the same state and question definitions. The LLM
+has only an additional output-format instruction. Jev uses Choice; Score is not
+literal numeric extraction. See the official [Choice documentation](https://docs.typesafe.ai/primitives/choice),
+[Score documentation](https://docs.typesafe.ai/primitives/score) and
+[source-value extraction pattern](https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook),
+checked 2026-09-21. Default Jev request version is `jev-1.13.0`; a future live run
+must verify availability and record the actual returned model version.
+
+The first pack has six invented letters and a seventh condition omitting the
+correct candidate while retaining the entire letter. Provisional author-written
+keys cover 48 decisions: primary selection, every available candidate's role and
+four attributes of the expected selected candidate. Other candidate attributes
+remain unscored. Missing/invalid answers count as wrong with a fixed denominator;
+report selection, component errors and exact selection-plus-attributes separately.
+These are fixture agreement measures, not native Purist/Pragmatic scores or clinical
+validation. The omission condition tests abstention when a candidate is unavailable;
+it does not establish candidate recall on real notes.
+
+Before live comparison, freeze model/runtime, fixtures, source segmentation,
+questions, keys, scorer and a call/cost budget. Preserve submitted requests and raw
+responses, returned model, time, usage, failures and attempts separately for each
+provider. The offline scorer accepts saved responses but does not execute calls or
+measure latency. Review the fictional keys independently before making substantive
+accuracy claims. A later dev750 study requires a reviewed reference and prospective
+native-answer mapping; locked test450 remains outside development.
+
+The current pack covers one principal finding per letter. Multi-event selection,
+quantity ranges in scored examples, cross-sentence binding, evidence precision,
+calibration, candidate-order sensitivity and native answer agreement remain future
+work. A verifier study must separately measure false acceptance of deliberately
+incorrect extractions. An LLM-plus-Jev pipeline adds a clinical model call and is
+not the primary one-call method.
+
+### Frozen live pilot v2 (2026-09-21)
+
+Conor authorised completion of the reference review, paired live comparison,
+robustness checks and a decision about dev750. The [v2 freeze](../../../results/letter-benchmarks/gan/jev_fictional_v2/freeze.json)
+is authoritative for exact inputs, hashes and execution settings. V1 remains an
+unchanged offline preparation artifact. V2 has 22 conditions and 157 scored
+decisions: seven base conditions, three quantity substitutions, four paraphrases,
+one complementary-current-findings case and seven order reversals. The order
+condition reverses candidate, question and option order together; it cannot isolate
+which of those orderings causes any difference. Cases are related fixtures, not
+22 independent clinical examples, and no inferential significance claim is planned.
+
+DeepSeek V4 Pro reviewed the 14 distinct letters in a fresh source-only context,
+without author keys or evaluation predictions. Its reference decisions agreed
+with the author's keys. Omission and order keys derive mechanically from these
+reviewed cases. Codex reviewed the rationales: the sister's seizures are excluded
+because they concern another person; the review's loose phrase "non-epileptic/other"
+is not evidence that those events are non-epileptic. This is independent model
+review plus author adjudication, not independent human clinical validation.
+
+Before evaluation, v2 clarified that the denominator sentinel `not_established`
+applies to qualitative frequency, whereas `not_applicable` covers observed counts,
+seizure freedom and non-frequency statements. No evaluation output informed this
+change. Questions retain per-candidate binding and source-only numerical candidates.
+
+Models: Jev `jev-1.13.0` and DeepSeek `deepseek-flash` (documented as V4.1 Flash).
+The DeepSeek alias is not an immutable checkpoint; preserve the returned model
+identifier without claiming stronger version pinning. DeepSeek uses thinking
+on/low, temperature 0, 24,000 maximum output tokens and JSON-object output.
+Each provider has one sequential request per condition, a 600-second timeout,
+no automatic retry, and no syntax or semantic repair. Raw response text, usage,
+returned model, HTTP failures and wall-clock latency are retained locally.
+
+The pilot ceiling is US$2 including the review. Conservative full-run reservation
+is US$0.86298273 using UTF-8 input-byte bounds plus framing allowance, maximum
+DeepSeek output tokens and published peak rates. Report measured-token peak-price
+upper estimates separately from provider invoices; missing usage retains its
+full reservation. This pilot has a separate ledger and does not erase earlier
+study charges. Credentials are loaded at runtime and never saved in artifacts.
+
+Report primary selection, role and attribute accuracy, exact selection-plus-four-
+attributes, and error mechanisms by condition group. One all-case denominator
+includes provider, truncation, syntax and missing-answer failures. No test450 or
+patient-data access, native-score substitution, or complete-inventory claim is
+permitted. Do not automatically execute dev750: recurrent binding, abstention or
+robustness failures require more fictional development; even a clean pilot needs
+candidate-coverage assessment, a reviewed reference and frozen native mapping.
+
+### V3 narrower classification and verification pilot (2026-09-21)
+
+Conor authorised the next bounded experiment. The
+[v3 freeze](../../../results/letter-benchmarks/gan/jev_fictional_v3/freeze.json)
+records eight development and eight reserved fictional letters, assigned before
+question implementation. Reserved comparator predictions are not inspected during
+development; all questions, keys and scoring are frozen before either split runs.
+These author-written fictional cases are not an untouched clinical holdout.
+
+The common task is classification of source-derived candidate sentences, not open
+finding discovery or numerical extraction. Both standalone models classify role,
+measurement kind, outer-field applicability and inner-field applicability, plus
+whether the candidate list covers all current confirmed findings. Full-letter
+context supports cross-sentence references. Source-derived literal numeric spans
+are stored separately without semantic binding, normalization or performance claims.
+V3 covers multiple seizure types, ranges, uncertain epileptic status, unresolved
+contradictions, missing candidates, cluster applicability and absent current data.
+Definitions belong to this experiment and do not modify the v0.7 reference rules.
+
+The three conditions are DeepSeek alone, Jev alone on the same candidates, and
+DeepSeek followed by Jev verification of its unchanged classification tuples.
+The hybrid has two clinical calls. An accept releases a tuple unchanged; reject,
+uncertain or a missing verdict defers it to review. It neither repairs an answer
+nor silently suppresses a field. Candidate coverage remains a separate warning:
+accepting all supplied tuples does not establish inventory completeness.
+
+An independent source-only DeepSeek V4 Pro review labels all 48 sentences without
+proposed keys or comparator outputs. One of 192 labels differed: inner applicability
+for a future cluster-day threshold with no size. Codex retained yes under the already
+written rule that cluster structure makes the field applicable even if its value is
+unstated. The disagreement and reason are preserved in the freeze. This is model
+review and author adjudication, not independent clinical validation.
+
+Each split has 100 scored standalone decisions and 23 candidate tuples. Missing
+source candidates remain in current-finding recall denominators even when the
+coverage warning is correct. A separate verifier challenge contains one correct
+and three deliberately wrong tuples per letter: changed role, kind or inner-field
+applicability. Correctness labels and mutation names are never sent to Jev. Report
+false acceptance on these 48 seeded wrong claims separately from false acceptance
+on actual DeepSeek errors; if the latter denominator is zero it is not evidence
+of error-detection sensitivity. Also report correct-proposal deferrals, retained
+current-finding recall, complete candidate classifications, cost and latency.
+
+Keep the v2 model settings, 600-second timeout and one-attempt/no-repair policy.
+V3 has its own US$2 cap, with US$0.797638866 reserved for all calls including review
+and a full-context allowance for hybrid verification. Calls within this pilot must
+be run serially: its append-only accounting files are not a concurrent transaction
+store. No broad benchmark or patient-data call is authorised by this pilot.
+
+After development, execute the unchanged frozen reserved comparison once, without
+prompt tuning. Recurrent classification/applicability errors, false acceptance of
+seeded wrong claims or rejection of correct inventory prevent expansion of this
+candidate. Even a clean result would still need native-answer mapping, reviewed
+references and a candidate-coverage assessment before a dev750 experiment.

@@ -1,0 +1,488 @@
+{
+  "freeze": {
+    "version": "jev_classification_verification_v3",
+    "created_at": "2026-09-21T22:55:42.958253+00:00",
+    "split": "8 development + 8 reserved fictional cases; not clinical holdout",
+    "row_policy": "all fixed candidates including missing/invalid answers",
+    "model": "jev-1.13.0 versus deepseek-flash; source review deepseek-v4-pro",
+    "runtime": "600s timeout, sequential per provider; DeepSeek thinking low, 24000 output cap",
+    "budget_usd": 2,
+    "reservation_usd": 0.7976388660000001,
+    "repair": "none",
+    "hybrid_policy": "Accept releases unchanged candidate; reject/uncertain/missing defers to review. No correction.",
+    "hybrid_numerical_policy": "No numerical extraction performance claim; literal candidates parsed separately.",
+    "decision": "No dev750 run unless reserved cases avoid recurring role/applicability failures and verification rejects all seeded wrong claims without losing correct inventory; even then reviewed native mapping and candidate coverage are prerequisites.",
+    "files": {
+      "scripts/benchmarks/jev_verifier_pilot.py": "092b217dce0e652db6dd768307ad7851fd1d7fc477e7c92619809122c98b8b23",
+      "scripts/benchmarks/jev_pilot.py": "8c792e8cb2018f6006f276979d0fae6804d043aa36906e069cad6b36e17afe20",
+      "scripts/benchmarks/prepare_jev_comparison.py": "6cca5a7eefd62e8269934edb07206606033c81f2e72c40c7be2054f2b139d1fe",
+      "examples/jev_comparison/v3/cases.json": "159ab73102685ab8521c2872a6a65152904c35f18cbf516e672e49b77bd77e91",
+      "results/letter-benchmarks/gan/jev_fictional_v3/cases.json": "159ab73102685ab8521c2872a6a65152904c35f18cbf516e672e49b77bd77e91",
+      "results/letter-benchmarks/gan/jev_fictional_v3/requests.json": "da6f47fd13fe10be19b9c5900720a78e1b8212d89d24f4858de9b952c5d9a145",
+      "results/letter-benchmarks/gan/jev_fictional_v3/review.json": "5ac06e9a456c38f76b888a909a03c362c73d52b396426ce397de446333e1a566",
+      "results/letter-benchmarks/gan/jev_fictional_v3/adjudication.json": "1915098def47b2e92846f3d0c2c047f2069326aa8b4b1b4d41d0d740bdbefaf4",
+      "results/letter-benchmarks/gan/jev_fictional_v3/split_lock.json": "28a49f066bb995d672153b0f0b5892ccf23deded40d91f438d90a60c41a59c12"
+    }
+  },
+  "splits": {
+    "development": {
+      "jev": {
+        "cases": 8,
+        "decisions": 100,
+        "correct": 91,
+        "complete_cases": 5,
+        "coverage_correct": 8,
+        "current_tp": 7,
+        "current_fp": 3,
+        "current_fn": 2
+      },
+      "deepseek": {
+        "cases": 8,
+        "decisions": 100,
+        "correct": 100,
+        "complete_cases": 8,
+        "coverage_correct": 8,
+        "current_tp": 8,
+        "current_fp": 0,
+        "current_fn": 1
+      },
+      "hybrid": {
+        "proposals": 23,
+        "correct_proposals": 23,
+        "incorrect_proposals": 0,
+        "accepted_correct": 17,
+        "false_accepts": 0,
+        "correct_deferred": 6,
+        "deferred": 6,
+        "current_tp": 7,
+        "current_fp": 0,
+        "current_fn": 2,
+        "cases": 8,
+        "all_candidates_correct_and_released": 4
+      },
+      "challenge": {
+        "wrong_claims": 24,
+        "false_accepts": 0,
+        "wrong_deferred": 24,
+        "missing_or_invalid_verdicts": 0,
+        "correct_claims": 8,
+        "correct_accepted": 7,
+        "correct_deferred": 1
+      }
+    },
+    "reserved": {
+      "jev": {
+        "cases": 8,
+        "decisions": 100,
+        "correct": 84,
+        "complete_cases": 2,
+        "coverage_correct": 8,
+        "current_tp": 8,
+        "current_fp": 2,
+        "current_fn": 2
+      },
+      "deepseek": {
+        "cases": 8,
+        "decisions": 100,
+        "correct": 99,
+        "complete_cases": 7,
+        "coverage_correct": 8,
+        "current_tp": 9,
+        "current_fp": 0,
+        "current_fn": 1
+      },
+      "hybrid": {
+        "proposals": 23,
+        "correct_proposals": 22,
+        "incorrect_proposals": 1,
+        "accepted_correct": 17,
+        "false_accepts": 0,
+        "correct_deferred": 5,
+        "deferred": 6,
+        "current_tp": 9,
+        "current_fp": 0,
+        "current_fn": 1,
+        "cases": 8,
+        "all_candidates_correct_and_released": 4
+      },
+      "challenge": {
+        "wrong_claims": 24,
+        "false_accepts": 1,
+        "wrong_deferred": 23,
+        "missing_or_invalid_verdicts": 0,
+        "correct_claims": 8,
+        "correct_accepted": 7,
+        "correct_deferred": 1
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "d_multi",
+      "split": "development",
+      "provider": "jev",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "d_multi",
+      "split": "development",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "d_cross",
+      "split": "development",
+      "provider": "jev",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "d_cross",
+      "split": "development",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "d_range",
+      "split": "development",
+      "provider": "jev",
+      "error": null,
+      "wrong": {
+        "s1.role": {
+          "expected": "current",
+          "actual": "historical"
+        }
+      }
+    },
+    {
+      "id": "d_range",
+      "split": "development",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "d_uncertain",
+      "split": "development",
+      "provider": "jev",
+      "error": null,
+      "wrong": {
+        "s1.role": {
+          "expected": "other",
+          "actual": "current"
+        },
+        "s1.kind": {
+          "expected": "none",
+          "actual": "rate"
+        },
+        "s1.outer_applicable": {
+          "expected": "no",
+          "actual": "yes"
+        }
+      }
+    },
+    {
+      "id": "d_uncertain",
+      "split": "development",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "d_conflict",
+      "split": "development",
+      "provider": "jev",
+      "error": null,
+      "wrong": {
+        "s0.role": {
+          "expected": "conflicting",
+          "actual": "current"
+        },
+        "s1.role": {
+          "expected": "conflicting",
+          "actual": "current"
+        },
+        "s1.outer_applicable": {
+          "expected": "no",
+          "actual": "yes"
+        },
+        "s2.role": {
+          "expected": "other",
+          "actual": "conflicting"
+        },
+        "s2.kind": {
+          "expected": "none",
+          "actual": "unresolved"
+        }
+      }
+    },
+    {
+      "id": "d_conflict",
+      "split": "development",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "d_missing",
+      "split": "development",
+      "provider": "jev",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "d_missing",
+      "split": "development",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "d_cluster",
+      "split": "development",
+      "provider": "jev",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "d_cluster",
+      "split": "development",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "d_unknown",
+      "split": "development",
+      "provider": "jev",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "d_unknown",
+      "split": "development",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "r_multi",
+      "split": "reserved",
+      "provider": "jev",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "r_multi",
+      "split": "reserved",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "r_cross",
+      "split": "reserved",
+      "provider": "jev",
+      "error": null,
+      "wrong": {
+        "s0.outer_applicable": {
+          "expected": "no",
+          "actual": "yes"
+        }
+      }
+    },
+    {
+      "id": "r_cross",
+      "split": "reserved",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "r_range",
+      "split": "reserved",
+      "provider": "jev",
+      "error": null,
+      "wrong": {
+        "s1.role": {
+          "expected": "current",
+          "actual": "historical"
+        }
+      }
+    },
+    {
+      "id": "r_range",
+      "split": "reserved",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "r_uncertain",
+      "split": "reserved",
+      "provider": "jev",
+      "error": null,
+      "wrong": {
+        "s1.role": {
+          "expected": "other",
+          "actual": "historical"
+        },
+        "s1.kind": {
+          "expected": "none",
+          "actual": "count"
+        },
+        "s1.outer_applicable": {
+          "expected": "no",
+          "actual": "yes"
+        }
+      }
+    },
+    {
+      "id": "r_uncertain",
+      "split": "reserved",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "r_conflict",
+      "split": "reserved",
+      "provider": "jev",
+      "error": null,
+      "wrong": {
+        "s0.role": {
+          "expected": "conflicting",
+          "actual": "current"
+        },
+        "s1.role": {
+          "expected": "conflicting",
+          "actual": "current"
+        },
+        "s1.outer_applicable": {
+          "expected": "no",
+          "actual": "yes"
+        },
+        "s2.role": {
+          "expected": "other",
+          "actual": "conflicting"
+        },
+        "s2.kind": {
+          "expected": "none",
+          "actual": "unresolved"
+        },
+        "s2.outer_applicable": {
+          "expected": "no",
+          "actual": "yes"
+        }
+      }
+    },
+    {
+      "id": "r_conflict",
+      "split": "reserved",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "r_missing",
+      "split": "reserved",
+      "provider": "jev",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "r_missing",
+      "split": "reserved",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    },
+    {
+      "id": "r_cluster",
+      "split": "reserved",
+      "provider": "jev",
+      "error": null,
+      "wrong": {
+        "s2.kind": {
+          "expected": "cluster",
+          "actual": "none"
+        },
+        "s2.outer_applicable": {
+          "expected": "yes",
+          "actual": "no"
+        }
+      }
+    },
+    {
+      "id": "r_cluster",
+      "split": "reserved",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {
+        "s2.inner_applicable": {
+          "expected": "yes",
+          "actual": "no"
+        }
+      }
+    },
+    {
+      "id": "r_unknown",
+      "split": "reserved",
+      "provider": "jev",
+      "error": null,
+      "wrong": {
+        "s2.role": {
+          "expected": "future",
+          "actual": "other"
+        },
+        "s2.kind": {
+          "expected": "rate",
+          "actual": "none"
+        },
+        "s2.outer_applicable": {
+          "expected": "yes",
+          "actual": "no"
+        }
+      }
+    },
+    {
+      "id": "r_unknown",
+      "split": "reserved",
+      "provider": "deepseek",
+      "error": null,
+      "wrong": {}
+    }
+  ],
+  "cost_peak_upper_usd": 0.092622798,
+  "calls": 65,
+  "timing": {
+    "classify_jev": {
+      "calls": 16,
+      "seconds": 12.289945625583641,
+      "peak_upper_usd": 0.004016922
+    },
+    "classify_deepseek": {
+      "calls": 16,
+      "seconds": 98.25442862382624,
+      "peak_upper_usd": 0.052007399999999995
+    },
+    "verify": {
+      "calls": 16,
+      "seconds": 9.54222712595947,
+      "peak_upper_usd": 0.001160502
+    },
+    "challenge": {
+      "calls": 16,
+      "seconds": 9.597609792253934,
+      "peak_upper_usd": 0.0015416940000000001
+    },
+    "review": {
+      "calls": 1,
+      "seconds": 48.65684070903808,
+      "peak_upper_usd": 0.03389628
+    }
+  }
+}

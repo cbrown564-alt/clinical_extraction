@@ -1,0 +1,26 @@
+[
+  {
+    "id": "cluster",
+    "text": "Previously the patient had 9 seizures per week.\nCurrently there are 2 cluster days per month with typically 6 seizures within 24 hours.\nBetween cluster days the patient is seizure-free.\nContact the clinic if cluster days exceed 3 per month.\nMedication is 500 mg twice daily."
+  },
+  {
+    "id": "rate",
+    "text": "Previously seizures occurred 8 times per day.\nCurrently the patient has 3 seizures per week.\nIncrease medication to 200 mg if seizures exceed 5 per day."
+  },
+  {
+    "id": "count",
+    "text": "Since the last review the patient has had 3 isolated seizures over 2 months.\nMedication remains 100 mg daily."
+  },
+  {
+    "id": "absence",
+    "text": "The patient has had no epileptic seizures for 6 months.\nTheir sister had 2 seizures last year."
+  },
+  {
+    "id": "no_current",
+    "text": "Seizures occurred 4 times per week in childhood.\nCurrent seizure frequency was not discussed.\nContact the clinic if seizures exceed 2 per day."
+  },
+  {
+    "id": "qualitative",
+    "text": "Currently the patient has frequent seizures.\nMedication is 100 mg daily."
+  }
+]

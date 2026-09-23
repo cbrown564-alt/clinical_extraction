@@ -1,0 +1,2629 @@
+{
+  "freeze_sha256": "6a79d38ba5c4f6580a7bcaa20483b0a2f2863d0a5d55704f5b7a444352be8685",
+  "freeze": {
+    "version": "jev_candidate_comparison_v2",
+    "frozen_at": "2026-09-21T22:40:15.436882+00:00",
+    "dataset": "fictional_jev_v2",
+    "split": "fictional-development",
+    "row_policy": "all 22 conditions, failures wrong",
+    "cases": 22,
+    "scored_decisions": 157,
+    "budget_usd": 2.0,
+    "full_reservation_usd": 0.8629827299999999,
+    "retry_policy": "one attempt per provider/case, no automatic retries",
+    "repair_policy": "none",
+    "timeout_seconds": 600,
+    "concurrency": 1,
+    "prices_per_million_peak": {
+      "jev": [
+        0.042,
+        0
+      ],
+      "deepseek": [
+        0.3,
+        1.2
+      ],
+      "review": [
+        1.32,
+        3.96
+      ]
+    },
+    "price_sources": [
+      "https://docs.typesafe.ai/models",
+      "https://api-docs.deepseek.com/quick_start/pricing/"
+    ],
+    "models": {
+      "jev": "jev-1.13.0",
+      "deepseek": "deepseek-flash",
+      "review": "deepseek-v4-pro"
+    },
+    "model_limit": "DeepSeek alias version recorded on response; no immutable checkpoint guarantee",
+    "go_decision": "No automatic dev750 run. Inspect binding, abstention and robustness errors; if recurring semantic failures remain, revise on fictional data first. Even a clean pilot requires reviewed reference, candidate coverage and native mapping.",
+    "files": {
+      "scripts/benchmarks/jev_pilot.py": "8c792e8cb2018f6006f276979d0fae6804d043aa36906e069cad6b36e17afe20",
+      "scripts/benchmarks/prepare_jev_comparison.py": "6cca5a7eefd62e8269934edb07206606033c81f2e72c40c7be2054f2b139d1fe",
+      "results/letter-benchmarks/gan/jev_fictional_v2/cases.json": "7d970f48f527ccbeec32979457a5bd559cc4d5abe05987c12b7c8ac238945418",
+      "results/letter-benchmarks/gan/jev_fictional_v2/packs.json": "dd1001e838c501b33452073cc22e6a262e95d1b9c36a100104fd5790553a2b85",
+      "results/letter-benchmarks/gan/jev_fictional_v2/requests.json": "332dad6716259dd532250b28fdc4c13da8c0f2370a200f38e53d1394bb28e5f6",
+      "results/letter-benchmarks/gan/jev_fictional_v2/review_comparison.json": "7b76786fbaa4a009445271e4cdff792847acc03b539ec7c87eaf846cdbe74466"
+    }
+  },
+  "providers": {
+    "jev": {
+      "groups": {
+        "all": {
+          "selection_correct": 20,
+          "complete_correct": 9,
+          "correct": 142,
+          "total": 157,
+          "cases": 22
+        },
+        "base": {
+          "selection_correct": 6,
+          "complete_correct": 3,
+          "correct": 44,
+          "total": 48,
+          "cases": 7
+        },
+        "quantities": {
+          "selection_correct": 3,
+          "complete_correct": 0,
+          "correct": 20,
+          "total": 25,
+          "cases": 3
+        },
+        "paraphrase": {
+          "selection_correct": 4,
+          "complete_correct": 2,
+          "correct": 30,
+          "total": 32,
+          "cases": 4
+        },
+        "competing": {
+          "selection_correct": 1,
+          "complete_correct": 1,
+          "correct": 4,
+          "total": 4,
+          "cases": 1
+        },
+        "order": {
+          "selection_correct": 6,
+          "complete_correct": 3,
+          "correct": 44,
+          "total": 48,
+          "cases": 7
+        }
+      },
+      "fields": {
+        "primary": {
+          "correct": 20,
+          "total": 22
+        },
+        "role": {
+          "correct": 67,
+          "total": 67
+        },
+        "structure": {
+          "correct": 16,
+          "total": 17
+        },
+        "outer_value": {
+          "correct": 14,
+          "total": 17
+        },
+        "denominator": {
+          "correct": 16,
+          "total": 17
+        },
+        "inner_value": {
+          "correct": 9,
+          "total": 17
+        }
+      },
+      "rows": [
+        {
+          "id": "cluster",
+          "correct": 9,
+          "total": 10,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s3.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s4.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "cluster",
+              "choice": "cluster",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v1",
+              "valid": true,
+              "correct": false
+            },
+            "s1.denominator": {
+              "expected": "month",
+              "choice": "month",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "v1",
+              "choice": "v1",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "f37e1af385bbd2e6c61ed27be06e14fe48174cac6b1881a69714ab0dca1dae62"
+        },
+        {
+          "id": "rate",
+          "correct": 7,
+          "total": 8,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "rate",
+              "choice": "rate",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "week",
+              "choice": "week",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "not_applicable",
+              "choice": "v0",
+              "valid": true,
+              "correct": false
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "ed31feed5220d90eb68a92d3c1e34e3542370c0a07eca6a40a0e55e4fac8d4ec"
+        },
+        {
+          "id": "count",
+          "correct": 6,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "count",
+              "choice": "count",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "v0",
+              "valid": true,
+              "correct": false
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "2b5af79189a06438c90713c99b9ed52c6a4b496560328c9eb51bd8f0a2a88112"
+        },
+        {
+          "id": "absence",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "seizure_free",
+              "choice": "seizure_free",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "c71516c497986a25f136172a574bd4f238b01c7b019c2cd6054f98f59bf5bd1e"
+        },
+        {
+          "id": "no_current",
+          "correct": 3,
+          "total": 4,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "no_current",
+              "choice": "s1",
+              "valid": true,
+              "correct": false
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "unknown",
+              "choice": "unknown",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "53dbbdef641fe2ea92bafcc4e9bdf465548b115910aba936573825d5c823ed03"
+        },
+        {
+          "id": "qualitative",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "qualitative",
+              "choice": "qualitative",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "not_established",
+              "choice": "not_established",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_established",
+              "choice": "not_established",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "7d3536ba557762aacc3fa3f6bd458e6abf2d6823d1ad9353e0bf9061b0b8f4af"
+        },
+        {
+          "id": "cluster_missing_candidate",
+          "correct": 5,
+          "total": 5,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "unsupported",
+              "choice": "unsupported",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s3.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s4.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "8f9f4a4b74fdfe8bd7ff2effd9df9794430fadf8e83de0f6acf7be977f24e271"
+        },
+        {
+          "id": "cluster_quantities",
+          "correct": 9,
+          "total": 10,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s3.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s4.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "cluster",
+              "choice": "cluster",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v1",
+              "valid": true,
+              "correct": false
+            },
+            "s1.denominator": {
+              "expected": "month",
+              "choice": "month",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "v1",
+              "choice": "v1",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "quantities",
+          "failure": null,
+          "raw_response_sha256": "ff868552187d112aa6f427a361c741b43521d44ce47bfbef98e1340642d502f1"
+        },
+        {
+          "id": "rate_quantities",
+          "correct": 7,
+          "total": 8,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "rate",
+              "choice": "rate",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "week",
+              "choice": "week",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "not_applicable",
+              "choice": "v0",
+              "valid": true,
+              "correct": false
+            }
+          },
+          "group": "quantities",
+          "failure": null,
+          "raw_response_sha256": "14854c8e79876eef008331e83b376a86d4a9d130d7fa9dd8109eb3dbec1614b7"
+        },
+        {
+          "id": "count_quantities",
+          "correct": 4,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "count",
+              "choice": "rate",
+              "valid": true,
+              "correct": false
+            },
+            "s0.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_applicable",
+              "choice": "month",
+              "valid": true,
+              "correct": false
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "v0",
+              "valid": true,
+              "correct": false
+            }
+          },
+          "group": "quantities",
+          "failure": null,
+          "raw_response_sha256": "3281ae2249e5b3333c97d89657494be2d9cb590bbaa37a7f0a0de5528793d760"
+        },
+        {
+          "id": "cluster_paraphrase",
+          "correct": 10,
+          "total": 10,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s3.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s4.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "cluster",
+              "choice": "cluster",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "month",
+              "choice": "month",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "v1",
+              "choice": "v1",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "paraphrase",
+          "failure": null,
+          "raw_response_sha256": "dcb1974e5c78213c1f1433fd62bccc2d33366ceab45a66a09d320fe84d0ced83"
+        },
+        {
+          "id": "rate_paraphrase",
+          "correct": 7,
+          "total": 8,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "rate",
+              "choice": "rate",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "week",
+              "choice": "week",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "not_applicable",
+              "choice": "v0",
+              "valid": true,
+              "correct": false
+            }
+          },
+          "group": "paraphrase",
+          "failure": null,
+          "raw_response_sha256": "8ea3134b0a8de4151efc116feef9c294f9416d91715409208a2a5802af6e20fc"
+        },
+        {
+          "id": "count_paraphrase",
+          "correct": 6,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "count",
+              "choice": "count",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "v0",
+              "valid": true,
+              "correct": false
+            }
+          },
+          "group": "paraphrase",
+          "failure": null,
+          "raw_response_sha256": "e012d8e3b85bce1ef8717c26e2a91af59027779bfc7b30fa3e913df36768e4d6"
+        },
+        {
+          "id": "qualitative_paraphrase",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "qualitative",
+              "choice": "qualitative",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "not_established",
+              "choice": "not_established",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_established",
+              "choice": "not_established",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "paraphrase",
+          "failure": null,
+          "raw_response_sha256": "91ec5ed081373cd1773ad8041d163f276513984aac0d40caf80ab41da1117e27"
+        },
+        {
+          "id": "competing_current",
+          "correct": 4,
+          "total": 4,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "ambiguous",
+              "choice": "ambiguous",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "competing",
+          "failure": null,
+          "raw_response_sha256": "060e58206efdaf89c16104a5d8dee869dac9e2a12ae0d33edc92dfb86004de3a"
+        },
+        {
+          "id": "cluster_reordered",
+          "correct": 9,
+          "total": 10,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s4.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s3.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "cluster",
+              "choice": "cluster",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v1",
+              "valid": true,
+              "correct": false
+            },
+            "s1.denominator": {
+              "expected": "month",
+              "choice": "month",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "v1",
+              "choice": "v1",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "0fc49d203f7f3c5b582d24555822d365e60be093096c9ce48eb68cb568c204d8"
+        },
+        {
+          "id": "rate_reordered",
+          "correct": 7,
+          "total": 8,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "rate",
+              "choice": "rate",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "week",
+              "choice": "week",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "not_applicable",
+              "choice": "v0",
+              "valid": true,
+              "correct": false
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "26157dd4536ead1d3dee329d1e55c140888cf8a4883039dee50eec293b5262ef"
+        },
+        {
+          "id": "count_reordered",
+          "correct": 6,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "count",
+              "choice": "count",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "v0",
+              "valid": true,
+              "correct": false
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "a0600bb4b2cab7415351565443ca68d403ed4ef098070bcc87b5bb4f2d3efb3e"
+        },
+        {
+          "id": "absence_reordered",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "seizure_free",
+              "choice": "seizure_free",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "fd0369e72c7a52c9b51caa304b0fd6a88bac98a16727d22ef6fd65f60940b542"
+        },
+        {
+          "id": "no_current_reordered",
+          "correct": 3,
+          "total": 4,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": false,
+          "diagnostics": {
+            "primary": {
+              "expected": "no_current",
+              "choice": "s1",
+              "valid": true,
+              "correct": false
+            },
+            "s2.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "unknown",
+              "choice": "unknown",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "c86d17dd2fcdf17812a4183eb866757a567171ac8bfa22eb607a1045feabea86"
+        },
+        {
+          "id": "qualitative_reordered",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "qualitative",
+              "choice": "qualitative",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "not_established",
+              "choice": "not_established",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_established",
+              "choice": "not_established",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "1d7089331a0601119e0e07f916f1c854febaca5cb38fa93194f29ecc43729312"
+        },
+        {
+          "id": "cluster_missing_candidate_reordered",
+          "correct": 5,
+          "total": 5,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "unsupported",
+              "choice": "unsupported",
+              "valid": true,
+              "correct": true
+            },
+            "s4.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s3.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "b031fab6d1fb7c5a3950c1d4c01151585cd9546a75d9994b410998eefa98f275"
+        }
+      ],
+      "attempts": 22,
+      "failures": 0,
+      "charge_peak_upper_usd": 0.0028685580000000002,
+      "total_seconds": 14.916317290742882,
+      "mean_seconds": 0.6780144223064947,
+      "returned_models": [
+        "jev-1.13.0"
+      ]
+    },
+    "deepseek": {
+      "groups": {
+        "all": {
+          "selection_correct": 22,
+          "complete_correct": 22,
+          "correct": 157,
+          "total": 157,
+          "cases": 22
+        },
+        "base": {
+          "selection_correct": 7,
+          "complete_correct": 7,
+          "correct": 48,
+          "total": 48,
+          "cases": 7
+        },
+        "quantities": {
+          "selection_correct": 3,
+          "complete_correct": 3,
+          "correct": 25,
+          "total": 25,
+          "cases": 3
+        },
+        "paraphrase": {
+          "selection_correct": 4,
+          "complete_correct": 4,
+          "correct": 32,
+          "total": 32,
+          "cases": 4
+        },
+        "competing": {
+          "selection_correct": 1,
+          "complete_correct": 1,
+          "correct": 4,
+          "total": 4,
+          "cases": 1
+        },
+        "order": {
+          "selection_correct": 7,
+          "complete_correct": 7,
+          "correct": 48,
+          "total": 48,
+          "cases": 7
+        }
+      },
+      "fields": {
+        "primary": {
+          "correct": 22,
+          "total": 22
+        },
+        "role": {
+          "correct": 67,
+          "total": 67
+        },
+        "structure": {
+          "correct": 17,
+          "total": 17
+        },
+        "outer_value": {
+          "correct": 17,
+          "total": 17
+        },
+        "denominator": {
+          "correct": 17,
+          "total": 17
+        },
+        "inner_value": {
+          "correct": 17,
+          "total": 17
+        }
+      },
+      "rows": [
+        {
+          "id": "cluster",
+          "correct": 10,
+          "total": 10,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s3.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s4.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "cluster",
+              "choice": "cluster",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "month",
+              "choice": "month",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "v1",
+              "choice": "v1",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "9381f17d1c40061450b4c55086325792605c7fdb7c68be36a14a843f0917067c"
+        },
+        {
+          "id": "rate",
+          "correct": 8,
+          "total": 8,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "rate",
+              "choice": "rate",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "week",
+              "choice": "week",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "9c250d1816542121448154e81e2b056f23629139076a9e4e916471fd507dca0f"
+        },
+        {
+          "id": "count",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "count",
+              "choice": "count",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "1c8c26f14d88cc02f8efc14c21dd565e113642fee0338939d9cdd58ed1f417c5"
+        },
+        {
+          "id": "absence",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "seizure_free",
+              "choice": "seizure_free",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "cb5492e4ceab652f8d55ad298c576575742211cdee2b43f52dbca48c286d4662"
+        },
+        {
+          "id": "no_current",
+          "correct": 4,
+          "total": 4,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "no_current",
+              "choice": "no_current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "unknown",
+              "choice": "unknown",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "8a66048867f6c38b67ad72e08c40373e682cea3bd665f4985620675df15d362d"
+        },
+        {
+          "id": "qualitative",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "qualitative",
+              "choice": "qualitative",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "not_established",
+              "choice": "not_established",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_established",
+              "choice": "not_established",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "90c8718c317de5e77552ce65210b7608f475f792e6dcad5289788b482c42f8b0"
+        },
+        {
+          "id": "cluster_missing_candidate",
+          "correct": 5,
+          "total": 5,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "unsupported",
+              "choice": "unsupported",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s3.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s4.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "base",
+          "failure": null,
+          "raw_response_sha256": "5d5dd758f3cbe29f3cfa81907cf3fff51adfb31693dc3a5e1b6617577a4bbf7f"
+        },
+        {
+          "id": "cluster_quantities",
+          "correct": 10,
+          "total": 10,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s3.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s4.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "cluster",
+              "choice": "cluster",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "month",
+              "choice": "month",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "v1",
+              "choice": "v1",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "quantities",
+          "failure": null,
+          "raw_response_sha256": "b625e8f0fb2f537ddeab53ed1c4707e7ad10218c5c45340e2954a1e756683f93"
+        },
+        {
+          "id": "rate_quantities",
+          "correct": 8,
+          "total": 8,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "rate",
+              "choice": "rate",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "week",
+              "choice": "week",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "quantities",
+          "failure": null,
+          "raw_response_sha256": "28d3feb596dd459dea90fcc93c02d235e5511ca9357ea844dc239f540c8c56e5"
+        },
+        {
+          "id": "count_quantities",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "count",
+              "choice": "count",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "quantities",
+          "failure": null,
+          "raw_response_sha256": "74a0cffb75ee0351f36b761b0e83550ed6d06ab1b7563a81e81739eabbf4a4b8"
+        },
+        {
+          "id": "cluster_paraphrase",
+          "correct": 10,
+          "total": 10,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s3.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s4.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "cluster",
+              "choice": "cluster",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "month",
+              "choice": "month",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "v1",
+              "choice": "v1",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "paraphrase",
+          "failure": null,
+          "raw_response_sha256": "c0bbedab30a8248918b96877395affabcca37fb3ee69603b2d850006affae31b"
+        },
+        {
+          "id": "rate_paraphrase",
+          "correct": 8,
+          "total": 8,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "rate",
+              "choice": "rate",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "week",
+              "choice": "week",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "paraphrase",
+          "failure": null,
+          "raw_response_sha256": "31a9a7991fea16254f0bfd5f926ac88a939fb28a5e539a8ee5d2bfa29a369720"
+        },
+        {
+          "id": "count_paraphrase",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "count",
+              "choice": "count",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "paraphrase",
+          "failure": null,
+          "raw_response_sha256": "2297f1203e73320ad3e421b570eaec141173c8119942cd8d0be6dc90796f500b"
+        },
+        {
+          "id": "qualitative_paraphrase",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "qualitative",
+              "choice": "qualitative",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "not_established",
+              "choice": "not_established",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_established",
+              "choice": "not_established",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "paraphrase",
+          "failure": null,
+          "raw_response_sha256": "076ee692cf7ad7aa82a43f19acd34548ca9a10b4cfee159a831561f4d98e8bd4"
+        },
+        {
+          "id": "competing_current",
+          "correct": 4,
+          "total": 4,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "ambiguous",
+              "choice": "ambiguous",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "competing",
+          "failure": null,
+          "raw_response_sha256": "69417eeafbdcfd7c3edeb06c4bc9d19e2cb65b67d183868e00deb5f67de38274"
+        },
+        {
+          "id": "cluster_reordered",
+          "correct": 10,
+          "total": 10,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s4.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s3.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "cluster",
+              "choice": "cluster",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "month",
+              "choice": "month",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "v1",
+              "choice": "v1",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "74d0e3e38eeb9b4147d9bf9e63092493a499f1933a1875a355d007038e897339"
+        },
+        {
+          "id": "rate_reordered",
+          "correct": 8,
+          "total": 8,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s1",
+              "choice": "s1",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            },
+            "s1.structure": {
+              "expected": "rate",
+              "choice": "rate",
+              "valid": true,
+              "correct": true
+            },
+            "s1.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.denominator": {
+              "expected": "week",
+              "choice": "week",
+              "valid": true,
+              "correct": true
+            },
+            "s1.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "acc972b3e6db0b2587ae66b8940b3e665ada1177af36373108465db9fd900563"
+        },
+        {
+          "id": "count_reordered",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "count",
+              "choice": "count",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "v0",
+              "choice": "v0",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "673c5b5ff9f08fcedd6a5c07303f0795bd3797bbb8bb692d8fe691085a1ce1a7"
+        },
+        {
+          "id": "absence_reordered",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "seizure_free",
+              "choice": "seizure_free",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "f7e43baa94ca06aa93e02b0de276076a3e16db3fb74e0761ff91181505fe9432"
+        },
+        {
+          "id": "no_current_reordered",
+          "correct": 4,
+          "total": 4,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "no_current",
+              "choice": "no_current",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "unknown",
+              "choice": "unknown",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "f2aabf18724b3d06d682f3bdfa22d445e2456ac98cfe125db1118c85ae00aa88"
+        },
+        {
+          "id": "qualitative_reordered",
+          "correct": 7,
+          "total": 7,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "s0",
+              "choice": "s0",
+              "valid": true,
+              "correct": true
+            },
+            "s1.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.structure": {
+              "expected": "qualitative",
+              "choice": "qualitative",
+              "valid": true,
+              "correct": true
+            },
+            "s0.outer_value": {
+              "expected": "not_established",
+              "choice": "not_established",
+              "valid": true,
+              "correct": true
+            },
+            "s0.denominator": {
+              "expected": "not_established",
+              "choice": "not_established",
+              "valid": true,
+              "correct": true
+            },
+            "s0.inner_value": {
+              "expected": "not_applicable",
+              "choice": "not_applicable",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "99b70679df17f8ac09d875f360989d182b67e3f0ce5c10f076518954cdf44590"
+        },
+        {
+          "id": "cluster_missing_candidate_reordered",
+          "correct": 5,
+          "total": 5,
+          "missing_or_invalid": 0,
+          "final_selection_and_attributes_correct": true,
+          "diagnostics": {
+            "primary": {
+              "expected": "unsupported",
+              "choice": "unsupported",
+              "valid": true,
+              "correct": true
+            },
+            "s4.role": {
+              "expected": "other",
+              "choice": "other",
+              "valid": true,
+              "correct": true
+            },
+            "s3.role": {
+              "expected": "future",
+              "choice": "future",
+              "valid": true,
+              "correct": true
+            },
+            "s2.role": {
+              "expected": "current",
+              "choice": "current",
+              "valid": true,
+              "correct": true
+            },
+            "s0.role": {
+              "expected": "historical",
+              "choice": "historical",
+              "valid": true,
+              "correct": true
+            }
+          },
+          "group": "order",
+          "failure": null,
+          "raw_response_sha256": "ad967f0ad29191da87d5f2acfc7cff1bfe4d757878db16894f8df41be0ff5fc2"
+        }
+      ],
+      "attempts": 22,
+      "failures": 0,
+      "charge_peak_upper_usd": 0.08045519999999999,
+      "total_seconds": 227.74071116978303,
+      "mean_seconds": 10.35185050771741,
+      "returned_models": [
+        "deepseek-flash"
+      ]
+    }
+  }
+}
