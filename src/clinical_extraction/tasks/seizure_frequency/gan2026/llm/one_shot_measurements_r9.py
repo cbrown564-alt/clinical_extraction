@@ -50,7 +50,12 @@ replace_instruction(
     "absence interval for the same event scope is one finding even if restated "
     "elsewhere. A single denial listing several named seizure types is one combined "
     "finding that retains the named types; do not broaden a limited list to all "
-    "events. A last-seizure statement remains a separate finding.",
+    "events. When one source says that an event log corroborates the absence "
+    "reported by a device for the same interval, score one absence finding "
+    "under the directly named clinical event; for 'no convulsive activity' "
+    "corroborated by 'no events requiring rescue measures', name convulsive "
+    "activity and keep the log wording as supporting context. A last-seizure "
+    "statement remains a separate finding.",
 )
 replace_instruction(
     "Qualitative frequency must",

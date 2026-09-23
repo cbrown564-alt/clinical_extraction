@@ -145,3 +145,9 @@ prospective and have **not** been applied to the v0.8.1 reference or score.
   rate remains its own finding. Do not attach the overall rate only to focal
   events because they are the majority. This corrects the prospective R9
   instruction; the saved R8 response and v0.8.1 gold stay unchanged.
+- When a device reports no convulsive activity over six months and an event log
+  explicitly corroborates it with no events requiring rescue measures, score
+  one absence finding for `convulsive activity` (source 8805). The rescue-log
+  clause is supporting context. The v0.8.1 gold currently says `events requiring
+  rescue measures`; correct that label in the next versioned reference rather
+  than editing the frozen score in place.
