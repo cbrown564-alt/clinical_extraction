@@ -28,6 +28,14 @@ The v0.8.4 development reference and scorer now implement those annotation
 decisions against saved R8 responses; the [result README](../../../results/letter-benchmarks/gan/seizure_finding_annotation_v0_8_4/dev750_r8_saved/README.md)
 owns the changed target and score.
 
+R9 revision `guide_v085_unscored_cluster_span_candidate` tells the model to
+keep a cluster's within-cluster span in the exact evidence quotation, omit it
+from `period`, and never default clusters to a day. `period` continues to hold
+the observation window for a cluster count. The v0.8.5 reference and scorer
+apply this owner decision to the saved development comparison; no R9 model
+run has occurred. The [v0.8.5 result](../../../results/letter-benchmarks/gan/seizure_finding_annotation_v0_8_5/dev750_r8_saved/README.md)
+owns the replay and score.
+
 ## R8 bimonthly default (2026-09-22)
 
 Conor selected one per two months as the default interpretation of "bimonthly",

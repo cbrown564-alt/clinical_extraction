@@ -255,7 +255,8 @@ An anchor explicitly known to be under two weeks is ineligible (15513:
 This is a prospective annotation decision and R9 prompt amendment. The v0.8.3
 reference and saved-R8 score remain frozen; source 15513 needs a versioned
 reference edit before any new score claims this rule. The separate question of
-whether a cluster's within-cluster span belongs in scored `period` is unresolved.
+whether a cluster's within-cluster span belongs in scored `period` was resolved
+in v0.8.5 below.
 
 ## Prospective cluster and seizure-link decisions (23 September 2026)
 
@@ -278,11 +279,27 @@ whether a cluster's within-cluster span belongs in scored `period` is unresolved
   an explicit seizure link, so its six-to-eight-week rate is unscored context.
 
 These decisions are prospective relative to the frozen v0.8.3 reference and
-saved-R8 result. The question of scoring the span *within* a cluster remains
-open; it is different from the observation window for a cluster count.
+saved-R8 result. Scoring the span *within* a cluster is resolved in v0.8.5
+below; it differs from the observation window for a cluster count.
 
 The additive v0.8.4 development reference now applies these decisions and the
 two-week minimum. Its producer is `scripts/benchmarks/revise_findings_v084.py`;
 the [v0.8.4 result](../../../results/letter-benchmarks/gan/seizure_finding_annotation_v0_8_4/dev750_r8_saved/README.md)
 owns the edit manifest, score and exceptions. The saved R8 predictions are
 unchanged. R9 is still an unrun prompt candidate.
+
+## v0.8.5 unscored within-cluster span (23 September 2026)
+
+The owner confirmed that **cluster size and any stated cadence are scored**.
+The span containing seizures *within* a cluster, such as `a day`, `within 24
+hours`, or `within half an hour`, is **unscored context**. Keep it in the exact
+evidence quotation for review, but do not use `period` for that span or infer a
+daily span when none is stated. `period` remains the observation window for an
+observed cluster count: `two cluster days this month` (11131) and `two clusters
+within a fortnight` (10618) still require those windows. `occurred_at` remains
+useful unscored detail for a dated single cluster.
+
+The [v0.8.5 result](../../../results/letter-benchmarks/gan/seizure_finding_annotation_v0_8_5/dev750_r8_saved/README.md)
+owns the 18 source-audited edits, versioned scorer and saved-R8 comparison.
+The prior references and results remain frozen. R9 has prospective instructions
+but no new model output.

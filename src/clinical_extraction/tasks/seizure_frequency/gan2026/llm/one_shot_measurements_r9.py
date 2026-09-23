@@ -1,4 +1,4 @@
-"""Prospective R9 prompt candidate for the v0.8.4 finding rules.
+"""Prospective R9 prompt candidate for the v0.8.5 finding rules.
 
 This is not the saved R8 prompt. No model response or result is attributed to it.
 """
@@ -13,8 +13,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 )
 
 VERSION = "one_shot_frequency_v2_measurements_r9"
-REVISION = "guide_v084_cluster_units_and_seizure_link_candidate"
-GUIDE_VERSION = "seizure_finding_annotation_v0.8.4"
+REVISION = "guide_v085_unscored_cluster_span_candidate"
+GUIDE_VERSION = "seizure_finding_annotation_v0.8.5"
 Rich = r8.Rich
 
 
@@ -53,7 +53,10 @@ replace_instruction(
     "not part of the scored cluster measurement. When N cluster days in an "
     "observation window each have M seizures, emit one cluster finding with "
     "count N, seizures_per_cluster M and period equal to the observation window; "
-    "do not duplicate it as a seizure-day count. "
+    "do not duplicate it as a seizure-day count. A span within a cluster, "
+    "such as 'within half an hour' or 'a day', stays in the exact evidence "
+    "but not in period; it is unscored context. Do not assume that clusters "
+    "last a day. Keep period for the observation window of a cluster count. "
     "Never treat a count of clusters as the same number of individual seizures.",
 )
 replace_instruction(

@@ -38,6 +38,8 @@ def test_adjudication_examples_and_rendered_r9_prompt() -> None:
     assert "four seizure-free days between cluster days" in instructions
     assert "A single grouped occurrence is one cluster" in instructions
     assert "do not duplicate it as a seizure-day count" in instructions
+    assert "A span within a cluster" in instructions
+    assert "Do not assume that clusters last a day" in instructions
     assert "Clinician concern about spells with reduced awareness" in instructions
     assert "historical only when the source explicitly marks" not in instructions
     assert payload["output_schema"]["$defs"]["QualitativeFrequency"]["properties"]["frequency"][
