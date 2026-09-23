@@ -40,7 +40,8 @@ replace_instruction(
     "For a simple count of clusters, use ordinary count with the counted event "
     "named as clusters. Use cluster measurement when the source states seizures "
     "per cluster or a recurring cluster cadence; in that case name event.type "
-    "'clusters', and keep the cadence and seizures_per_cluster in measurement. "
+    "'clusters' or 'clusters of [named subtype]' when a subtype is stated, and "
+    "keep the cadence and seizures_per_cluster in measurement. "
     "Never treat a count of clusters as the same number of individual seizures.",
 )
 replace_instruction(
@@ -82,8 +83,15 @@ replace_instruction(
     "Use a combined list only when the same measurement applies to every named type. "
     "For a combined absence list, retain the named types in one event label. "
     "Do not infer a more specific seizure diagnosis from a symptom description. "
+    "Do not score a possible isolated symptom as a seizure event unless the "
+    "clinician identifies it as a seizure or connects it to an established "
+    "seizure type; a recalled episode of confusion without collapse alone is "
+    "unscored context. "
     "Keep distinct seizure types, observation windows, seizure-day units and "
     "individual seizure counts separate. "
+    "When a stated total already includes the listed occurrences or a breakdown "
+    "by trigger or time of day, score the total once and treat the breakdown "
+    "as context unless it separately measures a named seizure subtype. "
     "Seizure_status is stated unless the source explicitly questions whether "
     "events are seizures or excludes seizure identity.",
 )

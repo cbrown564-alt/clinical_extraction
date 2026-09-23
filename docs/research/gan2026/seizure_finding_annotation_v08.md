@@ -156,3 +156,39 @@ prospective and have **not** been applied to the v0.8.1 reference or score.
   in the cluster measurement (source 8969). A generic `events` label loses the
   counted unit even when the measurement type is `cluster`. The existing gold
   already uses `clusters`; the R9 prompt now states this convention.
+
+## v0.8.2 claim-unit amendment (23 September 2026)
+
+The owner confirmed that a recalled brief episode of confusion without
+collapse is an **unscored possible event**, unless the letter identifies it as
+a seizure or connects it to an established seizure type (source 8805). This
+extends the established rule for symptoms lacking seizure features (8355),
+without excluding all explicitly named possible seizures.
+
+Apply one scored finding to a continuous seizure-free interval stated several
+ways across a letter. Prefer a stated duration as the scored measurement;
+retain a co-stated `since` anchor as unscored context. Different seizure
+subtypes, event scopes, and independently measured windows remain separate.
+When a total count is followed by its trigger or time-of-day breakdown, score
+the total once unless a breakdown separately measures a named seizure subtype.
+The longest seizure-free gap amid ongoing events remains a separate measured
+claim from their rate. For a device absence corroborated by an event log, name
+the directly reported clinical event (`convulsive activity` in 8805).
+
+The complete dev750 saved-R8 comparison was screened by
+`scripts/benchmarks/audit_claim_representation_v082.py`. Its local JSONL has
+one record per source letter, preserving IDs, hashes, exact quotations,
+source-aligned component differences, unpaired findings and rule-review flags.
+The flags are review candidates: a repeated absence may cover a different
+subtype or window, and a qualitative level beside a number may refer to a
+different event. Do not delete either solely because it was flagged.
+
+The source-adjudicated v0.8.2 reference applies the clear owner decisions
+using the explicit manifest in `scripts/benchmarks/revise_findings_v082.py`.
+Every changed finding has before/after evidence in local
+`runs/seizure_finding_annotation_v0_8_2/dev750_r8_saved/claim_adjudications.jsonl`.
+The v0.8.1 reference and raw R8 output remain unchanged. The v0.8.2 scorer
+ignores a `since` anchor when both sides state a seizure-free duration; it
+still requires the duration, source overlap, event label and timing. This is a
+changed synthetic-development target, not a new model run. The workbench
+version selector can display **v0.8.2 claim units**.
