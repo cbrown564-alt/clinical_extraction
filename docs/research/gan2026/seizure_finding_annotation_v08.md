@@ -256,3 +256,27 @@ This is a prospective annotation decision and R9 prompt amendment. The v0.8.3
 reference and saved-R8 score remain frozen; source 15513 needs a versioned
 reference edit before any new score claims this rule. The separate question of
 whether a cluster's within-cluster span belongs in scored `period` is unresolved.
+
+## Prospective cluster and seizure-link decisions (23 September 2026)
+
+- A single grouped occurrence is **one cluster** with `count: 1` and the
+  stated `seizures_per_cluster`, even without a recurring pattern (16645:
+  one August cluster of three; 16757: one April run of six). Keep its date in
+  `occurred_at` for review, but do not score that date. Source 16772 literally
+  describes a run of one seizure; retain the source's one-cluster representation
+  without inferring additional events.
+- A statement giving both affected cluster days and seizures per cluster day
+  is **one structured cluster finding**: `count` is the number of cluster days,
+  `seizures_per_cluster` is the within-day seizure number, and `period` is the
+  observation window (11109, 11118, 11131). Do not score a second seizure-day
+  count from the same claim. A separate claim about individual seizure days
+  remains independently reviewable.
+- Score uncertain spells only when the source explicitly identifies them as
+  seizures or links them to a named or established seizure type. The suggestion
+  of brief absences in 3528 and the established focal auras in 8144 qualify.
+  In 6738, the clinician's concern for reduced-awareness spells alone is not
+  an explicit seizure link, so its six-to-eight-week rate is unscored context.
+
+These decisions are prospective relative to the frozen v0.8.3 reference and
+saved-R8 result. The question of scoring the span *within* a cluster remains
+open; it is different from the observation window for a cluster count.

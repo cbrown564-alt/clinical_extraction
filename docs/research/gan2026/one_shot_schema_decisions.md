@@ -19,6 +19,12 @@ This is a prompt-only candidate, not a new model result. The v0.8.3 reference
 still includes a ten-day `none since` finding in source 15513 and therefore
 needs a versioned correction before comparison against this prompt.
 
+The later R9 revision `guide_v084_cluster_units_and_seizure_link_candidate`
+also instructs one structured finding for a single dated cluster or for
+cluster days with a stated size. The date is unscored context. It requires an
+explicit seizure link for uncertain spells; clinician concern about reduced
+awareness alone does not meet that boundary. This remains a no-call candidate.
+
 ## R8 bimonthly default (2026-09-22)
 
 Conor selected one per two months as the default interpretation of "bimonthly",

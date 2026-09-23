@@ -13,7 +13,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 )
 
 VERSION = "one_shot_frequency_v2_measurements_r9"
-REVISION = "guide_v083_two_week_absence_candidate"
+REVISION = "guide_v084_cluster_units_and_seizure_link_candidate"
 GUIDE_VERSION = "seizure_finding_annotation_v0.8.3"
 Rich = r8.Rich
 
@@ -41,12 +41,19 @@ replace_instruction(
 )
 replace_instruction(
     "Cluster keeps",
-    "For a simple count of clusters, use ordinary count with the counted event "
-    "named as clusters. Use cluster measurement when the source states seizures "
+    "For a simple count of clusters without a stated size, use ordinary count "
+    "with the counted event named as clusters. Use cluster measurement when "
+    "the source states seizures "
     "per cluster or a recurring pattern of grouped events, even when the word "
     "'cluster' is absent; in that case name event.type "
     "'clusters' or 'clusters of [named subtype]' when a subtype is stated, and "
-    "keep the cadence and seizures_per_cluster in measurement. "
+    "keep the cadence and seizures_per_cluster in measurement. A single grouped "
+    "occurrence is one cluster: count 1 and the stated seizures_per_cluster, "
+    "with occurred_at when its date is stated. The date is useful context, "
+    "not part of the scored cluster measurement. When N cluster days in an "
+    "observation window each have M seizures, emit one cluster finding with "
+    "count N, seizures_per_cluster M and period equal to the observation window; "
+    "do not duplicate it as a seizure-day count. "
     "Never treat a count of clusters as the same number of individual seizures.",
 )
 replace_instruction(
@@ -101,7 +108,9 @@ replace_instruction(
     "Do not score a possible isolated symptom as a seizure event unless the "
     "clinician identifies it as a seizure or connects it to an established "
     "seizure type; a recalled episode of confusion without collapse alone is "
-    "unscored context. "
+    "unscored context. Clinician concern about spells with reduced awareness "
+    "alone is not an explicit seizure link; wording suggestive of named "
+    "absences or an established focal aura is. "
     "Keep distinct seizure types, observation windows, seizure-day units and "
     "individual seizure counts separate. "
     "When a stated total already includes the listed occurrences or a breakdown "

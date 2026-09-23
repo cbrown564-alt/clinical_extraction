@@ -22,9 +22,7 @@ def test_adjudication_examples_and_rendered_r9_prompt() -> None:
     assert decisions[14530, "f1"][0] == "current"
     assert decisions[2965, "f4"][0] == "historical"
     assert (4597, "f3") not in decisions  # ongoing eight-week absence
-    payload = r9.prompt_payload(
-        "Clinic Date: 14 June 2019. Initial seizure in March 2019."
-    )
+    payload = r9.prompt_payload("Clinic Date: 14 June 2019. Initial seizure in March 2019.")
     instructions = " ".join(payload["schema_instructions"])
     assert "more than one calendar year" in instructions
     assert "Exactly one year ago" in instructions
@@ -38,7 +36,10 @@ def test_adjudication_examples_and_rendered_r9_prompt() -> None:
     assert "name event.type 'clusters'" in instructions
     assert "at least two weeks" in instructions
     assert "four seizure-free days between cluster days" in instructions
+    assert "A single grouped occurrence is one cluster" in instructions
+    assert "do not duplicate it as a seizure-day count" in instructions
+    assert "Clinician concern about spells with reduced awareness" in instructions
     assert "historical only when the source explicitly marks" not in instructions
-    assert payload["output_schema"]["$defs"]["QualitativeFrequency"]["properties"][
-        "frequency"
-    ]["enum"] == ["occasional", "frequent"]
+    assert payload["output_schema"]["$defs"]["QualitativeFrequency"]["properties"]["frequency"][
+        "enum"
+    ] == ["occasional", "frequent"]
