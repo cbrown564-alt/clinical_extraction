@@ -2,6 +2,7 @@
 export * from "./types";
 export { gan2026Dataset } from "./gan2026";
 export { exectv2Dataset, EXECTV2_FAMILIES } from "./exectv2";
+export { ganR8Dataset } from "./ganR8";
 export {
   DATASETS,
   DATASET_IDS,
@@ -20,6 +21,7 @@ export { filterBrowsableLetters, isBrowsableSplit } from "./splits";
 export { useActiveDataset, useDatasetNavigation } from "./useDataset";
 export {
   exectv2RuntimeAdapter,
+  ganR8RuntimeAdapter,
   gan2026RuntimeAdapter,
   getRuntimeAdapter,
 } from "./runtime";

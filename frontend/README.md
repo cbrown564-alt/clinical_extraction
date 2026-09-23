@@ -127,6 +127,22 @@ batch drill-down and local replay. Keep the bundled decisions available for
 recovery. Device/projection checks and presenter rehearsal still need to happen
 on the presentation setup.
 
+## Local R8 comparison
+
+During local development, select **Gan R8 review** from the workbench dataset
+switcher, or open [R8 versus reviewed gold](http://localhost:3000/workbench?dataset=ganR8).
+It shows each synthetic dev750 letter with its existing gold
+answer and reviewed v0.7 findings beside the saved R8 answer and findings.
+The ExECT-style inspector shows matched findings, field differences, missed gold
+findings and extra predictions. Click a quotation to locate it in the source
+letter. Matched states use the frozen Finding Purist score. This view makes no model calls and
+is unavailable in the public deployment.
+
+If the local bundle is absent or the saved scores change, rebuild it from the
+repository root with `.venv/bin/python scripts/benchmarks/build_r8_review.py`.
+The generated bundle stays under ignored `runs/`; never put the notes in
+`frontend/public`.
+
 ## Run locally
 
 From the repository root, start the API with the repository environment, then run

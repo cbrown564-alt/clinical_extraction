@@ -14,6 +14,9 @@ import type { DatasetId } from "@/lib/datasets";
  * selectors.
  */
 export default function DatasetSwitcher() {
+  const availableDatasets = process.env.NODE_ENV === "development"
+    ? DATASETS
+    : DATASETS.filter((dataset) => dataset.id !== "ganR8");
   const { datasetId, descriptor, setDataset } = useDatasetNavigation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -42,7 +45,7 @@ export default function DatasetSwitcher() {
   function openAndFocusSelected() {
     setOpen(true);
     window.requestAnimationFrame(() => {
-      const selectedIndex = Math.max(0, DATASETS.findIndex((dataset) => dataset.id === datasetId));
+      const selectedIndex = Math.max(0, availableDatasets.findIndex((dataset) => dataset.id === datasetId));
       focusOption(selectedIndex);
     });
   }
@@ -61,16 +64,16 @@ export default function DatasetSwitcher() {
   function onOptionKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, index: number) {
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      focusOption((index + 1) % DATASETS.length);
+      focusOption((index + 1) % availableDatasets.length);
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
-      focusOption((index - 1 + DATASETS.length) % DATASETS.length);
+      focusOption((index - 1 + availableDatasets.length) % availableDatasets.length);
     } else if (event.key === "Home") {
       event.preventDefault();
       focusOption(0);
     } else if (event.key === "End") {
       event.preventDefault();
-      focusOption(DATASETS.length - 1);
+      focusOption(availableDatasets.length - 1);
     } else if (event.key === "Escape") {
       event.preventDefault();
       setOpen(false);
@@ -103,7 +106,7 @@ export default function DatasetSwitcher() {
           aria-label="Dataset"
           className="absolute right-0 top-full z-50 mt-1 w-60 overflow-hidden rounded-md border border-border bg-surface shadow-lg"
         >
-          {DATASETS.map((d, index) => {
+          {availableDatasets.map((d, index) => {
             const active = d.id === datasetId;
             return (
               <button

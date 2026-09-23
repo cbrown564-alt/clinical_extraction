@@ -6,10 +6,12 @@ import { DATASETS, DEFAULT_DATASET, datasetSupports, getDataset } from "../regis
 import { parseDatasetId, resolveDatasetId, surfaceHref, DATASET_PARAM } from "../url";
 import { exectv2Dataset } from "../exectv2";
 import { gan2026Dataset } from "../gan2026";
+import { ganR8Dataset } from "../ganR8";
 import { filterBrowsableLetters, isBrowsableSplit } from "../splits";
 import {
   exectv2RuntimeAdapter,
   gan2026RuntimeAdapter,
+  ganR8RuntimeAdapter,
   getRuntimeAdapter,
 } from "../runtime";
 
@@ -18,10 +20,11 @@ function ids(items: Array<{ id: string }>): string[] {
 }
 
 describe("dataset descriptors", () => {
-  it("both datasets declare supported surfaces", () => {
+  it("all datasets declare supported surfaces", () => {
     expect(datasetSupports("gan2026", "workbench")).toBe(true);
 
     expect(datasetSupports("exectv2", "workbench")).toBe(true);
+    expect(datasetSupports("ganR8", "workbench")).toBe(true);
   });
 
   it("metric, component, and error class ids are unique and non-empty per dataset", () => {
@@ -47,6 +50,7 @@ describe("dataset descriptors", () => {
   it("datasets only browse development letters", () => {
     expect(gan2026Dataset.splits).toEqual(["dev750"]);
     expect(exectv2Dataset.splits).toEqual(["dev140"]);
+    expect(ganR8Dataset.splits).toEqual(["dev750"]);
     expect(gan2026Dataset.defaultSplit).toBe("dev750");
     expect(exectv2Dataset.defaultSplit).toBe("dev140");
   });
@@ -56,6 +60,7 @@ describe("dataset url handling", () => {
   it("parses known ids and rejects unknown ones", () => {
     expect(parseDatasetId("exectv2")).toBe("exectv2");
     expect(parseDatasetId("gan2026")).toBe("gan2026");
+    expect(parseDatasetId("ganR8")).toBe("ganR8");
     expect(parseDatasetId("nonsense")).toBeNull();
     expect(parseDatasetId(null)).toBeNull();
   });
@@ -110,8 +115,9 @@ describe("dataset runtime adapters", () => {
   it("maps each dataset id to a workbench explorer", () => {
     expect(getRuntimeAdapter("gan2026")).toBe(gan2026RuntimeAdapter);
     expect(getRuntimeAdapter("exectv2")).toBe(exectv2RuntimeAdapter);
+    expect(getRuntimeAdapter("ganR8")).toBe(ganR8RuntimeAdapter);
 
-    for (const adapter of [gan2026RuntimeAdapter, exectv2RuntimeAdapter]) {
+    for (const adapter of [gan2026RuntimeAdapter, exectv2RuntimeAdapter, ganR8RuntimeAdapter]) {
       expect(adapter.surfaces.ExampleExplorer).toBeDefined();
     }
   });
