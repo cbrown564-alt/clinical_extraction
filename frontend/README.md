@@ -143,6 +143,12 @@ repository root with `.venv/bin/python scripts/benchmarks/build_r8_review.py`.
 The generated bundle stays under ignored `runs/`; never put the notes in
 `frontend/public`.
 
+The **Labels** selector also offers v0.8 simplified and v0.8.1 one-year timing
+references against the same saved R8 responses. Build their local bundles with
+`.venv/bin/python scripts/benchmarks/score_findings_v08.py` and
+`.venv/bin/python scripts/benchmarks/retime_findings_v081.py`, respectively.
+The original v0.7 and v0.8 comparisons remain available for audit.
+
 ## Run locally
 
 From the repository root, start the API with the repository environment, then run
