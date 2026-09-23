@@ -1,0 +1,41 @@
+# One-year timing amendment: saved R8 development replay
+
+This is a versioned correction of the **gold timing field** across all 750 Gan
+synthetic development letters. It changes neither the v0.8 finding inventory nor
+the saved R8 responses. The v0.8 reference, score and review bundle remain
+available at their original paths.
+
+| Saved-response score | v0.8 | v0.8.1 timing |
+| --- | ---: | ---: |
+| Gold findings | 1,575 | 1,575 |
+| True positives | 1,025 | 1,019 |
+| Extra predictions | 416 | 422 |
+| Missed gold | 550 | 556 |
+| Usable responses | 714 | 714 |
+
+There are **94 audited timing corrections**: 79 historical-to-current and 15
+current-to-historical. Twenty-four of the former have explicit calendar dates
+inside the last year. Fifty-three use a stated recent month, relative interval
+or nearby dated event; two describe a present, unchanged pattern. The 15 older
+events include dated last seizures, elapsed intervals over a year and one
+synthetic letter that says “2017 so far” despite a 2025 letter date.
+
+The source-bearing adjudication file is local:
+`runs/seizure_finding_annotation_v0_8_1/dev750_r8_saved/timing_adjudications.jsonl`.
+The full converted reference and side-by-side workbench bundle are beside it.
+Every changed finding retains its ID, source ID, source hash, source quotation,
+document date, old timing, new timing and basis. The reproducible producer is
+`scripts/benchmarks/retime_findings_v081.py`. The score metadata records the
+base reference and score hashes.
+
+One coarse date remains unresolved: source row 14592, finding `f3`, says only
+that two lifetime episodes occurred in **2023**, with a 14 June 2024 clinic
+date. Part of 2023 falls on each side of the cutoff. Its existing historical
+label is retained under the explicit past-wording fallback; no month is
+invented. It should receive human review if that distinction becomes
+consequential.
+
+This is a changed development reference, not a new model run or evidence that
+the model became worse. The R8 prompt used for the saved responses still has
+the former timing rule. The prospective R9 prompt candidate states the one-year
+boundary and has not been used for inference.

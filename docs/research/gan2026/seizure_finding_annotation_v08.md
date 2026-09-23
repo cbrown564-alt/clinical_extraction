@@ -70,3 +70,39 @@ Purist / v0.8 simplified** at `?dataset=ganR8`; v0.8 rows come from the saved
 review bundle and keep the original R8 selected-answer endpoint.
 This is a changed target and scorer on synthetic development letters, not a new
 model result or a holdout estimate.
+
+## v0.8.1 timing amendment (23 September 2026)
+
+The owner changed the meaning of `timing` after reviewing recent dated events
+that v0.7/v0.8 marked historical. Use the **clinic date** as the reference; use
+the letter date if no usable clinic date is present. A finding is `historical`
+only when its measured event, or the end of its observation interval, is **more
+than one calendar year** before that reference date. An event on the one-year
+anniversary is `current`. An interval that reaches into the last year is
+`current`, even if an earlier part is older. An ongoing current pattern or
+seizure-free state stays `current` regardless of when it began.
+
+An explicit, usable date or relative interval takes precedence over narrative
+words such as `initial`, `previously` or `before treatment`. If the event
+date cannot be resolved enough to apply the cutoff, explicit past wording
+(including `in childhood`) still makes the finding `historical`; otherwise
+default to `current`. When a coarse date such as a year alone straddles the
+cutoff, retain the source's explicit past/current wording and flag it for review
+rather than inventing a month. Compare dates to assign `timing`, but preserve
+the source time expression in the finding. Do not infer an event count or new
+duration from this comparison.
+
+The original v0.8 reference and saved-R8 score remain frozen. The versioned
+v0.8.1 conversion reads all 750 v0.8 development letters, records every changed
+finding with its clinic date and source evidence, and keeps the projected saved
+R8 predictions unchanged. Its producer is
+`scripts/benchmarks/retime_findings_v081.py`; the local audit and reference
+are under `runs/seizure_finding_annotation_v0_8_1/dev750_r8_saved/`, and the
+new score is under
+`results/letter-benchmarks/gan/seizure_finding_annotation_v0_8_1/dev750_r8_saved/`.
+The workbench **Labels → v0.8.1 one-year timing** view shows this comparison.
+
+The prospective model-facing wording is in
+`src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r9.py`.
+The saved R8 prompt and outputs are untouched. R9 is a prompt candidate; it has
+not been run or evaluated as a new model result.
