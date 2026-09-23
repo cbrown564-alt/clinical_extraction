@@ -151,3 +151,8 @@ prospective and have **not** been applied to the v0.8.1 reference or score.
   clause is supporting context. The v0.8.1 gold currently says `events requiring
   rescue measures`; correct that label in the next versioned reference rather
   than editing the frozen score in place.
+- When the source describes weekly clusters of roughly six events each, use
+  `clusters` as the event label and keep weekly cadence and events per cluster
+  in the cluster measurement (source 8969). A generic `events` label loses the
+  counted unit even when the measurement type is `cluster`. The existing gold
+  already uses `clusters`; the R9 prompt now states this convention.

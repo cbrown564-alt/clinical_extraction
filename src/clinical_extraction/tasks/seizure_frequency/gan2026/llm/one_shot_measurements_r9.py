@@ -39,8 +39,9 @@ replace_instruction(
     "Cluster keeps",
     "For a simple count of clusters, use ordinary count with the counted event "
     "named as clusters. Use cluster measurement when the source states seizures "
-    "per cluster or a recurring cluster cadence. Never treat a count of clusters "
-    "as the same number of individual seizures.",
+    "per cluster or a recurring cluster cadence; in that case name event.type "
+    "'clusters', and keep the cadence and seizures_per_cluster in measurement. "
+    "Never treat a count of clusters as the same number of individual seizures.",
 )
 replace_instruction(
     "Seizure_free requires",
