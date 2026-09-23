@@ -20,6 +20,7 @@ type Finding = {
   condition?: string;
   evidence: string;
 };
+type ComponentPair = { gold_id: string; prediction_id: string; measurement_correct: boolean; event_correct: boolean };
 type Letter = {
   source_row_index: number;
   note: string;
@@ -33,6 +34,7 @@ type Letter = {
   pairs: [string, string][];
   reference: Finding[];
   predicted: Finding[];
+  component_score?: { pairs: ComponentPair[]; unpaired_gold: string[]; unpaired_predictions: string[] };
 };
 type ReviewBundle = {
   scope: string;
@@ -101,6 +103,12 @@ function MatchedCard({gold, predicted, onEvidence}: {gold: Finding; predicted: F
 function UnmatchedPanel({title, findings, onEvidence}: {title: string; findings: Finding[]; onEvidence: (quote: string) => void}) {
   return <section className="overflow-hidden rounded-md border border-border bg-surface"><div className="border-b border-border bg-surface-raised/50 px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-muted">{title} · {findings.length}</div>{findings.length ? findings.map(finding => <div key={finding.id} className="border-b border-border/60 last:border-0"><FindingSummary finding={finding} onEvidence={onEvidence}/></div>) : <p className="px-3 py-4 text-xs text-muted">None</p>}</section>;
 }
+function ComponentCard({gold, predicted, pair, onEvidence}: {gold: Finding; predicted: Finding; pair: ComponentPair; onEvidence: (quote: string) => void}) {
+  return <section className="rounded-md border border-border bg-surface p-3 text-xs">
+    <div className="flex flex-wrap items-center gap-2 border-b border-border/50 pb-2"><span className="font-semibold">Same source evidence</span><span className={pair.measurement_correct?"text-success":"text-error"}>Measurement {pair.measurement_correct?"✓":"✕"}</span><span className={pair.event_correct?"text-success":"text-error"}>Event label {pair.event_correct?"✓":"✕"}</span></div>
+    <div className="mt-2 grid grid-cols-2 gap-2"><button onClick={()=>onEvidence(gold.evidence)} className="rounded bg-surface-raised/50 p-2 text-left hover:bg-surface-raised"><span className="font-mono text-[10px] uppercase text-muted">Gold</span><p className="mt-1 font-semibold">{gold.event.type}</p><p className="mt-1 text-muted">{measurement(gold)}</p></button><button onClick={()=>onEvidence(predicted.evidence)} className="rounded bg-surface-raised/50 p-2 text-left hover:bg-surface-raised"><span className="font-mono text-[10px] uppercase text-muted">R8</span><p className="mt-1 font-semibold">{predicted.event.type}</p><p className="mt-1 text-muted">{measurement(predicted)}</p></button></div>
+  </section>;
+}
 function Inspector({row, lens, onEvidence, version}: {row: Letter; lens: Lens; onEvidence: (quote:string)=>void; version: "v07" | "v08" | "v081"}) {
   const gold = new Map(row.reference.map(f => [f.id, f]));
   const pred = new Map(row.predicted.map(f => [f.id, f]));
@@ -108,14 +116,18 @@ function Inspector({row, lens, onEvidence, version}: {row: Letter; lens: Lens; o
   const matchedPred = new Set(row.pairs.map(([id])=>id));
   const missed = row.reference.filter(f => !matchedGold.has(f.id));
   const extra = row.predicted.filter(f => !matchedPred.has(f.id));
+  const componentPairs = row.component_score?.pairs ?? [];
+  const componentResidual = componentPairs.filter(pair => !matchedGold.has(pair.gold_id));
   const [mode, setMode] = useState<"matched"|"raw">("matched");
   return <div className="flex h-full min-h-0 flex-col">
     <div className="shrink-0 border-b border-border bg-surface px-4 py-2"><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2"><Layers3 className="h-3.5 w-3.5 text-muted"/><h3 className="text-xs font-semibold">Seizure Frequency</h3><span className="hidden text-[11px] text-muted sm:inline">{version === "v081" ? "v0.8.1 one-year timing versus saved R8" : version === "v08" ? "v0.8 gold versus projected saved R8" : "Gold versus saved R8 predictions"}</span></div><div className="flex rounded-md border border-border bg-surface-raised p-0.5 text-[11px]"><button onClick={()=>setMode("matched")} className={`rounded px-2 py-0.5 ${mode==="matched"?"bg-surface font-semibold shadow-xs":"text-muted"}`}>Matched Diff</button><button onClick={()=>setMode("raw")} className={`rounded px-2 py-0.5 ${mode==="raw"?"bg-surface font-semibold shadow-xs":"text-muted"}`}>Raw Lists</button></div></div></div>
     <div className="flex-1 space-y-3 overflow-y-auto p-4">
       <div className="rounded-md border border-border bg-surface p-3"><div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Selected answer <span className={row.answer_correct?"text-success":"text-error"}>· Purist {row.answer_correct?"agrees":"differs"}</span></div><div className="grid grid-cols-2 gap-2 text-xs"><div className="rounded bg-surface-raised/50 p-2"><div className="font-mono text-[10px] uppercase text-muted">Gold label</div><p className="mt-1 font-semibold">{row.gold_answer}</p></div><div className="rounded bg-surface-raised/50 p-2"><div className="font-mono text-[10px] uppercase text-muted">R8 answer</div><p className="mt-1 font-semibold">{row.predicted_answer??"No answer"}</p></div></div></div>
       {!row.usable && <div className="rounded-md border border-error/25 bg-error/5 p-3 text-xs text-error">R8 inventory failed schema validation. The frozen scorer does not salvage partial findings.</div>}
+      {version==="v081" && row.component_score && <div className="rounded-md border border-border bg-surface px-3 py-2 text-xs"><span className="font-semibold">Component score</span><span className="ml-3 text-muted">Measurement {componentPairs.filter(pair=>pair.measurement_correct).length}/{row.reference.length}</span><span className="ml-3 text-muted">Event label {componentPairs.filter(pair=>pair.event_correct).length}/{row.reference.length}</span><p className="mt-1 text-[11px] text-muted">One-to-one source-aligned findings; missing gold remains in each denominator.</p></div>}
       {mode==="raw" ? <div className="grid grid-cols-2 gap-3"><UnmatchedPanel title="Gold findings" findings={row.reference} onEvidence={onEvidence}/><UnmatchedPanel title="Predicted findings" findings={row.predicted} onEvidence={onEvidence}/></div> : <>
         {(lens==="all"||lens==="matched") && row.pairs.map(([pid,gid]) => {const g=gold.get(gid);const p=pred.get(pid);return g&&p?<MatchedCard key={`${pid}:${gid}`} gold={g} predicted={p} onEvidence={onEvidence}/>:null;})}
+        {lens==="all" && componentResidual.map(pair=>{const g=gold.get(pair.gold_id);const p=pred.get(pair.prediction_id);return g&&p?<ComponentCard key={`${pair.gold_id}:${pair.prediction_id}`} gold={g} predicted={p} pair={pair} onEvidence={onEvidence}/>:null;})}
         {(lens==="all"||lens==="missed") && <UnmatchedPanel title="Missed gold findings" findings={missed} onEvidence={onEvidence}/>}
         {(lens==="all"||lens==="extra") && <UnmatchedPanel title="Extra R8 findings" findings={extra} onEvidence={onEvidence}/>}
       </>}
