@@ -1,4 +1,4 @@
-"""Prospective R9 prompt candidate for the v0.8.1 finding rules.
+"""Prospective R9 prompt candidate for the v0.8.4 finding rules.
 
 This is not the saved R8 prompt. No model response or result is attributed to it.
 """
@@ -14,7 +14,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 
 VERSION = "one_shot_frequency_v2_measurements_r9"
 REVISION = "guide_v084_cluster_units_and_seizure_link_candidate"
-GUIDE_VERSION = "seizure_finding_annotation_v0.8.3"
+GUIDE_VERSION = "seizure_finding_annotation_v0.8.4"
 Rich = r8.Rich
 
 

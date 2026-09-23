@@ -24,6 +24,9 @@ also instructs one structured finding for a single dated cluster or for
 cluster days with a stated size. The date is unscored context. It requires an
 explicit seizure link for uncertain spells; clinician concern about reduced
 awareness alone does not meet that boundary. This remains a no-call candidate.
+The v0.8.4 development reference and scorer now implement those annotation
+decisions against saved R8 responses; the [result README](../../../results/letter-benchmarks/gan/seizure_finding_annotation_v0_8_4/dev750_r8_saved/README.md)
+owns the changed target and score.
 
 ## R8 bimonthly default (2026-09-22)
 

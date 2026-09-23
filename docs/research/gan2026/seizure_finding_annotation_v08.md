@@ -280,3 +280,9 @@ whether a cluster's within-cluster span belongs in scored `period` is unresolved
 These decisions are prospective relative to the frozen v0.8.3 reference and
 saved-R8 result. The question of scoring the span *within* a cluster remains
 open; it is different from the observation window for a cluster count.
+
+The additive v0.8.4 development reference now applies these decisions and the
+two-week minimum. Its producer is `scripts/benchmarks/revise_findings_v084.py`;
+the [v0.8.4 result](../../../results/letter-benchmarks/gan/seizure_finding_annotation_v0_8_4/dev750_r8_saved/README.md)
+owns the edit manifest, score and exceptions. The saved R8 predictions are
+unchanged. R9 is still an unrun prompt candidate.

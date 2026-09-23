@@ -57,9 +57,10 @@ function quantity(value: unknown): string {
   if (typeof value === "number" || typeof value === "string") return String(value);
   if (!value || typeof value !== "object") return "?";
   const q = value as Record<string, unknown>;
-  if (q.type === "bound") return `${q.relation === "at_most" ? "≤" : q.relation === "at_least" ? "≥" : "~"}${quantity(q.value)}`;
+  if (q.type === "bound") return `${q.relation === "at_most" ? "≤" : q.relation === "at_least" ? "≥" : q.relation === "less_than" ? "<" : ">"}${quantity(q.value)}`;
   if (q.type === "range") return `${quantity(q.lower)}–${quantity(q.upper)}`;
   if (q.type === "number") return String(q.value);
+  if (q.type === "qualitative") return String(q.quantity);
   return JSON.stringify(q);
 }
 function durationText(value: Record<string, unknown>): string {
@@ -88,6 +89,14 @@ function measurement(finding: Finding): string {
   if (m.type === "rate") {
     const per = m.per as Record<string, unknown> | undefined;
     return `${quantity(m.count)} per ${per ? `${quantity(per.value)} ${per.unit}` : "?"}`;
+  }
+  if (m.type === "cluster") {
+    const rate = m.rate as { count?: unknown; per?: Record<string, unknown> } | undefined;
+    const count = m.count;
+    const size = m.seizures_per_cluster;
+    const cadence = rate?.count && rate.per ? `${quantity(rate.count)} clusters per ${durationText(rate.per)}` : count ? `${quantity(count)} ${quantity(count) === "1" ? "cluster" : "clusters"}` : "";
+    const clusterSize = size ? `${quantity(size)} seizures per cluster` : "";
+    return [cadence, clusterSize].filter(Boolean).join(" · ") || "cluster";
   }
   if (m.type === "qualitative") return String(m.frequency);
   return `${String(m.type)} · ${JSON.stringify(Object.fromEntries(Object.entries(m).filter(([key]) => key !== "type")))}`;
@@ -130,7 +139,7 @@ function ComponentCard({gold, predicted, pair, onEvidence}: {gold: Finding; pred
     <div className="mt-2 grid grid-cols-2 gap-2"><button onClick={()=>onEvidence(gold.evidence)} className="rounded bg-surface-raised/50 p-2 text-left hover:bg-surface-raised"><span className="font-mono text-[10px] uppercase text-muted">Gold</span><p className="mt-1 font-semibold">{gold.event.type}</p><p className="mt-1 text-muted">{measurement(gold)}</p></button><button onClick={()=>onEvidence(predicted.evidence)} className="rounded bg-surface-raised/50 p-2 text-left hover:bg-surface-raised"><span className="font-mono text-[10px] uppercase text-muted">R8</span><p className="mt-1 font-semibold">{predicted.event.type}</p><p className="mt-1 text-muted">{measurement(predicted)}</p></button></div>
   </section>;
 }
-function Inspector({row, lens, onEvidence, version}: {row: Letter; lens: Lens; onEvidence: (quote:string)=>void; version: "v07" | "v08" | "v081" | "v082" | "v083"}) {
+function Inspector({row, lens, onEvidence, version}: {row: Letter; lens: Lens; onEvidence: (quote:string)=>void; version: "v07" | "v08" | "v081" | "v082" | "v083" | "v084"}) {
   const gold = new Map(row.reference.map(f => [f.id, f]));
   const pred = new Map(row.predicted.map(f => [f.id, f]));
   const matchedGold = new Set(row.pairs.map(([,id])=>id));
@@ -141,7 +150,7 @@ function Inspector({row, lens, onEvidence, version}: {row: Letter; lens: Lens; o
   const componentResidual = componentPairs.filter(pair => !matchedGold.has(pair.gold_id));
   const [mode, setMode] = useState<"matched"|"raw">("matched");
   return <div className="flex h-full min-h-0 flex-col">
-    <div className="shrink-0 border-b border-border bg-surface px-4 py-2"><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2"><Layers3 className="h-3.5 w-3.5 text-muted"/><h3 className="text-xs font-semibold">Seizure Frequency</h3><span className="hidden text-[11px] text-muted sm:inline">{version === "v083" ? "v0.8.3 owner decisions versus saved R8" : version === "v082" ? "v0.8.2 claim units versus saved R8" : version === "v081" ? "v0.8.1 one-year timing versus saved R8" : version === "v08" ? "v0.8 gold versus projected saved R8" : "Gold versus saved R8 predictions"}</span></div><div className="flex rounded-md border border-border bg-surface-raised p-0.5 text-[11px]"><button onClick={()=>setMode("matched")} className={`rounded px-2 py-0.5 ${mode==="matched"?"bg-surface font-semibold shadow-xs":"text-muted"}`}>Matched Diff</button><button onClick={()=>setMode("raw")} className={`rounded px-2 py-0.5 ${mode==="raw"?"bg-surface font-semibold shadow-xs":"text-muted"}`}>Raw Lists</button></div></div></div>
+    <div className="shrink-0 border-b border-border bg-surface px-4 py-2"><div className="flex items-center justify-between gap-2"><Layers3 className="h-3.5 w-3.5 text-muted"/><h3 className="text-xs font-semibold">Seizure Frequency</h3><span className="hidden text-[11px] text-muted sm:inline">{version === "v084" ? "v0.8.4 cluster and seizure-link decisions versus saved R8" : version === "v083" ? "v0.8.3 owner decisions versus saved R8" : version === "v082" ? "v0.8.2 claim units versus saved R8" : version === "v081" ? "v0.8.1 one-year timing versus saved R8" : version === "v08" ? "v0.8 gold versus projected saved R8" : "Gold versus saved R8 predictions"}</span></div><div className="flex rounded-md border border-border bg-surface-raised p-0.5 text-[11px]"><button onClick={()=>setMode("matched")} className={`rounded px-2 py-0.5 ${mode==="matched"?"bg-surface font-semibold shadow-xs":"text-muted"}`}>Matched Diff</button><button onClick={()=>setMode("raw")} className={`rounded px-2 py-0.5 ${mode==="raw"?"bg-surface font-semibold shadow-xs":"text-muted"}`}>Raw Lists</button></div></div>
     <div className="flex-1 space-y-3 overflow-y-auto p-4">
       <div className="rounded-md border border-border bg-surface p-3"><div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Selected answer <span className={row.answer_correct?"text-success":"text-error"}>· Purist {row.answer_correct?"agrees":"differs"}</span></div><div className="grid grid-cols-2 gap-2 text-xs"><div className="rounded bg-surface-raised/50 p-2"><div className="font-mono text-[10px] uppercase text-muted">Gold label</div><p className="mt-1 font-semibold">{row.gold_answer}</p></div><div className="rounded bg-surface-raised/50 p-2"><div className="font-mono text-[10px] uppercase text-muted">R8 answer</div><p className="mt-1 font-semibold">{row.predicted_answer??"No answer"}</p></div></div></div>
       {!row.usable && <div className="rounded-md border border-error/25 bg-error/5 p-3 text-xs text-error">R8 inventory failed schema validation. The frozen scorer does not salvage partial findings.</div>}
@@ -159,7 +168,7 @@ function Inspector({row, lens, onEvidence, version}: {row: Letter; lens: Lens; o
 export default function R8WorkbenchExplorer() {
   const search = useSearchParams();
   const requestedVersion = search.get("version");
-  const version = requestedVersion === "v083" ? "v083" : requestedVersion === "v082" ? "v082" : requestedVersion === "v081" ? "v081" : requestedVersion === "v08" ? "v08" : "v07";
+  const version = requestedVersion === "v084" ? "v084" : requestedVersion === "v083" ? "v083" : requestedVersion === "v082" ? "v082" : requestedVersion === "v081" ? "v081" : requestedVersion === "v08" ? "v08" : "v07";
   const query = useQuery<ReviewBundle>({queryKey:["gan-r8-review",version],queryFn:async()=>{const response=await fetch(`/workbench/r8-data?version=${version}`,{cache:"no-store"});if(!response.ok) throw new Error(await response.text());return response.json();},staleTime:5*60*1000});
   const router = useRouter();
   const pathname = usePathname();
@@ -181,7 +190,7 @@ export default function R8WorkbenchExplorer() {
   const highlightStart = quote && row ? row.note.indexOf(quote) : -1;
   useEffect(()=>{if(highlightStart>=0) sourceRef.current?.querySelector(".span-highlight")?.scrollIntoView({block:"center",behavior:"smooth"});},[highlightStart,quote]);
   if(query.isLoading) return <SurfaceLoading message="Loading saved R8 comparison…"/>;
-  if(query.error||!query.data) return <SurfaceError title="R8 comparison unavailable" detail={version === "v083" ? "Build the local bundle with .venv/bin/python scripts/benchmarks/revise_findings_v083.py" : version === "v082" ? "Build the local bundle with .venv/bin/python scripts/benchmarks/revise_findings_v082.py" : version === "v081" ? "Build the local bundle with .venv/bin/python scripts/benchmarks/retime_findings_v081.py" : version === "v08" ? "Build the local bundle with .venv/bin/python scripts/benchmarks/score_findings_v08.py" : "Build the local bundle with .venv/bin/python scripts/benchmarks/build_r8_review.py"}/>;
+  if(query.error||!query.data) return <SurfaceError title="R8 comparison unavailable" detail={version === "v084" ? "Build the local bundle with .venv/bin/python scripts/benchmarks/revise_findings_v084.py" : version === "v083" ? "Build the local bundle with .venv/bin/python scripts/benchmarks/revise_findings_v083.py" : version === "v082" ? "Build the local bundle with .venv/bin/python scripts/benchmarks/revise_findings_v082.py" : version === "v081" ? "Build the local bundle with .venv/bin/python scripts/benchmarks/retime_findings_v081.py" : version === "v08" ? "Build the local bundle with .venv/bin/python scripts/benchmarks/score_findings_v08.py" : "Build the local bundle with .venv/bin/python scripts/benchmarks/build_r8_review.py"}/>;
   const bundle=query.data;
   const letterItems=visible.map(item=>({value:String(item.source_row_index),label:`${item.source_row_index} – ${item.usable?`${item.purist_tp} matched / ${item.reference.length} gold`:"invalid inventory"}`}));
   const items:LensItem[]=[
@@ -195,7 +204,7 @@ export default function R8WorkbenchExplorer() {
   return <SurfaceLayout variant="fill">
     <ControlBar left={<>
       <ControlField label="Run"><ControlFixedValue>R8 rich · dev750</ControlFixedValue></ControlField>
-      <ControlField label="Labels" htmlFor="r8-version"><ControlSelect id="r8-version" value={version} onChange={event=>setVersion(event.target.value)}><option value="v07">v0.7 · Finding Purist</option><option value="v08">v0.8 · simplified</option><option value="v081">v0.8.1 · one-year timing</option><option value="v082">v0.8.2 · claim units</option><option value="v083">v0.8.3 · owner decisions</option></ControlSelect></ControlField>
+      <ControlField label="Labels" htmlFor="r8-version"><ControlSelect id="r8-version" value={version} onChange={event=>setVersion(event.target.value)}><option value="v07">v0.7 · Finding Purist</option><option value="v08">v0.8 · simplified</option><option value="v081">v0.8.1 · one-year timing</option><option value="v082">v0.8.2 · claim units</option><option value="v083">v0.8.3 · owner decisions</option><option value="v084">v0.8.4 · cluster units</option></ControlSelect></ControlField>
       <ControlField label="Show" htmlFor="r8-outcome"><ControlSelect id="r8-outcome" value={outcome} onChange={event=>{setOutcome(event.target.value as Outcome);setFocus(null);}}>{OUTCOMES.map(item=><option key={item.id} value={item.id}>{item.label}</option>)}</ControlSelect></ControlField>
       <ControlField label="Letter" htmlFor="r8-letter" icon={<FileText className="h-3 w-3 text-muted"/>}><LetterPicker id="r8-letter" items={letterItems} value={String(row.source_row_index)} onChange={setLetter} className="min-w-0 flex-1 sm:min-w-[240px] sm:flex-none"/></ControlField>
     </>} right={<MetricChips chips={[{label:"Precision",value:bundle.aggregate.tp/(bundle.aggregate.tp+bundle.aggregate.fp),format:"rate",asPercent:true},{label:"Recall",value:bundle.aggregate.tp/(bundle.aggregate.tp+bundle.aggregate.fn),format:"rate",asPercent:true}]}/>}/>
