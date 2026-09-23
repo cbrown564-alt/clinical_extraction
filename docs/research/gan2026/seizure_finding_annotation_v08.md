@@ -139,3 +139,9 @@ prospective and have **not** been applied to the v0.8.1 reference or score.
   `focal impaired-awareness episodes`, one per month). Saved R8 got the
   measurement right and the subtype wrong. The versioned v0.8.1 component
   diagnostic records these separately without changing the whole-finding score.
+- An overall rate for `episodes` stays overall when the source says the episodes
+  are `predominantly focal`; that word describes the mix, not a restriction on
+  the denominator (source 5551). A separately stated generalised breakthrough
+  rate remains its own finding. Do not attach the overall rate only to focal
+  events because they are the majority. This corrects the prospective R9
+  instruction; the saved R8 response and v0.8.1 gold stay unchanged.

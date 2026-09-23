@@ -33,6 +33,7 @@ def test_adjudication_examples_and_rendered_r9_prompt() -> None:
     assert "brief nocturnal episodes" in instructions
     assert "seizures, seizure days and clusters" in instructions
     assert "the next sentence says only 'seizure frequency'" in instructions
+    assert "Do not narrow an overall event rate to the predominant subtype" in instructions
     assert "historical only when the source explicitly marks" not in instructions
     assert payload["output_schema"]["$defs"]["QualitativeFrequency"]["properties"][
         "frequency"
