@@ -29,6 +29,9 @@ def test_adjudication_examples_and_rendered_r9_prompt() -> None:
     assert "more than one calendar year" in instructions
     assert "Exactly one year ago" in instructions
     assert "no usable date" in instructions
+    assert "short, source-supported name" in instructions
+    assert "brief nocturnal episodes" in instructions
+    assert "seizures, seizure days and clusters" in instructions
     assert "historical only when the source explicitly marks" not in instructions
     assert payload["output_schema"]["$defs"]["QualitativeFrequency"]["properties"][
         "frequency"

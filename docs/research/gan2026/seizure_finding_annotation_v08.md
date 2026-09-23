@@ -106,3 +106,30 @@ The prospective model-facing wording is in
 `src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r9.py`.
 The saved R8 prompt and outputs are untouched. R9 is a prompt candidate; it has
 not been run or evaluated as a new model result.
+
+## Subsequent owner decisions for the next annotation revision
+
+These decisions were made during the continuing saved-R8 error review. They are
+prospective and have **not** been applied to the v0.8.1 reference or score.
+
+- When a letter gives a dated last seizure and a current seizure-free interval,
+  an undated, vague statement that events happened `occasionally` in the same
+  history is context, not another scored frequency finding (source 2992).
+- When a stated total is broken down by trigger, score the total once and keep
+  the subcounts as context. A separately stated last-seizure date remains a
+  finding (source 14146: three total, one after missed doses and two without a
+  clear trigger).
+- A longest seizure-free gap within an ongoing seizure pattern is a distinct
+  scored finding from the event rate (source 12506: three weeks and one to two
+  tonic-clonic seizures per month).
+- A symptom explicitly lacking seizure features is not a seizure-frequency
+  finding unless the clinician identifies it as a seizure event (source 8355:
+  occasional `head-fog`).
+- Use a concise, source-supported event label. An incidental descriptor such as
+  `brief` does not distinguish `brief nocturnal episodes` from `nocturnal
+  episodes` when the evidence and rate are the same (source 704). Preserve
+  seizure subtype and counted unit: clusters, seizures and seizure days are
+  different; a rate covering only one listed subtype must not be attached to
+  all listed types. The R9 prompt candidate includes this instruction. A future
+  versioned scorer must test label equivalence with evidence and measurement;
+  the current v0.8.1 saved-response score remains unchanged.

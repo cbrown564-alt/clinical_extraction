@@ -13,7 +13,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 )
 
 VERSION = "one_shot_frequency_v2_measurements_r9"
-REVISION = "guide_v081_one_year_timing_candidate"
+REVISION = "guide_v081_concise_event_labels_candidate"
 GUIDE_VERSION = "seizure_finding_annotation_v0.8.1"
 Rich = r8.Rich
 
@@ -62,9 +62,17 @@ replace_instruction(
 )
 replace_instruction(
     "Event.type is",
-    "Event.type names the source-supported event. Retain seizure subtypes in a "
-    "combined absence list as one event label. Keep distinct seizure types, "
-    "observation windows, seizure-day units and individual seizure counts separate. "
+    "Event.type is a short, source-supported name for the measured event and its "
+    "counted unit. Omit incidental descriptors such as 'brief' when they do not "
+    "identify a different event: 'brief nocturnal episodes' and 'nocturnal "
+    "episodes' use the same label. Put triggers and observation time in condition "
+    "or period instead of extending the event name. Preserve a stated seizure "
+    "subtype, the distinction between seizures, seizure days and clusters, and "
+    "a combined list only when the same measurement applies to every named type. "
+    "For a combined absence list, retain the named types in one event label. "
+    "Do not infer a more specific seizure diagnosis from a symptom description. "
+    "Keep distinct seizure types, observation windows, seizure-day units and "
+    "individual seizure counts separate. "
     "Seizure_status is stated unless the source explicitly questions whether "
     "events are seizures or excludes seizure identity.",
 )
