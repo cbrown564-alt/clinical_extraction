@@ -133,3 +133,9 @@ prospective and have **not** been applied to the v0.8.1 reference or score.
   all listed types. The R9 prompt candidate includes this instruction. A future
   versioned scorer must test label equivalence with evidence and measurement;
   the current v0.8.1 saved-response score remains unchanged.
+- Score event label and measurement as separate diagnostic components alongside
+  the whole-finding score. When an adjacent sentence gives the frequency of a
+  just-described subtype, carry that subtype into the event label (source 3999:
+  `focal impaired-awareness episodes`, one per month). Saved R8 got the
+  measurement right and the subtype wrong. The versioned v0.8.1 component
+  diagnostic records these separately without changing the whole-finding score.

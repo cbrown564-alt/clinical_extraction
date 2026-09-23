@@ -32,6 +32,7 @@ def test_adjudication_examples_and_rendered_r9_prompt() -> None:
     assert "short, source-supported name" in instructions
     assert "brief nocturnal episodes" in instructions
     assert "seizures, seizure days and clusters" in instructions
+    assert "the next sentence says only 'seizure frequency'" in instructions
     assert "historical only when the source explicitly marks" not in instructions
     assert payload["output_schema"]["$defs"]["QualitativeFrequency"]["properties"][
         "frequency"

@@ -39,3 +39,31 @@ This is a changed development reference, not a new model run or evidence that
 the model became worse. The R8 prompt used for the saved responses still has
 the former timing rule. The prospective R9 prompt candidate states the one-year
 boundary and has not been used for inference.
+
+## Separate event and measurement diagnostic
+
+The additive [component score](component_score.json) pairs whole-finding
+matches first, then pairs remaining gold and saved R8 findings one-to-one when
+their exact source quotations overlap. It scores two fields independently:
+`measurement` is the native type, value and denominator; `event` is the event
+label key, including stated subtype and counted unit. Observation period,
+timing, seizure status and evidence remain visible in the original whole-finding
+score. A field mismatch gives a false positive and false negative for that field;
+an unpaired finding does the same. This diagnostic does **not** replace the
+whole-finding endpoint.
+
+| Component | Correct | Extra | Missed | Precision | Recall |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Measurement | 1,133 | 308 | 442 | 78.6% | 71.9% |
+| Event label | 1,222 | 219 | 353 | 84.8% | 77.6% |
+
+On source 3999, both saved R8 findings have the correct measurements, but the
+monthly rate is attached to generic `seizures` instead of the gold `focal
+impaired-awareness episodes`. That finding receives measurement credit and no
+event-label credit. The other finding on the letter receives both. This is a
+synthetic development diagnostic based on saved R8 responses, not an R9 run.
+Only source-exact overlapping quotations qualify for residual pairing, so a
+paraphrased or invalid quote can still leave both sides unpaired. Event-label
+agreement uses the existing v0.7 key and can treat generic labels as equivalent;
+it is not a clinician-validated subtype ontology. Reproduce with
+`.venv/bin/python scripts/benchmarks/score_finding_components_v081.py`.
