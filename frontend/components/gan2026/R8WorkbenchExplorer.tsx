@@ -62,8 +62,29 @@ function quantity(value: unknown): string {
   if (q.type === "number") return String(q.value);
   return JSON.stringify(q);
 }
+function durationText(value: Record<string, unknown>): string {
+  if (value.type === "qualitative") return String(value.quantity ?? "unspecified period");
+  const unit = String(value.unit ?? "");
+  const singular = (value.type === "number" || value.type === "bound") && value.value === 1;
+  const unitText = `${unit}${singular ? "" : "s"}`.trim();
+  if (value.type === "range") return `${quantity(value.lower)}–${quantity(value.upper)} ${unitText}`;
+  if (value.type === "bound") {
+    const relation = { at_least: "at least", more_than: "more than", at_most: "at most", less_than: "less than" }[String(value.relation)] ?? "about";
+    return `${relation} ${quantity(value.value)} ${unitText}`;
+  }
+  return `${quantity(value.value)} ${unitText}`.trim();
+}
 function measurement(finding: Finding): string {
   const m = finding.measurement;
+  if (m.type === "seizure_free") {
+    const duration = m.duration as Record<string, unknown> | undefined;
+    if (duration) {
+      const phrase = durationText(duration);
+      return `seizure-free ${duration.type === "qualitative" && /^(this|last|in|over|since)\b/i.test(phrase) ? "" : "for "}${phrase}`;
+    }
+    const since = m.since as { time?: string } | undefined;
+    return since?.time && since.time.toLowerCase() !== "since" ? `seizure-free since ${since.time}` : "seizure-free";
+  }
   if (m.type === "rate") {
     const per = m.per as Record<string, unknown> | undefined;
     return `${quantity(m.count)} per ${per ? `${quantity(per.value)} ${per.unit}` : "?"}`;
