@@ -26,8 +26,10 @@ observation period. A sentence can support more than one finding when it states
 distinct measurements, such as an explicit frequency trend and a numeric rate.
 
 Use the 2026-09-21 guide clarification and matching schema to preserve vague
-seizure-free durations and named observation intervals verbatim. This does not
-extend numeric rate denominators. Record reviewer segments, source and program
+seizure-free durations, named observation intervals and vague recurrence
+denominators verbatim. Keep ordinary-event and cluster rates distinct. Apply
+subsequent adjudications in a separately hashed snapshot, preserving the prior
+assembled reference and all batch reviews. Record reviewer segments, source and program
 hashes, unresolved letters and assembly replay in the local evidence report. The
 [execution record](one_shot_execution_record.md) owns completed coverage and checks;
 the frozen test450 reference is outside this continuation.

@@ -5,13 +5,13 @@
     "docs/research/gan2026/seizure_finding_annotation_review.md"
   ],
   "owner_sha256": {
-    "docs/research/gan2026/seizure_finding_annotation_guide.md": "489499f6178fadff81738566d01198254a5536f7ea9db46106c2305fabe8d292",
-    "docs/research/gan2026/seizure_finding_annotation_review.md": "47f9eadc648ede2b71022764ea8403397f5c0be150b74bf50fb3191645c2a23f"
+    "docs/research/gan2026/seizure_finding_annotation_guide.md": "8596bb32a8a45e21a85df793802fb8342399d47f4fd1b540becc32799d2c53de",
+    "docs/research/gan2026/seizure_finding_annotation_review.md": "3df20e125f4ec8f86e0aaea55329e63c2d57103384b8977d1a92abb1adaac531"
   },
-  "r8_source_sha256": "88c352c9dbd3db7fae98c0ab822675ec43d9778b63ce7da104c138844b449bfe",
+  "r8_source_sha256": "2013e11740da7d5d5ed7f27fddd5226058965f7d8dbea45104550b953451c51b",
   "checker": "scripts/benchmarks/check_annotations_v07.py",
   "files": {
-    "REVIEWER_INSTRUCTIONS.md": "a6f3378356754fd18d8bd4612b7f5f800a3c928598099937bc6705e81cb6772f",
-    "annotation.schema.json": "fe631fe35f7e5fc61967df0b59275b82e599ecd27330705e250ad71811c9fb57"
+    "REVIEWER_INSTRUCTIONS.md": "6f1dbd77de00364e5fa977692ee85759db303ac8df2b02df98cf894a96019ccd",
+    "annotation.schema.json": "d594b4ea38f3b02baa3dfd42cb563e51124caad4ead149c8ea8547db03567572"
   }
 }

@@ -754,6 +754,7 @@
             "mapping": {
               "bound": "#/$defs/BoundDuration",
               "number": "#/$defs/NumberDuration",
+              "qualitative": "#/$defs/VerbatimDuration",
               "range": "#/$defs/RangeDuration"
             },
             "propertyName": "type"
@@ -767,6 +768,9 @@
             },
             {
               "$ref": "#/$defs/BoundDuration"
+            },
+            {
+              "$ref": "#/$defs/VerbatimDuration"
             }
           ],
           "title": "Per"
@@ -819,6 +823,7 @@
             "mapping": {
               "bound": "#/$defs/BoundDuration",
               "number": "#/$defs/NumberDuration",
+              "qualitative": "#/$defs/VerbatimDuration",
               "range": "#/$defs/RangeDuration"
             },
             "propertyName": "type"
@@ -832,6 +837,9 @@
             },
             {
               "$ref": "#/$defs/BoundDuration"
+            },
+            {
+              "$ref": "#/$defs/VerbatimDuration"
             }
           ],
           "title": "Per"

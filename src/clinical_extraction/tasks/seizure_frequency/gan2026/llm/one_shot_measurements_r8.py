@@ -20,7 +20,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import one_shot_mea
 
 r4 = r5.r4
 VERSION = "one_shot_frequency_v2_measurements_r8"
-REVISION = "guide_v07_v2_vague_absence"
+REVISION = "guide_v07_v4_bimonthly_default"
 GUIDE_VERSION = "seizure_finding_annotation_v0.7"
 Record = r4.v1.StrictRecord
 Unit = Literal["second", "minute", "hour", "day", "week", "month", "quarter", "year"]
@@ -115,7 +115,7 @@ class VerbatimDuration(Record):
     )
 
 
-AbsenceDuration = Annotated[
+SourceDuration = Annotated[
     NumberDuration | RangeDuration | BoundDuration | VerbatimDuration, Field(discriminator="type")
 ]
 
@@ -145,7 +145,7 @@ class Event(Record):
 
 class RateDetails(Record):
     count: Quantity
-    per: Duration
+    per: SourceDuration
 
 
 class Rate(RateDetails):
@@ -174,7 +174,7 @@ class Cluster(Record):
 
 class SeizureFree(Record):
     type: Literal["seizure_free"]
-    duration: AbsenceDuration | None = None
+    duration: SourceDuration | None = None
     since: TimePoint | None = None
 
     @model_validator(mode="after")
@@ -297,7 +297,14 @@ SCHEMA_INSTRUCTIONS = [
     "count 1 per range 4-6 week; an absence every night, daily, weekly, q2wk and a focal seizure "
     "monthly are all count 1 per 1 unit; a median interval of six weeks is 1 per 6 weeks; up to "
     "3 a week is a bound at_most 3 per 1 week; several per week keeps qualitative quantity "
-    "several. Keep the stated unit, including quarter; never convert units.",
+    "several. A vague recurrence interval stays verbatim: every few weeks is count 1 with "
+    "per {type: qualitative, quantity: few weeks}; several months apart is count 1 per "
+    "{type: qualitative, quantity: several months}. Keep the entire interval phrase, including "
+    "its unit, without a separate unit field or invented numeric range. The same rule applies "
+    "to cluster rates. Keep numeric units, including quarter; never convert units.",
+    "Bimonthly defaults to count 1 per 2 months unless the source explicitly defines another "
+    "interval. Preserve the exact bimonthly wording in evidence so the interpretation can "
+    "be revisited without losing the source statement.",
     "Count is events in a stated window or on a date, kept as a count with period or "
     "occurred_at; never divide it into a rate. Read N or M as the range N-M. Affected-period "
     "counts such as seizure days 8/30 this month are counts whose event type is seizure days.",
@@ -321,7 +328,8 @@ SCHEMA_INSTRUCTIONS = [
     "Quantities are number, range, bound (at_least, more_than, at_most, less_than) or "
     "qualitative quantity. There is no approximate flag and no inclusivity flag: the quotation "
     "carries about, roughly and on average. Durations use number, range or bound with a unit; "
-    "seizure_free.duration also allows a qualitative duration phrase copied verbatim.",
+    "seizure_free.duration and rate per (including cluster rates) also allow a qualitative "
+    "duration phrase copied verbatim. Observation period.duration remains numeric.",
     "Event.type is the source's words for the measured event; each quantified statement is one "
     "finding under its own label. Never merge, sum, distribute or link findings because two "
     "labels might name the same events. Scope is specific when the label itself names a seizure "
@@ -611,6 +619,61 @@ def fictional_cases() -> list[dict[str, Any]]:
                     },
                     "evidence": "She has been seizure-free for several months.",
                 }
+            ],
+        ),
+        _case(
+            "vague_event_recurrence_interval",
+            "She reports a focal seizure perhaps once every few weeks.",
+            [
+                {
+                    "event": {"type": "focal seizure"},
+                    "measurement": rate(
+                        {"type": "number", "value": 1},
+                        {"type": "qualitative", "quantity": "few weeks"},
+                    ),
+                    "evidence": "She reports a focal seizure perhaps once every few weeks.",
+                }
+            ],
+        ),
+        _case(
+            "vague_cluster_recurrence_interval",
+            "Clusters of two seizures recur every several days.",
+            [
+                {
+                    "event": {"type": "seizures"},
+                    "measurement": {
+                        "type": "cluster",
+                        "rate": {
+                            "count": {"type": "number", "value": 1},
+                            "per": {"type": "qualitative", "quantity": "several days"},
+                        },
+                        "seizures_per_cluster": {"type": "number", "value": 2},
+                    },
+                    "evidence": "Clusters of two seizures recur every several days.",
+                }
+            ],
+        ),
+        _case(
+            "bimonthly_default_and_explicit_definition",
+            "Focal seizures occur bimonthly. "
+            "Absence seizures occur bimonthly, meaning twice per month.",
+            [
+                {
+                    "event": {"type": "Focal seizures"},
+                    "measurement": rate(
+                        {"type": "number", "value": 1},
+                        {"type": "number", "value": 2, "unit": "month"},
+                    ),
+                    "evidence": "Focal seizures occur bimonthly.",
+                },
+                {
+                    "event": {"type": "Absence seizures"},
+                    "measurement": rate(
+                        {"type": "number", "value": 2},
+                        {"type": "number", "value": 1, "unit": "month"},
+                    ),
+                    "evidence": "Absence seizures occur bimonthly, meaning twice per month.",
+                },
             ],
         ),
     ]

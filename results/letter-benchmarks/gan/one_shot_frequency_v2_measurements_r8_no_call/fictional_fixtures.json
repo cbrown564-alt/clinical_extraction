@@ -498,5 +498,145 @@
         "f1"
       ]
     }
+  },
+  {
+    "name": "vague_event_recurrence_interval",
+    "note_text": "She reports a focal seizure perhaps once every few weeks.",
+    "scope": "representation only; answer placeholder unless stated",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "She reports a focal seizure perhaps once every few weeks."
+      },
+      "findings": [
+        {
+          "event": {
+            "type": "focal seizure",
+            "scope": "specific",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "rate",
+            "count": {
+              "type": "number",
+              "value": 1
+            },
+            "per": {
+              "type": "qualitative",
+              "quantity": "few weeks"
+            }
+          },
+          "evidence": "She reports a focal seizure perhaps once every few weeks.",
+          "id": "f1",
+          "timing": "current"
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "vague_cluster_recurrence_interval",
+    "note_text": "Clusters of two seizures recur every several days.",
+    "scope": "representation only; answer placeholder unless stated",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Clusters of two seizures recur every several days."
+      },
+      "findings": [
+        {
+          "event": {
+            "type": "seizures",
+            "scope": "unspecified",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "cluster",
+            "rate": {
+              "count": {
+                "type": "number",
+                "value": 1
+              },
+              "per": {
+                "type": "qualitative",
+                "quantity": "several days"
+              }
+            },
+            "seizures_per_cluster": {
+              "type": "number",
+              "value": 2
+            }
+          },
+          "evidence": "Clusters of two seizures recur every several days.",
+          "id": "f1",
+          "timing": "current"
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
+  },
+  {
+    "name": "bimonthly_default_and_explicit_definition",
+    "note_text": "Focal seizures occur bimonthly. Absence seizures occur bimonthly, meaning twice per month.",
+    "scope": "representation only; answer placeholder unless stated",
+    "output": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "Focal seizures occur bimonthly."
+      },
+      "findings": [
+        {
+          "event": {
+            "type": "Focal seizures",
+            "scope": "specific",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "rate",
+            "count": {
+              "type": "number",
+              "value": 1
+            },
+            "per": {
+              "type": "number",
+              "value": 2,
+              "unit": "month"
+            }
+          },
+          "evidence": "Focal seizures occur bimonthly.",
+          "id": "f1",
+          "timing": "current"
+        },
+        {
+          "event": {
+            "type": "Absence seizures",
+            "scope": "specific",
+            "seizure_status": "stated"
+          },
+          "measurement": {
+            "type": "rate",
+            "count": {
+              "type": "number",
+              "value": 2
+            },
+            "per": {
+              "type": "number",
+              "value": 1,
+              "unit": "month"
+            }
+          },
+          "evidence": "Absence seizures occur bimonthly, meaning twice per month.",
+          "id": "f2",
+          "timing": "current"
+        }
+      ],
+      "selected_ids": [
+        "f1"
+      ]
+    }
   }
 ]

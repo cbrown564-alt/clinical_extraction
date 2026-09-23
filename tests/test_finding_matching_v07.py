@@ -111,6 +111,27 @@ def test_value_timing_and_type_differences_are_fp_and_fn() -> None:
     ):
         assert not fm.measurement_equal(vague, {"type": "seizure_free", "duration": duration})
 
+    # A verbatim rate interval is not an invented number/range or another time unit.
+    rate = {
+        "type": "rate",
+        "count": {"type": "number", "value": 1},
+        "per": {"type": "qualitative", "quantity": "few weeks"},
+    }
+    cluster = {"type": "cluster", "rate": {k: v for k, v in rate.items() if k != "type"}}
+    assert r8.Rate.model_validate(rate).model_dump(exclude_none=True) == rate
+    assert r8.Cluster.model_validate(cluster).model_dump(exclude_none=True) == cluster
+    assert fm.measurement_equal(rate, rate)
+    assert fm.measurement_equal(cluster, cluster)
+    for denominator in (
+        {"type": "number", "value": 3, "unit": "week"},
+        {"type": "range", "lower": 2, "upper": 3, "unit": "week"},
+        {"type": "qualitative", "quantity": "few months"},
+    ):
+        assert not fm.measurement_equal(rate, {**rate, "per": denominator})
+        assert not fm.measurement_equal(
+            cluster, {"type": "cluster", "rate": {**cluster["rate"], "per": denominator}}
+        )
+
 
 def test_duplicate_prediction_matches_once_and_specific_label_does_not_match_generic() -> None:
     pred = [

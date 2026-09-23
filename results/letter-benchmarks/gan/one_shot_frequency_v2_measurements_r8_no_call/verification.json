@@ -1,6 +1,6 @@
 {
   "version": "one_shot_frequency_v2_measurements_r8",
-  "revision": "guide_v07_v2_vague_absence",
+  "revision": "guide_v07_v4_bimonthly_default",
   "guide_version": "seizure_finding_annotation_v0.7",
   "fixtures": [
     {
@@ -67,6 +67,21 @@
       "name": "vague_absence_duration_is_preserved",
       "valid": true,
       "findings": 1
+    },
+    {
+      "name": "vague_event_recurrence_interval",
+      "valid": true,
+      "findings": 1
+    },
+    {
+      "name": "vague_cluster_recurrence_interval",
+      "valid": true,
+      "findings": 1
+    },
+    {
+      "name": "bimonthly_default_and_explicit_definition",
+      "valid": true,
+      "findings": 2
     }
   ],
   "shared_with_r7": [
@@ -76,16 +91,16 @@
     "cases"
   ],
   "components": {
-    "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r8.py": "88c352c9dbd3db7fae98c0ab822675ec43d9778b63ce7da104c138844b449bfe",
+    "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r8.py": "2013e11740da7d5d5ed7f27fddd5226058965f7d8dbea45104550b953451c51b",
     "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r5.py": "53beb5707c8fccaa626a5ac7c0a97bd4a86a698e9674e5d57788cf53def36e37",
     "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements.py": "a9cb300e9b800dfa1ce19bcb81c9501b1105946cbd0b665a54510bff4625ac08",
     "/Users/cobro/code/clinical-extraction/scripts/benchmarks/prepare_one_shot_r8.py": "03ff2ea650d13001eb40f6fabcb75fc0572ff6a1cd5b262f6a57ec6130193e67"
   },
   "artifacts": {
-    "fictional_fixtures.json": "ead866fef712f63fcb9ba1c99aceae6c4a4c793e18e82e99a6cdfc046affe3cf",
-    "r7_r8.diff": "a2a88720afe631d3c747d69faf122a8f4be8fd85369b86934bdb347f331249d3",
-    "rich.messages.json": "a5ef0dd554b0bb4c5424340cb99e115bb892f192b104951114c83d540049f2a9",
-    "rich.schema.json": "7563afa01362dbed3a51a3dcb24e0fc9dacbd6f9c0eaeff5afdbaf21b59851cf"
+    "fictional_fixtures.json": "d1d42cce6c84dd097aa50bc1ff02e6529053e31f1936bb47a04988ab79148416",
+    "r7_r8.diff": "50c9fdb689f2adafa01aacf4bcb75240348677769be8a754ac5ee67eced0a0df",
+    "rich.messages.json": "d7b6c75a7fce729b7b54604cac2a7da915a7a477b6261089589b57b04c88816c",
+    "rich.schema.json": "87583f5c9d4291dcdda283f907026ab7ea931e96146d6f465d65d59f17b8b24d"
   },
   "model_calls": 0
 }

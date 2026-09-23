@@ -57,6 +57,12 @@ diagnostic, aetiological or classification uncertainty.
 These decide the cases that generated most v0.6 disagreement. Apply them without
 raising an issue.
 
+- Bimonthly: default to one event per two months unless the source explicitly
+  defines another interval (owner decision, 2026-09-22). This agrees with the
+  original development gold labels and applies to annotation and finding scoring.
+  Keep "bimonthly" in the exact evidence so a later policy revision can reinterpret
+  it. The default settles the representation without claiming the word has only
+  one possible meaning.
 - Event label: use the source's words for the measured event (`event.type`). Each
   quantified statement is one finding under its own label. Never merge, sum,
   distribute or link findings because two labels might name the same events. There
@@ -106,13 +112,22 @@ Conor approved preserving vague seizure-free durations rather than excluding the
 For "seizure-free for several months", use `seizure_free` with
 `duration: {"type": "qualitative", "quantity": "several months"}`. Copy the complete
 duration phrase, including its time unit, without inventing a number or a `since`
-anchor. This extension applies to `seizure_free.duration`; numeric durations and
-rate denominators retain their existing structures. Approximate but numeric
+anchor. Use this structure for `seizure_free.duration`. Approximate but numeric
 durations such as "about six months" keep numeric 6 month and the exact evidence.
 An explicitly named observation interval with no numeric duration ("this month",
 "In October", "during this interval") uses the same verbatim duration structure;
 do not turn it into a full numeric month or a `since` anchor. Keep relative `since`
 expressions relative even when another statement supplies a possible calendar date.
+
+Conor subsequently approved the same verbatim structure for vague recurrence
+intervals. "Once every few weeks" is `rate` with count 1 and
+`per: {"type": "qualitative", "quantity": "few weeks"}`; "several months apart"
+is count 1 per `"several months"`. Preserve the complete interval phrase including
+its unit, without a separate unit field, numeric range, or conversion to monthly
+frequency. This also applies to `cluster.rate.per`; keep the measured cluster unit.
+Replace a provisional qualitative substitute with the stated cadence, retaining
+hedges in the quotation. Numeric denominators and `period.duration` are unchanged;
+the existing "near-daily" → `frequent` default remains in force.
 
 The Cursor reviewer instructions and assembler had introduced a broader repeat
 rule that ignored an added or omitted observation window. That change was not in
@@ -125,7 +140,7 @@ do not rewrite the frozen test450 annotations or authorise test-derived tuning.
 
 Raise `needs_review` only when all three hold: the statement is in scope; no default
 above applies; and the competing readings produce different structured values
-(for example "bimonthly", or a rate that could attach to either of two labels with
+(for example a rate that could attach to either of two labels with
 different numbers). Record one sentence in `review_reason`. Everything else is
 decided by the defaults or excluded. Do not log candidates, alternatives, or
 statements you excluded. A letter with `needs_review` is excluded from finding

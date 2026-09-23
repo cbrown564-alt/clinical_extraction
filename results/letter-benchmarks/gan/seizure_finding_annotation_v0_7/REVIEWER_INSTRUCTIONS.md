@@ -37,17 +37,30 @@ schedules; diagnostic, aetiological or classification uncertainty.
 
 ## Fixed defaults
 
+Bimonthly defaults to one per two months unless the source explicitly defines
+another interval (owner decision, 2026-09-22). This agrees with the original
+development gold labels and applies to annotation and finding scoring. Keep the
+exact "bimonthly" evidence so the interpretation can be changed later; do not raise
+`needs_review` solely for this word's competing meanings.
+
 Development clarification, 2026-09-21: preserve vague seizure-free durations.
 "Seizure-free for several months" uses measurement
 `{"type":"seizure_free","duration":{"type":"qualitative","quantity":"several months"}}`.
 Copy the entire duration phrase verbatim, with no numeric inference or separate
-unit. This extension is specific to `seizure_free.duration`; numeric durations and
-rate denominators retain their existing structures. Do not exclude an otherwise
+unit. Do not exclude an otherwise
 in-scope absence solely because its duration is vague.
 An explicitly stated observation interval such as "this month", "In October" or
 "during this interval" also stays verbatim in the qualitative duration structure;
 do not infer a full numeric month or invent a `since` anchor. Relative `since`
 expressions stay relative even when another statement supplies a calendar date.
+
+The owner also approved verbatim vague rate denominators: "once every few weeks"
+uses `{"type":"rate","count":{"type":"number","value":1},"per":{"type":"qualitative","quantity":"few weeks"}}`.
+Use the same `per` structure for cluster recurrence, retaining the cluster counting
+unit. "Several months apart" is one per `"several months"`. Copy the complete
+interval phrase including its unit; do not invent a numeric value/range or replace
+the cadence with "occasional". Hedges remain in the evidence. Numeric denominators,
+numeric observation durations and the near-daily → frequent default are unchanged.
 
 - `event.type`: the source's words for the measured event. One finding per quantified
   statement under its own label. Never merge, sum, distribute or link findings because
@@ -74,7 +87,8 @@ expressions stay relative even when another statement supplies a calendar date.
   hedge and keep the circumstance. Omit the field when there is none.
 - Quantities: `{"type":"number","value":3}`, `{"type":"range","lower":2,"upper":3}`,
   `{"type":"bound","relation":"at_most","value":3}` (value may be a number or a range
-  object), `{"type":"qualitative","quantity":"several"}`. Durations add `"unit"`.
+  object), `{"type":"qualitative","quantity":"several"}`. Numeric durations add
+  `"unit"`; verbatim durations and rate denominators keep the unit inside the phrase.
   There is no `approximate` flag and no inclusivity flag.
 - `evidence`: an exact, contiguous quotation of the shortest span containing the
   measurement and its time or window. Extend backwards by at most one sentence, only
@@ -90,7 +104,7 @@ expressions stay relative even when another statement supplies a calendar date.
 ## When to mark needs_review
 
 Only when all three hold: the statement is in scope; no default above decides it; and
-the competing readings give different structured values (for example "bimonthly", or a
+the competing readings give different structured values (for example a
 rate that could attach to either of two labels with different numbers). Then set
 `annotation_state` to `needs_review` and write one sentence in `review_reason`. Every
 other case is decided by the defaults or excluded. A needs_review letter is excluded
