@@ -131,7 +131,7 @@ on the presentation setup.
 
 During local development, select **Gan R8 review** from the workbench dataset
 switcher, or open [R8 versus reviewed gold](http://localhost:3000/workbench?dataset=ganR8).
-The v0.8.1 view also shows source-aligned measurement and event-label credit
+The v0.8.1 view also shows source-aligned measurement, subtype and event-label credit
 separately. A partial match remains in the whole-finding missed/extra lists so
 the original endpoint is still visible.
 It shows each synthetic dev750 letter with its existing gold

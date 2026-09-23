@@ -33,6 +33,7 @@ def test_same_source_rate_gets_credit_when_subtype_is_lost() -> None:
             "gold_id": "g",
             "prediction_id": "p",
             "measurement_correct": True,
+            "subtype_correct": False,
             "event_correct": False,
         }
     ]
@@ -52,6 +53,7 @@ def test_different_rates_do_not_gain_measurement_credit() -> None:
         "gold_id": "g",
         "prediction_id": "p",
         "measurement_correct": False,
+        "subtype_correct": True,
         "event_correct": True,
     }
 
@@ -70,3 +72,19 @@ def test_different_source_passages_do_not_cross_match() -> None:
     assert result["pairs"] == []
     assert result["unpaired_gold"] == ["g"]
     assert result["unpaired_predictions"] == ["p"]
+
+
+def test_cluster_unit_is_separate_from_subtype() -> None:
+    note = "Two clusters of focal seizures this month."
+    row = {
+        "source_row_index": 3,
+        "note": note,
+        "usable": True,
+        "reference": [finding("g", "clusters of focal seizures", note, 2)],
+        "predicted": [finding("p", "focal seizures", note, 2)],
+        "pairs": [],
+    }
+    pair = score_row(row)["pairs"][0]
+    assert pair["measurement_correct"]
+    assert pair["subtype_correct"]
+    assert not pair["event_correct"]

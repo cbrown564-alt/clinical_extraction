@@ -1,4 +1,4 @@
-"""Score event labels and measurements separately on saved R8 versus v0.8.1.
+"""Score event labels, seizure subtypes and measurements on saved R8 versus v0.8.1.
 
 The whole-finding score and its pairs are frozen inputs. Remaining predictions
 and gold findings are paired one-to-one only when their exact source quotations
@@ -16,13 +16,16 @@ from typing import Any
 from clinical_extraction.tasks.seizure_frequency.gan2026.evaluation import (
     finding_matching_v07 as exact,
 )
+from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
+    one_shot_measurements_r8 as r8,
+)
 
 REVIEW = Path("runs/seizure_finding_annotation_v0_8_1/dev750_r8_saved/review_bundle.json")
 OUTPUT = Path(
     "results/letter-benchmarks/gan/seizure_finding_annotation_v0_8_1/"
     "dev750_r8_saved/component_score.json"
 )
-VERSION = "finding_components_v081_v1"
+VERSION = "finding_components_v081_v2"
 
 
 def measurement_agrees(pred: dict[str, Any], gold: dict[str, Any]) -> bool:
@@ -32,6 +35,19 @@ def measurement_agrees(pred: dict[str, Any], gold: dict[str, Any]) -> bool:
 
 def event_agrees(pred: dict[str, Any], gold: dict[str, Any]) -> bool:
     return exact.label_key(pred["event"]["type"]) == exact.label_key(gold["event"]["type"])
+
+
+def subtype_key(finding: dict[str, Any]) -> tuple[str, ...]:
+    """Named seizure features, excluding cluster and affected-day count units."""
+    words = {
+        exact._lemma(word)
+        for word in r8.TYPE_WORDS.findall(finding["event"]["type"])
+    }
+    return tuple(sorted(words - {"cluster", "seizure day"}))
+
+
+def subtype_agrees(pred: dict[str, Any], gold: dict[str, Any]) -> bool:
+    return subtype_key(pred) == subtype_key(gold)
 
 
 def residual_pairs(
@@ -60,6 +76,7 @@ def residual_pairs(
                 10_000
                 + 100 * measurement_agrees(pred[pi], gold[gi])
                 + 50 * event_agrees(pred[pi], gold[gi])
+                + 25 * subtype_agrees(pred[pi], gold[gi])
                 + 10 * (pred[pi].get("timing") == gold[gi].get("timing"))
             )
             option = later + weight, ((gi, pi), *pairs)
@@ -87,6 +104,7 @@ def score_row(row: dict[str, Any]) -> dict[str, Any]:
             "gold_id": gid,
             "prediction_id": pid,
             "measurement_correct": measurement_agrees(pred[pid], gold[gid]),
+            "subtype_correct": subtype_agrees(pred[pid], gold[gid]),
             "event_correct": event_agrees(pred[pid], gold[gid]),
         }
         for gid, pid in aligned
@@ -116,7 +134,11 @@ def aggregate(rows: list[dict[str, Any]], review: list[dict[str, Any]]) -> dict[
         "unpaired_gold": sum(len(row["unpaired_gold"]) for row in rows),
         "unpaired_predictions": sum(len(row["unpaired_predictions"]) for row in rows),
     }
-    for name, field in (("measurement", "measurement_correct"), ("event", "event_correct")):
+    for name, field in (
+        ("measurement", "measurement_correct"),
+        ("subtype", "subtype_correct"),
+        ("event", "event_correct"),
+    ):
         tp = sum(pair[field] for row in rows for pair in row["pairs"])
         fp = sum(len(row["unpaired_predictions"]) for row in rows) + sum(
             not pair[field] for row in rows for pair in row["pairs"]
