@@ -7,6 +7,18 @@ their named versions; their uses of “current” refer to that decision date.
 They do not override the [source annotation guide](seizure_finding_annotation_guide.md).
 Execution results and authorisations belong to the [execution record](one_shot_execution_record.md).
 
+## Prospective R9 two-week absence rule (2026-09-23)
+
+R9 revision `guide_v083_two_week_absence_candidate` now tells the model to
+exclude known seizure-free intervals shorter than two weeks and ordinary gaps
+between recurring clusters. The owner chose the two-week threshold after review
+of source 15442 (four-day intercluster gap), 14872 (two-week current absence)
+and 12506 (explicit three-week longest absence). An explicit anchor with an
+unknown duration remains representable; the model must not invent elapsed time.
+This is a prompt-only candidate, not a new model result. The v0.8.3 reference
+still includes a ten-day `none since` finding in source 15513 and therefore
+needs a versioned correction before comparison against this prompt.
+
 ## R8 bimonthly default (2026-09-22)
 
 Conor selected one per two months as the default interpretation of "bimonthly",

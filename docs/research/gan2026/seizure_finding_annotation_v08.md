@@ -236,3 +236,23 @@ identity, evidence, and before/after values; it reads the frozen v0.8.2
 reference and saved R8 projection. The same v0.8.2 scorer is used, so any
 score change reflects reference representation rather than a new model run.
 The workbench **v0.8.3 owner decisions** view exposes the revised comparison.
+
+## Prospective two-week seizure-free minimum (23 September 2026)
+
+The owner set **two weeks** as the minimum for a separately scored seizure-free
+interval. A known shorter interval is context, including four or five days
+between recurring cluster days (sources 15442 and 15470). The threshold is a
+necessary condition, not sufficient evidence of a separate absence claim:
+"may remain seizure-free for up to four months, then has a cluster" (15404)
+describes a typical or maximum gap in an ongoing pattern. Keep the cluster
+finding; do not add seizure freedom from that gap. A distinct current absence
+of two weeks (14872) and an explicitly reported longest seizure-free period
+of three weeks (12506) remain eligible. When a since anchor has no resolvable
+duration, retain an explicit seizure-free state without inventing an interval.
+An anchor explicitly known to be under two weeks is ineligible (15513:
+"none since" a seizure ten days ago); its last-seizure finding remains.
+
+This is a prospective annotation decision and R9 prompt amendment. The v0.8.3
+reference and saved-R8 score remain frozen; source 15513 needs a versioned
+reference edit before any new score claims this rule. The separate question of
+whether a cluster's within-cluster span belongs in scored `period` is unresolved.

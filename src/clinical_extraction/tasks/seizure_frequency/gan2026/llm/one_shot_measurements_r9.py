@@ -13,7 +13,7 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
 )
 
 VERSION = "one_shot_frequency_v2_measurements_r9"
-REVISION = "guide_v083_owner_batch_decisions_candidate"
+REVISION = "guide_v083_two_week_absence_candidate"
 GUIDE_VERSION = "seizure_finding_annotation_v0.8.3"
 Rich = r8.Rich
 
@@ -51,6 +51,13 @@ replace_instruction(
 )
 replace_instruction(
     "Seizure_free requires",
+    "Score a seizure-free interval only when it is known to last at least two weeks. "
+    "A shorter interval, such as four seizure-free days between cluster days, "
+    "is context for the ongoing seizure pattern, not a separate finding. "
+    "Do not score a typical or maximum gap merely because it reaches two weeks; "
+    "it must be a distinct reported seizure-free interval or explicitly reported "
+    "longest seizure-free period. If a since anchor has no resolvable duration, "
+    "retain an explicitly reported seizure-free state without inventing one. "
     "Seizure_free requires a duration or since anchor. When a duration is stated, "
     "it is the scored interval; retain a co-stated since anchor as additional "
     "source detail. For an anchor-only claim, keep the source anchor. One continuous "
