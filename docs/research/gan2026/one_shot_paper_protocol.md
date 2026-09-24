@@ -128,6 +128,18 @@ Everything removed at the lockdown is recoverable: Git tag
 scorers and results; `~/code/archives/clinical-extraction-runs-2026-09-24.tar.gz`
 holds the local `runs/` directory, including raw responses and ledgers.
 
+## Change log
+
+- 2026-09-24: Owner decision after the first paired run. The expanded answer
+  lost 3.47 Purist points, mostly lower counts and rate-to-seizure-free
+  swaps, consistent with finding rules leaking into answer arithmetic. One
+  instruction was added at the start of the expanded schema instructions: the
+  answer is decided exactly as if only the answer were requested, and the
+  finding rules apply only to the findings array. Only the expanded prompt is
+  rerun; the saved minimal responses are reused. The first expanded result is
+  kept as `score_expanded_initial.json`. This is a single bounded attempt: if
+  the gap remains, the cost is reported and the prompt is not changed again.
+
 ## Out of scope
 
 Paper-pipeline replication, Jev, optimiser search, hybrid or two-call methods,

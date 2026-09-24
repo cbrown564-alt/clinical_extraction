@@ -60,6 +60,10 @@ MINIMAL_SCHEMA_INSTRUCTIONS = [
 ]
 
 EXPANDED_SCHEMA_INSTRUCTIONS = [
+    "Decide answer.label exactly as if only the answer were requested: use the decision "
+    "cases and label forms, including their arithmetic such as adding month counts and "
+    "their time conversion. The finding rules below apply only to the findings array; "
+    "they never change how the answer is chosen or calculated.",
     "Also return findings: one entry for each seizure-frequency statement in the note, "
     "current or historical. The cases' facts illustrate answer selection; findings use "
     "the output schema instead. answer.claim_indices lists the zero-based positions of "
