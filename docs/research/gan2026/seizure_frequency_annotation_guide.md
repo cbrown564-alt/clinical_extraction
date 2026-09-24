@@ -135,11 +135,17 @@ the schema and every quotation is an exact substring of its letter. The
 derivation inputs are in the archived runs tarball
 (`~/code/archives/clinical-extraction-runs-2026-09-24.tar.gz`).
 
-**test450.** Not yet annotated under this guide. The earlier test450
-annotations were discarded with the old guides. Annotate all 450 letters from
-source only, without model outputs or native labels, before any test450 run.
-Test450 remains aggregate-only for evaluation; annotation exposure must be
-disclosed.
+**test450.** Not yet annotated under this guide; the earlier test450
+annotations were discarded with the old guides. The source-only package is
+built by `scripts/benchmarks/prepare_test450_annotation.py` into ignored
+`runs/seizure_frequency/annotation/test450/`: all 450 letters (including
+`row_ok=False`) in nine batches of 50, instructions taken verbatim from this
+guide's rules, the record schema, a worked example and
+`validate_annotations.py` (identity, coverage, schema and exact quotations).
+No native labels, references, predictions or row-quality flags are exported.
+The test450 reference has a single tier, so its findings are imported as core
+and all-reference recall is the reported measure. Test450 stays
+aggregate-only for evaluation; disclose annotation exposure.
 
 ## Change log
 
