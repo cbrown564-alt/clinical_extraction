@@ -14,9 +14,7 @@ import type { DatasetId } from "@/lib/datasets";
  * selectors.
  */
 export default function DatasetSwitcher() {
-  const availableDatasets = process.env.NODE_ENV === "development"
-    ? DATASETS
-    : DATASETS.filter((dataset) => dataset.id !== "ganR8");
+  const availableDatasets = DATASETS;
   const { datasetId, descriptor, setDataset } = useDatasetNavigation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

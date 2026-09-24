@@ -8,27 +8,20 @@ owns future comparison conditions, permissions, unresolved execution decisions,
 thresholds and safeguards. The completed two-stage dissertation remains separately
 owned under [dissertation materials](../dissertation/README.md).
 
-## Current annotation and scope decision (2026-09-14)
+## Locked study design (2026-09-24)
 
-The next major research step is to define and apply source-first seizure-finding
-annotation guidelines across dev750. Codex writes the guide, Conor obtains Gemini
-annotations, and Codex reviews them. This replaces the earlier plan to leave the
-richer inventory unevaluated: the intended outcomes now include finding correctness
-and completeness alongside the original selected-label task. Development annotation
-is not independent clinical validation; results remain pending until the reference
-and matching rules are reviewed.
-
-First complete the authorised 600-second reruns of r4/r5 timeouts, keeping the
-original conditions and first-attempt results intact. Make minimal demonstrated
-representation corrections in a separate candidate, then review disagreements.
-Measure time per letter; a separate completion-reliability programme is not a
-priority. If seizure annotation works well, extend to medications, diagnoses and
-investigations and test whether all-four-family extraction harms the original
-frequency-label endpoint. Conor then plans to share the reviewed materials with
-Yujian Gan and explore clinical annotation of real letters by the King's team.
-Participation, permissions and real finding references are not yet established.
-The protocol links the separate annotation, review, schema and execution owners;
-the roadmap owns sequencing. This outline owns how those findings enter the paper.
+The study compares two one-call prompts on the same notes: `minimal` returns
+the native answer and its quotation; `expanded` returns the same answer plus
+every seizure-frequency finding defined by the locked
+[annotation guide](../../docs/research/gan2026/seizure_frequency_annotation_guide.md).
+The paper's central claim rests on native Purist answer agreement and the
+paired expanded-minus-minimal difference. Finding agreement with the dev750
+reference is reported descriptively under a lenient rule: the inventory's
+boundaries are fuzzier than a single label, and it is not used to tune prompts.
+Development annotation is not independent clinical validation. If this holds,
+extend the approach to medications, diagnoses and investigations, keeping the
+native frequency answer as the common endpoint. The protocol owns conditions,
+endpoints and the run record; the roadmap owns sequencing.
 
 ## Execution scope update (2026-09-13)
 
@@ -87,10 +80,9 @@ evaluation if use is authorised under the protocol. Pragmatic scoring is a compa
 outcome.
 
 The reference does not gold-label a complete inventory of seizure-frequency facts.
-The planned source-first dev750 annotation supplies a separate reference for
-finding correctness and completeness. Until reviewed annotation and matching are
-available, report exactness, schema validity, count and type descriptively. Real
-finding claims require the separately agreed clinical reference. An exact substring
+The source-first dev750 reference under the locked annotation guide supplies a
+separate, descriptive measure of finding agreement. Real finding claims require
+a separately agreed clinical reference. An exact substring
 match does not establish clinical validity.
 
 The primary task result is all-note agreement with the existing real-letter expert
@@ -185,38 +177,23 @@ outside the core paper.
 | Method | Specify the one-call record, declared task view, source-provenance fields, format boundary and reproducibility record. | The visible chain is source → record → answer, not hidden reasoning. Historic two-stage methods are context, not the proposed method. |
 | Evaluation | Define all-note Purist agreement as the primary endpoint, Pragmatic companion score, and contract reliability measures. | Include schema-invalid and unusable output in the task denominator. The protocol owns thresholds, permissions, review design and future execution choices. |
 | Results: primary real-letter evaluation | Report the authorised real Gan 300 primary result with denominators, uncertainty, coverage and classified failures. | Leave empty until a reviewed, authorised evaluation exists; do not pool with synthetic results. |
-| Results: controlled synthetic comparison | Compare own rich versus simple prompts on the same permitted Gan condition; report the Holgate comparison only if supplied and permitted. | Treat rich-versus-simple as a joint task/output contrast; distinguish the external whole-prompt comparator. |
+| Results: controlled synthetic comparison | Compare the expanded and minimal prompts on the same permitted Gan notes; report the Holgate comparison only if supplied and permitted. | Treat expanded-versus-minimal as a joint task/output contrast; distinguish the external whole-prompt comparator. |
 | Results: reliability and capability | Report first-pass schema validity, source-quote exactness, repair/unparsed failure paths, descriptive findings, runtime and any model panel. | Separate exact-span validity from clinical support; distinguish model capability from contract design. |
 | Results: configuration | Present one compact configuration map and descriptive native reference check. | Demonstrates editable task components without retraining; it does not establish clinician usability or reduced expertise. |
 | Discussion | Explain the contribution for evidence-grounded clinical extraction and bounded research/database use. | Discuss annotation limits, synthetic/real differences, prior exposure, local-execution limits, non-deployment and the need for future clinical or usability studies. |
 
-## Active schema revision (2026-09-14)
+## Earlier synthetic result (v1)
 
-Conor approved a v2 candidate that makes frequency measurements computable: typed
-rates, observed counts, cluster components, seizure-free intervals, last-seizure
-times and qualitative findings. It preserves event scope, measurement uncertainty,
-conditions and exact evidence without a universal raw-value/negation/confidence bag.
-The schema decisions own the [agreed design](../../docs/research/gan2026/one_shot_schema_decisions.md#agreed-v2-measurement-design-2026-09-14).
-This candidate has fictional no-call checks and a permitted dev750 wording review,
-which removed the generic measurement-denial flag. No model-run performance
-evidence exists for this candidate. The synthetic results
-below evaluate v1 and must not be attributed to the revised schema.
+The first frozen DeepSeek V4.1 Flash comparison (13 September, thinking off)
+used an earlier rich schema on all 450 synthetic test notes: rich 342/450
+Purist (76.0%), simple 334/450 (74.2%), paired difference +1.78 points
+(95% CI −0.44 to +4.00). It is context only; it does not evaluate the locked
+`expanded` condition, and test450 has since been reused. Its artifacts are in
+Git tag `archive/pre-lockdown-2026-09-24`. The protocol's run record owns the
+later development history and the locked conditions' results.
 
-## Available synthetic result (v1)
-
-The frozen DeepSeek V4.1 Flash API comparison is complete on all 450 synthetic
-test notes, including 20 row_ok=False notes. Rich achieved 342/450 Purist agreement
-(76.0%) and simple 334/450 (74.2%); the paired difference was +1.78 percentage points
-(95% CI −0.44 to +4.00). This does not establish superiority or non-inferiority.
-Pragmatic agreement was 368/450 versus 360/450. Four rich and three simple outputs
-were unusable and counted as incorrect. These are reused-holdout synthetic results,
-not patient-data results or clinical validation of the full finding inventory.
-
-The [execution record](../../docs/research/gan2026/one_shot_execution_record.md#completed-synthetic-comparison-2026-09-13)
-owns detailed reliability/cost reporting and the
-[reviewed machine aggregate](../../results/letter-benchmarks/gan/one_shot_frequency_v1/test450.aggregate.json).
-Table 3 and the API portions of Table 4 can now be populated from those artifacts.
-Table 2, supplementary Dell results and multi-family patient results remain pending.
+Table 3 and the API portions of Table 4 come from the locked paired run. Table 2,
+supplementary Dell results and multi-family patient results remain pending.
 
 ## Planned exhibits
 
@@ -231,7 +208,7 @@ Table 2, supplementary Dell results and multi-family patient results remain pend
 3. **Table 2 — Primary real-letter task result.** Purist all-note agreement,
    Pragmatic companion, usable-answer coverage, denominator, uncertainty and
    classified unusable failures. Populate only after authorised evaluation.
-4. **Table 3 — Controlled synthetic prompt comparison.** Rich versus simple own
+4. **Table 3 — Controlled synthetic prompt comparison.** Expanded versus minimal
    prompt, matched on all named conditions, with paired task differences,
    denominators and richer-output costs. Add the Holgate whole-prompt condition only
    when its original supplied prompt and permissions are documented.

@@ -9,7 +9,7 @@
  * classes it owns, and how its specimens and runs are labelled.
  */
 
-export type DatasetId = "gan2026" | "exectv2" | "ganR8";
+export type DatasetId = "gan2026" | "exectv2";
 
 /** A stable review surface, keyed by its route segment. */
 export type ExplorerSurface = "workbench";

@@ -6,13 +6,8 @@ Current focus: the one-call seizure-frequency paper. Longitudinal work is paused
 | --- | --- |
 | Decisions and next work | [Roadmap](plans/ACTIVE_ROADMAP.md) |
 | Argument, manuscript structure and exhibits | [Paper outline](../publications/jamia-one-shot/README.md) |
-| Data, comparisons, outcomes and execution readiness | [Evaluation protocol](research/gan2026/one_shot_paper_protocol.md) |
-| Seizure-finding annotation guidelines and matching | [Annotation guide v0.8 through v0.8.5 amendments](research/gan2026/seizure_finding_annotation_v08.md), [frozen v0.7 guide](research/gan2026/seizure_finding_annotation_guide.md) |
-| Annotation workflow, review and matching | [Annotation review](research/gan2026/seizure_finding_annotation_review.md) |
-| Planned inventory score | [Finding Purist match](research/gan2026/finding_purist_match.md) |
-| Prompt/schema versions and rationale | [Schema decisions](research/gan2026/one_shot_schema_decisions.md) |
-| Jev supplementary experiment design | [Evaluation protocol](research/gan2026/one_shot_paper_protocol.md#jev-fictional-comparison) |
-| Run authorisations and completed comparisons | [Execution record](research/gan2026/one_shot_execution_record.md) |
+| Conditions, prompts, endpoints, execution and run record | [Evaluation protocol](research/gan2026/one_shot_paper_protocol.md) |
+| Seizure-frequency finding definition, reference and finding score | [Annotation guide](research/gan2026/seizure_frequency_annotation_guide.md) |
 | Repository setup and commands | [README](../README.md) |
 | Current task state | [Project status](../PROJECT_STATUS.md), local-only |
 | Software interfaces | [Architecture](design/architecture.md) |

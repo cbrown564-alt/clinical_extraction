@@ -1,8 +1,0 @@
-{
-  "r_cluster.s2.inner_applicable": {
-    "accepted": "yes",
-    "reviewer": "no",
-    "reason": "The frozen task definition makes an inner field applicable to grouped seizure episodes even when size is unstated. The future threshold concerns grouped seizure days. Applicability is not presence of a numerical size. Retain the author key; no question or source change.",
-    "phase": "source-only reference review, before evaluation outputs"
-  }
-}
