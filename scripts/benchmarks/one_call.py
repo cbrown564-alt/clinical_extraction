@@ -47,11 +47,6 @@ API = "https://api.deepseek.com"
 MAX_TOKENS = 24000
 TIMEOUT = 600
 CONCURRENCY = 12
-INPUT_PEAK = 0.30 / 1_000_000
-OUTPUT_PEAK = 1.20 / 1_000_000
-BUDGET = 100.0
-# Conservative charges of all earlier one-call study runs (ledgers archived 2026-09-24).
-PRIOR_STUDY_CHARGE = 69.1461255
 
 
 def digest(value: bytes) -> str:
@@ -151,22 +146,9 @@ def identity(conditions: tuple[prompts.Condition, ...]) -> dict[str, Any]:
         "max_tokens": MAX_TOKENS,
         "timeout_seconds": TIMEOUT,
         "concurrency": CONCURRENCY,
-        "budget_usd": BUDGET,
         "retry_policy": "none; first response only",
         "repair_policy": "none",
     }
-
-
-def reserve(request: dict[str, Any]) -> float:
-    return (len(encoded(request["messages"])) + 1024) * INPUT_PEAK + MAX_TOKENS * OUTPUT_PEAK
-
-
-def charged(attempts: list[dict[str, Any]]) -> float:
-    finished = {
-        a["request_id"]: a["charged_upper_usd"] for a in attempts if a["state"] == "finished"
-    }
-    started = {a["request_id"]: a["charged_upper_usd"] for a in attempts if a["state"] == "started"}
-    return sum({**started, **finished}.values())
 
 
 async def run(selected: list[dict[str, Any]]) -> None:
@@ -176,10 +158,7 @@ async def run(selected: list[dict[str, Any]]) -> None:
     ledger = read_lines(ROOT / "attempts.jsonl")
     started = {row["request_id"] for row in ledger}
     pending = [job for job in selected if job["request_id"] not in started]
-    bound = PRIOR_STUDY_CHARGE + charged(ledger) + sum(reserve(j["body"]) for j in pending)
-    if bound > BUDGET:
-        raise ValueError(f"Worst-case study charge ${bound:.2f} exceeds ${BUDGET:.2f}")
-    print(f"Starting {len(pending)} calls; worst-case study bound ${bound:.2f}", flush=True)
+    print(f"Starting {len(pending)} calls", flush=True)
     semaphore = asyncio.Semaphore(CONCURRENCY)
     stopped = False
     completed = 0
@@ -193,7 +172,6 @@ async def run(selected: list[dict[str, Any]]) -> None:
                 if stopped:
                     return
                 rid, request = job["request_id"], job["body"]
-                charge = reserve(request)
                 start = time.time()
                 append(
                     ROOT / "requests.jsonl",
@@ -206,7 +184,7 @@ async def run(selected: list[dict[str, Any]]) -> None:
                 )
                 append(
                     ROOT / "attempts.jsonl",
-                    {"request_id": rid, "state": "started", "charged_upper_usd": charge},
+                    {"request_id": rid, "state": "started"},
                 )
                 response, error = None, None
                 try:
@@ -219,11 +197,6 @@ async def run(selected: list[dict[str, Any]]) -> None:
                 except (httpx.HTTPError, ValueError) as exc:
                     error = type(exc).__name__
                 usage = (response or {}).get("usage") or {}
-                if "prompt_tokens" in usage and "completion_tokens" in usage:
-                    charge = (
-                        usage["prompt_tokens"] * INPUT_PEAK
-                        + usage["completion_tokens"] * OUTPUT_PEAK
-                    )
                 append(
                     ROOT / "responses.jsonl",
                     {"request_id": rid, "response": response, "error": error},
@@ -233,7 +206,6 @@ async def run(selected: list[dict[str, Any]]) -> None:
                     {
                         "request_id": rid,
                         "state": "finished",
-                        "charged_upper_usd": charge,
                         "usage": usage,
                         "error": error,
                         "elapsed_seconds": time.time() - start,
@@ -252,6 +224,29 @@ def content(response: dict[str, Any] | None) -> tuple[str | None, str | None]:
     if not choices:
         return None, None
     return choices[0].get("message", {}).get("content"), choices[0].get("finish_reason")
+
+
+def usage_summary(
+    selected: list[dict[str, Any]], conditions: tuple[prompts.Condition, ...]
+) -> dict[str, Any]:
+    """Provider-reported tokens and request latency per condition; no cost estimate."""
+    condition_of = {job["request_id"]: job["condition"] for job in selected}
+    finished = [
+        a
+        for a in read_lines(ROOT / "attempts.jsonl")
+        if a["state"] == "finished" and a["request_id"] in condition_of
+    ]
+    summary = {}
+    for c in conditions:
+        rows = [a for a in finished if condition_of[a["request_id"]] == c]
+        seconds = sorted(a["elapsed_seconds"] for a in rows)
+        summary[c] = {
+            "finished": len(rows),
+            "prompt_tokens": sum(a["usage"].get("prompt_tokens", 0) for a in rows),
+            "completion_tokens": sum(a["usage"].get("completion_tokens", 0) for a in rows),
+            "median_seconds": seconds[len(seconds) // 2] if seconds else None,
+        }
+    return summary
 
 
 def score(selected: list[dict[str, Any]], conditions: tuple[prompts.Condition, ...]) -> None:
@@ -309,7 +304,7 @@ def score(selected: list[dict[str, Any]], conditions: tuple[prompts.Condition, .
         "identity": identity(conditions),
         "responses_saved": sum(job["request_id"] in saved for job in selected),
         "scheduled": len(selected),
-        "charge_upper_usd": charged(read_lines(ROOT / "attempts.jsonl")),
+        "usage": usage_summary(selected, conditions),
         "conditions": {
             c: {
                 "primary_whole_response": {

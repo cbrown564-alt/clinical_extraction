@@ -53,7 +53,7 @@ The [holdout policy](../../benchmarks/holdout-is-aggregate-only.md) applies.
 | **Primary: answer agreement** | Native Purist correct / all scheduled letters, per condition. The whole response must be usable; any failure counts as wrong. Pragmatic companion. Wilson 95% intervals. |
 | **Primary contrast** | Expanded minus minimal, paired over letters: difference, wins/losses/ties and a paired percentile bootstrap 95% interval (seed 20260913, 10,000 replicates). Descriptive; no non-inferiority claim. |
 | Declared-answer view | Same, judging only the declared answer even when the findings are invalid. Secondary. |
-| Contract reliability | Failure categories (no response, truncation, envelope, syntax, schema, target label, missing evidence), exact-quotation rate, cost and latency. |
+| Contract reliability | Failure categories (no response, truncation, envelope, syntax, schema, target label, missing evidence), exact-quotation rate, provider-reported tokens and latency. No cost estimates. |
 | **Findings (descriptive)** | Lenient precision, core recall and all-reference recall against the dev750 reference, with attribute agreement among matched pairs. Rule in the guide and `findings_score.py`. |
 
 ## Execution
@@ -74,11 +74,9 @@ Raw requests, responses and attempt ledgers stay local under
 `runs/seizure_frequency/one_call/dev750/`; the aggregate goes to
 `results/letter-benchmarks/gan/one_call/dev750/score.json`.
 
-**Budget.** The study cap is US$100. Earlier runs charged US$69.1461255
-(conservative). The runner reserves worst-case cost before calling: the paired
-dev750 run reserves US$55.42, a bound of US$124.57, so it will refuse to start
-until the cap is raised or the conditions are run separately. Expected actual
-charge is about US$10 (R11 cost US$7.67 for 750 expanded calls).
+There is no budget cap and no cost estimate (decision 2026-09-24: the
+peak-price estimates were not reliable). The runner records provider-reported
+token usage and request latency only.
 
 ## Run record
 

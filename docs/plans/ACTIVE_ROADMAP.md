@@ -37,8 +37,9 @@ removed from the checkout and recoverable from Git tag
   not a new numbered revision.
 - Develop on dev750 only. Evaluate the frozen conditions once on aggregate-only
   test450 after its source-only re-annotation, disclosing prior exposure.
-- Main synthetic runs use the DeepSeek API from this computer within Conor's
-  study cap. The collaborator owns local DeepSeek cluster runs on real data.
+- Main synthetic runs use the DeepSeek API from this computer. There is no
+  study budget cap and no cost tracking; record tokens and latency only. The
+  collaborator owns local DeepSeek cluster runs on real data.
 - Real Gan 300 use depends on written permission and exposure metadata.
 - No semantic deterministic repair or extra clinical call in the primary method.
   The dissertation's two-stage results are context only.
@@ -49,7 +50,7 @@ removed from the checkout and recoverable from Git tag
 
 | Order | Work | Completion evidence |
 | --- | --- | --- |
-| 1 | Run the paired `minimal`/`expanded` dev750 comparison once. Needs Conor's authorisation and a budget decision (worst-case reservation exceeds the current cap; expected charge about US$10). | `results/letter-benchmarks/gan/one_call/dev750/score.json` with answer agreement, paired difference and descriptive finding score. |
+| 1 | Run the paired `minimal`/`expanded` dev750 comparison once. Needs Conor's authorisation to run. | `results/letter-benchmarks/gan/one_call/dev750/score.json` with answer agreement, paired difference and descriptive finding score. |
 | 2 | Re-annotate all 450 test letters from source only under the locked guide. | Reviewed test450 reference with source hashes; annotation exposure recorded. No predictions inspected. |
 | 3 | Freeze both conditions, the scorer and the analysis; run test450 once. | Recorded freeze and aggregate-only result. |
 | 4 | Extend the same approach to medications (the existing Prescription family), then diagnoses and investigations, keeping the native frequency answer as the common endpoint. | Family-specific guide sections and development references; a paired seizure-only versus multi-family comparison on the answer endpoint. |

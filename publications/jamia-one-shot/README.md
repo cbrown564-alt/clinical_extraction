@@ -25,8 +25,8 @@ endpoints and the run record; the roadmap owns sequencing.
 
 ## Execution scope update (2026-09-13)
 
-Conor confirmed DeepSeek API evaluation on synthetic notes within a total US$10
-budget, supplementary Dell XPS 15 runs, and collaborator-managed local DeepSeek
+Conor confirmed DeepSeek API evaluation on synthetic notes (no budget cap or
+cost tracking since 2026-09-24), supplementary Dell XPS 15 runs, and collaborator-managed local DeepSeek
 cluster execution on real patient data. Two patient runs are planned: the
 single-label frequency condition and a separate extension across several clinical
 families. The evaluation protocol owns the extension's pending field definitions,
@@ -210,7 +210,7 @@ supplementary Dell results and multi-family patient results remain pending.
    classified unusable failures. Populate only after authorised evaluation.
 4. **Table 3 — Controlled synthetic prompt comparison.** Expanded versus minimal
    prompt, matched on all named conditions, with paired task differences,
-   denominators and richer-output costs. Add the Holgate whole-prompt condition only
+   denominators and richer-output token usage and latency. Add the Holgate whole-prompt condition only
    when its original supplied prompt and permissions are documented.
 5. **Table 4 — Contract reliability and runtime.** First-pass schema validity,
    exact-source evidence rate, format repair, residual unparsed/unusable responses,
