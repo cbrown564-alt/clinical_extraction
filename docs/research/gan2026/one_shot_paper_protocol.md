@@ -80,7 +80,30 @@ token usage and request latency only.
 
 ## Run record
 
-No run of the locked `expanded` prompt has been made yet.
+### Paired dev750 run (2026-09-24)
+
+One first attempt per letter and condition, 1,500 calls, no retry or repair.
+Aggregate: `results/letter-benchmarks/gan/one_call/dev750/score.json`.
+
+| Measure | minimal | expanded |
+| --- | --- | --- |
+| Purist, whole response (primary) | 659/750 (87.9%, 85.3–90.0) | 633/750 (84.4%, 81.6–86.8) |
+| Pragmatic | 680/750 (90.7%) | 660/750 (88.0%) |
+| Unusable responses | 2 (1 transport, 1 envelope) | 17 (5 transport, 4 empty content, 5 target label, 2 schema, 1 envelope) |
+| Median latency; completion tokens | 6.3 s; 1.65M | 27.1 s; 4.84M |
+
+Paired expanded minus minimal: Purist −3.47 points (95% CI −5.60 to −1.33;
+21 expanded wins, 47 losses, 682 ties); Pragmatic −2.67 (−4.67 to −0.80).
+Of the 47 losses, 13 are unusable expanded responses and 34 are different
+labels. Of the latter, 13 are lower counts within the same rate form (for
+example 8 → 7 per 2 months, 6 → 3 per 3 months) and 7 are rates replaced by
+seizure-free labels. The minimal condition reproduces r4 (658 → 659).
+
+Findings (descriptive): 733 usable expanded responses, 1,333 findings;
+precision 0.845, core recall 0.884, all-reference recall 0.835. Among matched
+pairs, measurement kind and counted unit agree 98.8%, status 97.2%, phase
+91.1%, event scope 74.6%.
+
 
 History before the lockdown, for context only. All rows are dev750 answer
 agreement on DeepSeek V4.1 Flash unless stated; they used different prompts
