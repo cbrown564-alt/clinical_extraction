@@ -28,6 +28,23 @@ priorities and the decisions below, without repeating either document.
 
 ## Decisions already made
 
+- On 2026-09-24, Conor approved source-literal decisions for the 64 open
+  synthetic dev750 compact-annotation rows. The versioned v0.3 candidate is
+  structurally complete over all 750 rows, with preserved original claims and
+  attributed additions. The [guide](../research/gan2026/seizure_finding_annotation_v08.md#owner-reviewed-compact-candidate-v03-24-september-2026)
+  owns the clarified policy, and the local no-call artifact owns the checks.
+  Next establish independent annotation agreement and align a versioned scorer
+  and prompt before any prospective model comparison; no new gold or score is
+  claimed from structural completion alone.
+- On 2026-09-23, Conor chose a narrower **candidate primary finding score**
+  after the R8/v0.8.5 discrepancy review: current seizure activity, an explicit
+  last event, and a source-stated historical comparator needed to explain a
+  change. The [annotation guide](../research/gan2026/seizure_finding_annotation_v08.md#candidate-compact-primary-finding-policy-23-september-2026)
+  owns the proposed boundary and the [schema decisions](../research/gan2026/one_shot_schema_decisions.md#candidate-compact-claim-record-2026-09-23)
+  own the compact claim shape. This is not a new gold reference or score. The
+  existing selected-frequency primary outcome and one-call design stay fixed;
+  resolve the listed claim-unit choices and prove independent annotation
+  agreement before a prospective model run.
 - Study one clinical model call per note, returning seizure-frequency findings,
   quotations, qualifiers and one declared task answer. A one-call prompt may
   contain examples; one-call and zero-shot are different properties.

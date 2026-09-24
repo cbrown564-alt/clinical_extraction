@@ -303,3 +303,205 @@ The [v0.8.5 result](../../../results/letter-benchmarks/gan/seizure_finding_annot
 owns the 18 source-audited edits, versioned scorer and saved-R8 comparison.
 The prior references and results remain frozen. R9 has prospective instructions
 but no new model output.
+
+## Candidate compact primary finding policy (23 September 2026)
+
+Conor chose a narrower **primary finding score** after reviewing the saved-R8
+errors. This is a prospective candidate, not a change to v0.8.5, its 750-letter
+reference, or any saved score. The paper's primary selected-frequency answer and
+one-call design remain separate and unchanged. The candidate finding score should
+measure the seizure activity needed to explain the current clinical state, rather
+than every historical quantified mention. The extraction prompt and gold guide
+must use the same scope before a new run can test it.
+
+### One-sentence rule
+
+Record each distinct, source-supported measurement of **current seizure activity**
+once, together with an explicitly stated last event and the nearest measured prior
+state that the letter uses to explain a change; preserve event subtype, counted
+unit, uncertainty and observation window, and keep corroboration or incidental
+detail in evidence rather than making another scored claim.
+
+### What enters the candidate primary score
+
+1. **Current activity:** an ongoing or current-assessment rate, observed count,
+   measured cluster pattern, anchored seizure-free state, or standalone
+   occasional/frequent level when no more precise statement measures the same
+   event and window. Current means the state presented as applying at the clinic
+   assessment; the one-year recency flag does not make a superseded pattern
+   ongoing.
+2. **Last event:** one explicitly identified last or most recent seizure/event,
+   with its stated date or relative time, even when the current state is
+   seizure-free. An ordinary dated event is not promoted to the last event.
+3. **Change comparator:** for each current event population, at most the nearest
+   earlier measured state that the source explicitly contrasts with the current
+   state (for example, a prior monthly rate before treatment versus current
+   seizure freedom, or a prior absence interval before a documented relapse).
+   A source-stated change in the named seizure type can justify one separate
+   comparator for that type. Do not infer a comparison merely from chronological
+   ordering of diary entries.
+4. **When no current measurement is given:** retain the most recent measured
+   seizure-activity claim as a primary finding so the inventory does not imply
+   that the letter contained no relevant measurement. Its phase remains
+   `past_or_unclear`, not ongoing by default. This does not create a current
+   frequency answer from an old count.
+
+Other historical measurements, repeated summaries, diary entries that merely
+support a selected total, trend-only language, trigger/time-of-day breakdowns
+without a distinct named subtype, and within-cluster spans are unscored context.
+The exact quotation remains available for review. An old diary is not summed into
+a current rate. A source-stated total and an affected-day count are different
+units; do not substitute one for the other.
+
+### Decision order for an annotator
+
+1. Is this the patient's event, explicitly a seizure or linked by the clinician
+   to an established seizure type? Exclude plans, thresholds, family history,
+   non-seizure events and unlinked symptoms. A linked but explicitly possible
+   seizure keeps `uncertain` status.
+2. Is there a stated rate, count with window/date, cluster count/cadence/size,
+   anchored absence, explicit last event, or standalone frequency level? If not,
+   retain the text only as context.
+3. Identify the event population and the **counted unit**: individual seizure,
+   affected day/night, cluster, or cluster day. Attach the source window and
+   any qualifier that changes who or what was counted.
+4. Is it current activity, an explicit last event, the nearest source-stated
+   change comparator, or the most recent measurement when no current one exists?
+   If none applies, it is outside the primary finding score.
+5. Does an existing finding already measure the same population, unit and window?
+   Add corroborating evidence to that finding. Keep a different subtype,
+   counted unit or measured window separate. Do not invent arithmetic, duration,
+   subtype or seizure status to make two statements agree.
+
+Examples that the guide and scorer must distinguish:
+
+| Source claim | Primary finding | Unscored context or forbidden inference |
+| --- | --- | --- |
+| “Now one focal impaired-awareness seizure per month; before treatment, four per week.” | Current monthly rate and one explicit prior comparator. | Earlier isolated diary counts are not additional primary findings. |
+| “Three tonic-clonic seizure nights per week.” | Rate of three **affected nights** per week for the named subtype. | Do not assert three individual seizures per week. |
+| “Two cluster days this month, usually six seizures each within 24 hours.” | One cluster-day claim with count two, window this month and stated size six. | The within-cluster 24-hour span is evidence, not the observation window or another finding. |
+| “No convulsions since February; auras still weekly.” | Convulsion absence and separate current aura rate. | Do not call the patient globally seizure-free. |
+| “Occasional head-fog,” with no clinician seizure link. | None. | Preserve the symptom only as context. |
+
+The compact response shape is owned by
+[schema decisions](one_shot_schema_decisions.md#candidate-compact-claim-record-2026-09-23).
+For the first candidate, preserve the existing approved defaults unless Conor
+changes them explicitly: score an explicitly reported longest seizure-free gap
+of at least two weeks separately; retain a broad absence summary only when its
+scope or interval adds a distinct claim; retain an explicitly stated last event
+as a separate finding; and read bare daily cadence using the v0.7 one-per-day
+default. The representative review should test whether these four defaults are
+reproducible and whether “daily” genuinely describes an individual-event rate.
+Any departure needs a named decision and a new reference version. This section
+does not itself authorise reference conversion or a model call.
+
+### Compact candidate v0.2 adjudication rules (24 September 2026)
+
+The five dev750 review batches preserved all 1,524 original findings but left
+116 source rows flagged for adjudication. A separate review of their reasons and
+the 18 null primary claims found that phase and seizure linkage caused more
+uncertainty than the record shape. These rules define a **new development
+candidate**, not a correction to v0.8.5 or an accepted new reference.
+
+- Apply the seizure-link test to each measured event population. A source-named
+  seizure phenotype or an unambiguous reference to it qualifies; a diagnosis,
+  diary heading, symptom or treatment discussion alone does not link every
+  nearby event to seizures. Preserve an explicitly possible seizure as uncertain.
+- Read `ongoing`, `superseded` and `past_or_unclear` from the note's clinical
+  sequence. Keep literal dates and windows. Do not repair contradictory dates or
+  make an old one-year recency flag determine phase.
+- Keep event population, counted unit, measurement kind, restriction and window
+  separate. Select each eligible current measurement once, plus an explicit last
+  event and at most the nearest source-linked measured comparator for that
+  population. Corroborating summaries and unlinked diary history are context.
+- Use `seizure_free` only for explicit zero activity over an anchored interval
+  and its stated subtype and reporting scope. “Largely event-free” and absence
+  of documentation while frequency is uncertain do not assert zero. The
+  existing two-week, distinct absence, last-event and bare-daily defaults above
+  still apply.
+- A prior comparison with an irreducibly unclear counted unit stays unscored
+  context with its exact wording. A “most weeks/months” occupancy statement
+  without an accepted event quantity, cluster measurement or standalone level
+  is also context. Do not add an unknown-unit escape value or guess an event
+  count. Explicit seizures **every night** count affected `seizure_night`s,
+  one per day-cycle, when no per-night event count is given; “most nights” does
+  not become exact nightly cadence.
+- An observed count of explicitly named status-epilepticus episodes uses
+  `counted_unit: status_episode`. It is never a count of individual seizures,
+  attendances or rescue doses. An explicitly stated **median inter-seizure
+  interval** uses `measurement.kind: median_interval`, its source duration and
+  `counted_unit: not_applicable`; do not turn the median into a regular rate.
+
+Unresolved central ambiguity remains a separately reported row partition with
+source ID and reason. A row with an essential disputed primary measurement or
+contradictory current state must not be marked complete, treated as an empty
+inventory, or silently removed from a full-inventory reference. In particular,
+“bimonthly” alone does not decide between twice monthly and every two months.
+Adjudicate the source; keep it unresolved if the source does not settle it.
+
+### Owner-reviewed compact candidate v0.3 (24 September 2026)
+
+Conor reviewed the open dev750 examples and approved a source-literal v0.3
+candidate. These decisions supersede the v0.2 handling **for this new development
+candidate only**. They do not change the frozen v0.8.5 reference or any saved
+score. The v0.2 record schema is reused; no new field or value is needed.
+
+**One-sentence rule:** Record each distinct, source-stated current, last-event,
+nearest prior or fallback seizure measurement with its literal event population,
+counted unit, window and uncertainty; keep contradictory assertions separately,
+but treat a less precise restatement of the same measurement as context.
+
+- Do not make one source assertion override another merely to reconcile a
+  contradictory clinical history. A current subtype rate and “no seizures
+  recorded since the last appointment” can both be primary. The latter means
+  absence of **recorded** events within that reporting scope, not proof of
+  global clinical freedom. Preserve both source windows and any conflict in the
+  evidence; do not invent a transition date. Likewise, retain distinct dated
+  events and absence intervals without repairing contradictory dates.
+- Use the more precise statement once when another sentence describes the
+  **same** event population and period less precisely. In source 2678, “every
+  night” supplies the primary affected-night cadence; “most nights” is context.
+  In source 15497, the air-travel episode describes the already identified most
+  recent flight cluster; it is not a second last event.
+- An explicit clinician heading such as `Present Seizure Frequency` can link
+  its immediately listed events to seizure activity (1706). A clinical account
+  under evaluation can support a **possible** seizure finding when its
+  phenomenology and management tie the measured events to that concern; retain
+  `uncertain` status (1707, 10873). An anchored seizure-diary absence can
+  describe possible events or auras with its app-reporting restriction (8577).
+  A diagnosis or diary heading alone still does not convert every nearby
+  symptom or fall into a seizure (14282).
+- For this candidate, `bimonthly` means once every two months in 959 and 960.
+  Keep two explicitly counted named populations separate without summing them
+  when their overlap is not stated (1597, 1640). Use the event label in the
+  counted sentence when a later clinical description uses another term (4496,
+  3262). Preserve literal broader labels such as “generalised seizures” beside
+  continuing absences or jerks; do not silently relabel them tonic–clonic
+  (15168, 15193). A total spanning mixed semiology remains unspecified-scope
+  rather than becoming a subtype total (15965, 16097).
+- A phrase that measures two named populations can supply two claims with
+  different units. In 12484, 12502 and 12506, “these occur roughly once a
+  month” applies separately to myoclonic **clusters** and tonic **seizures**.
+  A preceding occasional tonic level is not a third scored measurement of the
+  same tonic pattern. A three-count of focal epileptic spasms counts individual
+  spasms, even if the later semiology says they can cluster (1980).
+- Preserve the source's selected window literally. Use “this month” for the
+  two-cluster counts in 3242 and 3262 and the affected-day count in 3281,
+  despite conflicting adjacent wording or the note date. Do not repair an
+  impossible calendar sequence in the source. A diary cluster with no dated
+  window stays `past_or_unclear`, not automatically ongoing (13209).
+- Keep an explicitly stated maximum seizure-free gap of at least two weeks as
+  a distinct past-or-unclear finding with its **literal unspecified event scope**,
+  even alongside continuing subtype rates. Do not infer a subtype restriction
+  or present the gap as current global freedom. An until-only statement with
+  no start/duration (891), an unanchored denial (14187, 15429), or a phrase
+  that may fall below two weeks (13149) remains context. A prior “once every
+  couple of weeks” with no clear counted unit remains context (15771).
+
+The owner-approved overlay is local-only under
+`runs/seizure_finding_annotation_compact_v0_1/dev750/`. Structural completion
+of all 750 source rows means the declared policy can represent their selected
+claims; it does not establish independent annotator agreement, clinical
+validation, model performance or holdout generalization.
+The candidate v0.2 schema is
+[`rich.v0_2.schema.json`](../../../results/letter-benchmarks/gan/one_shot_frequency_compact_scope_candidate_no_call/rich.v0_2.schema.json).
