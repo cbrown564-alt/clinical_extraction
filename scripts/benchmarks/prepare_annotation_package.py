@@ -28,7 +28,10 @@ GUIDE = Path("docs/research/gan2026/seizure_frequency_annotation_guide.md")
 VALIDATOR = Path("scripts/benchmarks/annotation_validator.py")
 ANNOTATION_ROOT = Path("runs/seizure_frequency/annotation")
 BATCH_SIZE = 50
-SPLITS = {"test": ("test450", 450, "a held-out evaluation"), "train": ("train300", 300, "an evaluation")}
+SPLITS = {
+    "test": ("test450", 450, "a held-out evaluation"),
+    "train": ("train300", 300, "an evaluation"),
+}
 
 RECORD_SCHEMA: dict[str, Any] = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
