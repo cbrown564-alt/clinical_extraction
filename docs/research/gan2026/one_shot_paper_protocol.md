@@ -128,6 +128,29 @@ Everything removed at the lockdown is recoverable: Git tag
 scorers and results; `~/code/archives/clinical-extraction-runs-2026-09-24.tar.gz`
 holds the local `runs/` directory, including raw responses and ledgers.
 
+### Expanded rerun after the answer-separation instruction (2026-09-24)
+
+750 new first-attempt expanded calls; the saved minimal responses are reused.
+This is the locked expanded result. Aggregate: `score.json`; the first
+expanded run is `score_expanded_initial.json`.
+
+| Measure | minimal | expanded (initial) | expanded (locked) |
+| --- | --- | --- | --- |
+| Purist, whole response | 659/750 (87.9%) | 633/750 (84.4%) | 644/750 (85.9%, 83.2–88.2) |
+| Pragmatic | 680/750 | 660/750 | 668/750 (89.1%) |
+| Unusable responses | 2 | 17 | 8 |
+| Paired Purist, expanded − minimal | — | −3.47 (−5.60 to −1.33) | −2.00 (−3.73 to −0.27) |
+| Paired Pragmatic | — | −2.67 (−4.67 to −0.80) | −1.60 (−3.20 to −0.13) |
+| Findings precision / core recall / all recall | — | 0.845 / 0.884 / 0.835 | 0.838 / 0.906 / 0.853 |
+
+The locked expanded run won 15 letters and lost 30 (705 ties). Of the losses,
+6 are unusable responses and 24 are different labels with no dominant
+pattern: lower counts fell from 13 to 5. By the recorded stopping rule, the
+prompt is not changed again. On this model the expanded contract retains the
+answer within about two Purist points while returning the finding inventory;
+the paired interval narrowly excludes zero. Median latency 26.9 s versus
+6.3 s; completion tokens 4.97M versus 1.65M.
+
 ## Change log
 
 - 2026-09-24: Owner decision after the first paired run. The expanded answer

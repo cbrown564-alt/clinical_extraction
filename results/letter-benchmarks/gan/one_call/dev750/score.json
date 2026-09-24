@@ -1,0 +1,243 @@
+{
+  "identity": {
+    "dataset": "Gan 2026 synthetic",
+    "split": "dev750",
+    "row_policy": "all 750 split rows including row_ok=False",
+    "dataset_sha256": "cf13b498609079d37ba7ccd4cb9886b7d8a60a8bcd75e48ab5b4debb939b1c21",
+    "manifest_sha256": "c5f512d8744261916bd6d92562430489a3ba0494b0bf7c6575bfaa9e58680143",
+    "conditions": [
+      "minimal",
+      "expanded"
+    ],
+    "prompt_sha256": {
+      "minimal": "902bf3e2523420990f95871ccdccd18d971048ead265d5ab34b57b2621bd99a4",
+      "expanded": "d0b9c2b07f34bd109da779629ceae9402641e4cce24dafd11eaca7fe5a31b89b"
+    },
+    "schema_sha256": "03f2db2c6b98f1abc709980f73cd1dc917decc18a20ce90e5a55e8c5b6922795",
+    "model": "deepseek-flash",
+    "provider_documented_version": "DeepSeek-V4.1-Flash",
+    "thinking": "enabled",
+    "reasoning_effort": "low",
+    "temperature_submitted": 0,
+    "max_tokens": 24000,
+    "timeout_seconds": 600,
+    "concurrency": 12,
+    "retry_policy": "none; first response only",
+    "repair_policy": "none"
+  },
+  "responses_saved": 1500,
+  "scheduled": 1500,
+  "usage": {
+    "minimal": {
+      "finished": 750,
+      "prompt_tokens": 3697446,
+      "completion_tokens": 1651891,
+      "median_seconds": 6.3424670696258545
+    },
+    "expanded": {
+      "finished": 750,
+      "prompt_tokens": 5800758,
+      "completion_tokens": 4970580,
+      "median_seconds": 26.86207675933838
+    }
+  },
+  "conditions": {
+    "minimal": {
+      "primary_whole_response": {
+        "purist": {
+          "correct": 659,
+          "denominator": 750,
+          "agreement": 0.8786666666666667,
+          "ci95": [
+            0.8533490227270708,
+            0.9001250577361828
+          ]
+        },
+        "pragmatic": {
+          "correct": 680,
+          "denominator": 750,
+          "agreement": 0.9066666666666666,
+          "ci95": [
+            0.88372533286108,
+            0.9254633803124842
+          ]
+        }
+      },
+      "declared_answer_only": {
+        "purist": {
+          "correct": 659,
+          "denominator": 750,
+          "agreement": 0.8786666666666667,
+          "ci95": [
+            0.8533490227270708,
+            0.9001250577361828
+          ]
+        },
+        "pragmatic": {
+          "correct": 680,
+          "denominator": 750,
+          "agreement": 0.9066666666666666,
+          "ci95": [
+            0.88372533286108,
+            0.9254633803124842
+          ]
+        }
+      },
+      "failures": {
+        "invalid_envelope": 1,
+        "no_response": 1
+      },
+      "exact_quotes": {
+        "exact": 717,
+        "slots": 721
+      }
+    },
+    "expanded": {
+      "primary_whole_response": {
+        "purist": {
+          "correct": 644,
+          "denominator": 750,
+          "agreement": 0.8586666666666667,
+          "ci95": [
+            0.8319037782279848,
+            0.881774136013618
+          ]
+        },
+        "pragmatic": {
+          "correct": 668,
+          "denominator": 750,
+          "agreement": 0.8906666666666667,
+          "ci95": [
+            0.8663108669611462,
+            0.9110409132350977
+          ]
+        }
+      },
+      "declared_answer_only": {
+        "purist": {
+          "correct": 646,
+          "denominator": 750,
+          "agreement": 0.8613333333333333,
+          "ci95": [
+            0.8347528153398511,
+            0.8842312543979716
+          ]
+        },
+        "pragmatic": {
+          "correct": 670,
+          "denominator": 750,
+          "agreement": 0.8933333333333333,
+          "ci95": [
+            0.8692021778072523,
+            0.9134557578852116
+          ]
+        }
+      },
+      "failures": {
+        "invalid_envelope": 2,
+        "invalid_schema": 3,
+        "no_response": 2,
+        "invalid_target_label": 1
+      },
+      "exact_quotes": {
+        "exact": 2619,
+        "slots": 2627
+      }
+    }
+  },
+  "paired": {
+    "purist": {
+      "expanded_minus_minimal": -0.02,
+      "expanded_wins": 15,
+      "minimal_wins": 30,
+      "ties": 705,
+      "denominator": 750,
+      "ci95": [
+        -0.037333333333333336,
+        -0.0026666666666666666
+      ],
+      "bootstrap": {
+        "seed": 20260913,
+        "replicates": 10000,
+        "unit": "letter"
+      }
+    },
+    "pragmatic": {
+      "expanded_minus_minimal": -0.016,
+      "expanded_wins": 12,
+      "minimal_wins": 24,
+      "ties": 714,
+      "denominator": 750,
+      "ci95": [
+        -0.032,
+        -0.0013333333333333333
+      ],
+      "bootstrap": {
+        "seed": 20260913,
+        "replicates": 10000,
+        "unit": "letter"
+      }
+    }
+  },
+  "findings": {
+    "scorer": "seizure_frequency_findings_lenient",
+    "letters": 750,
+    "usable_responses": 742,
+    "predicted_findings": 1373,
+    "reference_findings": {
+      "core": 1219,
+      "supporting": 131
+    },
+    "precision": 0.8383102694828842,
+    "recall_core": 0.9056603773584906,
+    "recall_all": 0.8525925925925926,
+    "counts": {
+      "letters": 750,
+      "usable": 742,
+      "predicted": 1373,
+      "matched_predicted": 1151,
+      "core_reference": 1219,
+      "core_matched": 1104,
+      "supporting_reference": 131,
+      "supporting_matched": 47
+    },
+    "recall_by_tier_and_phase": {
+      "core:ongoing": 0.9045643153526971,
+      "core:past_or_unclear": 0.9254658385093167,
+      "core:superseded": 0.8829787234042553,
+      "supporting:ongoing": 0.13432835820895522,
+      "supporting:past_or_unclear": 0.625,
+      "supporting:superseded": 0.375
+    },
+    "matched_pair_attribute_agreement": {
+      "kind": 0.9913119026933102,
+      "scope": 0.7471763683753258,
+      "counted_unit": 0.9939183318853171,
+      "status": 0.9704604691572546,
+      "phase": 0.9087749782797567,
+      "restriction_stated": 0.7419635099913119
+    },
+    "predicted_kind_by_phase": {
+      "cluster:ongoing": 103,
+      "cluster:past_or_unclear": 9,
+      "cluster:superseded": 9,
+      "last_event:ongoing": 41,
+      "last_event:past_or_unclear": 32,
+      "last_event:superseded": 2,
+      "median_interval:ongoing": 5,
+      "observed_count:ongoing": 260,
+      "observed_count:past_or_unclear": 115,
+      "observed_count:superseded": 27,
+      "qualitative:ongoing": 91,
+      "qualitative:past_or_unclear": 9,
+      "qualitative:superseded": 7,
+      "rate:ongoing": 298,
+      "rate:past_or_unclear": 5,
+      "rate:superseded": 35,
+      "seizure_free:ongoing": 288,
+      "seizure_free:past_or_unclear": 19,
+      "seizure_free:superseded": 18
+    }
+  },
+  "reference_sha256": "e40755d70afcb83714082a93b6e838c4f3692189c5567959a42933055b839943"
+}
