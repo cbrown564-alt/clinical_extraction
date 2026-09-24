@@ -19,6 +19,16 @@ of task-relevant seizure findings read from each full source letter. Annotators 
 not limit their inventory to r5 outputs or to the existing selected answer. The
 existing Gan answer reference remains separate and retains its scoring semantics.
 
+The frozen v0.7 reference and saved R8 comparisons retain that full-inventory
+meaning. On 2026-09-23 Conor selected a narrower **candidate primary finding
+score** for future development: current activity, an explicit last event, and a
+source-stated prior measurement that explains a change. The
+[candidate annotation rule](seizure_finding_annotation_v08.md#candidate-compact-primary-finding-policy-23-september-2026)
+defines its scope. It must receive its own source-first reference and frozen
+scorer before any score is reported. It does not replace the established native
+selected-frequency primary outcome, make the old inventory scores comparable to
+new ones, or permit a changed prompt to be judged against a moving reference.
+
 ### Source-only test450 annotation
 
 On 2026-09-15, Conor requested a separate ChatGPT 6 Pro task to annotate all

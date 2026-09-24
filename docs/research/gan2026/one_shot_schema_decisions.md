@@ -5,6 +5,125 @@ Reorganised 2026-09-14 from the [study protocol](one_shot_paper_protocol.md).
 R8 is the latest development representation below. Earlier dated sections describe
 their named versions; their uses of “current” refer to that decision date.
 They do not override the [source annotation guide](seizure_finding_annotation_guide.md).
+
+## Owner-reviewed compact candidate v0.3 (2026-09-24)
+
+Conor approved source-literal decisions for the 64 remaining dev750 review
+rows. The versioned v0.3 **annotation candidate** reuses the v0.2 JSON schema:
+none of the decisions requires a new field or enum. The [v0.3 guide
+section](seizure_finding_annotation_v08.md#owner-reviewed-compact-candidate-v03-24-september-2026)
+owns event selection and conflict handling. In particular, a reporting-scoped
+absence remains a `seizure_free` measurement with a precise `restriction` and
+evidence; it must not be interpreted as global clinical freedom. Named current
+rates and a contradictory since-visit absence can both be selected without
+inventing a temporal transition. This changes future matching semantics and
+requires a versioned scorer before a model comparison. The v0.2 proposal,
+schema and candidate remain available unchanged.
+
+The local owner overlay has all 750 rows structurally complete while preserving
+all 1,524 legacy claim records. This is development annotation policy, not an
+independently reproduced gold reference or a measured model result.
+
+## Compact candidate v0.2 after dev750 review (2026-09-24)
+
+All five 150-row review batches retained and structurally validated the 1,524
+original findings. Their source reviewers marked 116 rows for adjudication; 18
+provisional primary claims lacked a compact record. The separate
+[policy proposal](../../../runs/seizure_finding_annotation_compact_v0_1/dev750/compact_policy_adjudication_proposal.json)
+and source review support two narrow additions to a **new candidate** schema:
+
+| Addition | Meaning and constraint | Reason |
+| --- | --- | --- |
+| `counted_unit: status_episode` | Permitted only with `observed_count` and a named status-epilepticus event. | Two notes count episodes of status epilepticus, which may contain repeated seizures and cannot be counted as individual seizures. |
+| `measurement.kind: median_interval` | Holds a source-stated inter-seizure duration with `counted_unit: not_applicable`. | Five notes give a median between events, which is not a regular rate or a seizure-free interval. |
+
+The [v0.2 schema](../../../results/letter-benchmarks/gan/one_shot_frequency_compact_scope_candidate_no_call/rich.v0_2.schema.json)
+adds only these representations. The v0.1 schema and five returned batch files
+remain unchanged. All 1,436 non-null reviewed candidates and the seven proposed
+extension records passed structural validation under v0.2; two malformed
+unit/measurement combinations were rejected. This check does not establish
+clinical correctness or make the 116 flagged rows accepted gold.
+
+The [candidate guide](seizure_finding_annotation_v08.md#compact-candidate-v02-adjudication-rules-24-september-2026)
+owns the matching scope decisions: unclear-unit prior comparators and
+unsupported “most weeks/months” occupancy detail stay context; explicit
+every-night seizures count affected nights when no events-per-night count is
+stated. Essential ambiguity remains in a reported unresolved partition. The
+four earlier approved defaults are preserved. These choices prioritise a
+reproducible narrow score and require source-based adjudication before any
+versioned reference or model comparison.
+
+## Candidate compact claim record (2026-09-23)
+
+Conor approved exploring a narrower primary **finding** score: current seizure
+activity, an explicitly stated last event, and the nearest source-stated prior
+measurement needed to explain a change. The candidate annotation rule and
+inclusion examples are in [the v0.8 guide's candidate section](seizure_finding_annotation_v08.md#candidate-compact-primary-finding-policy-23-september-2026).
+This does not change the paper's existing selected-frequency primary outcome,
+the one-call requirement, frozen R8 or v0.8.5 artifacts, or the unrun R9
+candidate. A future prompt and reference must share this scope before they are
+compared.
+
+The proposed **one-call response** still has `answer` and `findings`. The compact
+record changes only how each finding expresses its clinical claim. It removes
+duplicated meanings across free-text event names and measurement types:
+
+| Field | Candidate meaning | Scored distinction |
+| --- | --- | --- |
+| `event` | Concise source-supported seizure type or explicit event set, with `overall`, `named`, `combined` or `unspecified` scope. A frozen alias list can equate spelling variants; it must not infer a subtype from diagnosis alone. | Overall versus named/combined population and named subtype(s); unspecified stays unresolved. |
+| `counted_unit` | `individual_seizure`, `seizure_day`, `seizure_night`, `cluster`, `cluster_day`, or `not_applicable` for absence and last-event claims. | Three affected nights are not three seizures; two clusters are not two seizures. |
+| `status` | Explicit `stated` or `uncertain` for included claims. Explicit non-seizures and unlinked symptoms are outside the seizure inventory. | Uncertain cannot silently become stated. |
+| `measurement` | One of `rate`, `observed_count`, `cluster`, `seizure_free`, `last_event`, or `qualitative`, with only values supported by the source. A cluster keeps stated count, cadence and size in one claim. | Kind, number/range/bound, denominator, cluster count/cadence/size, absence duration/anchor and last-event time as applicable. |
+| `time` | Source window or occurrence expression plus `phase`: `ongoing`, `superseded`, or `past_or_unclear`. The one-year recency category is calculated from dates outside the model. | Observation window and phase. Recent does not mean ongoing. |
+| `restriction` | Optional qualifier only when it changes the counted population or denominator, such as “witnessed only” or “while asleep.” | Meaning-changing restrictions only. |
+| `evidence` | One or more exact source fragments supporting all scored fields. Each fragment must occur in the note; evidence support must also be reviewed. | Source support, not identical quotation boundaries. |
+
+For `answer`, keep the existing native label and supporting evidence. If it
+links to findings, use validated zero-based `claim_indices` into the returned
+`findings` array rather than asking the model to invent stable finding IDs.
+An answer derived from several findings can reference several indices. The
+existing no-reference sentinel still needs an explicit answer and an empty
+finding list; this candidate does not change native answer semantics. The
+model must return the answer and findings in **one clinical call**. Moving the
+answer to another model call would change the study design.
+
+Illustrative candidate records, not accepted reference conversions:
+
+```json
+{
+  "event": {"scope": "named", "label": "generalised tonic-clonic seizures"},
+  "counted_unit": "seizure_night",
+  "status": "stated",
+  "measurement": {
+    "kind": "rate",
+    "quantity": {"kind": "number", "value": 3},
+    "per": {"kind": "number", "value": 1, "unit": "week"}
+  },
+  "time": {"source": "Currently", "phase": "ongoing"},
+  "evidence": ["Currently, generalised tonic-clonic seizures occur on three nights per week"]
+}
+```
+
+This records affected nights without asserting three individual seizures. For
+“two cluster days this month, usually six seizures each within 24 hours,” use
+`counted_unit: cluster_day`, a `cluster` measurement with count two and
+seizures per cluster six, and `time.source: this month`. Keep `within 24
+hours` in evidence only; it is not the observation window. These examples
+must be rendered with source-supported wording in any eventual model prompt.
+
+The [portable structural candidate](../../../results/letter-benchmarks/gan/one_shot_frequency_compact_scope_candidate_no_call/rich.schema.json)
+and [five fictional cases](../../../results/letter-benchmarks/gan/one_shot_frequency_compact_scope_candidate_no_call/fictional_fixtures.json)
+make this shape reviewable. JSON Schema validation and exact evidence occurrence
+passed for all five; six malformed structural probes were rejected. The example
+answer labels are illustrative and were **not** checked against native Purist.
+The schema cannot by itself check source entailment, clinically meaningful event
+aliases, all cross-field meaning, claim duplication, the two-week
+absence rule, or whether an index is within the returned array. Those require
+explicit code or review before evaluation. The candidate guide preserves the
+approved last-event and other disputed defaults for the first representative
+slice. Model-facing instructions and a versioned development reference are
+still unfinished.
+This no-call artifact is not an R9 revision or evidence of model performance.
 Execution results and authorisations belong to the [execution record](one_shot_execution_record.md).
 
 ## Prospective R9 two-week absence rule (2026-09-23)

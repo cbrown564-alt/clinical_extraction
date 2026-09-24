@@ -1,0 +1,130 @@
+[
+  {
+    "case": "current_rate_and_explicit_change_comparator",
+    "note": "Currently, focal impaired-awareness seizures occur once per month. Before treatment, they occurred four times per week.",
+    "response": {
+      "answer": {
+        "label": "1 per month",
+        "evidence": "Currently, focal impaired-awareness seizures occur once per month.",
+        "claim_indices": [0]
+      },
+      "findings": [
+        {
+          "event": {"scope": "named", "label": "focal impaired-awareness seizures"},
+          "counted_unit": "individual_seizure",
+          "status": "stated",
+          "measurement": {
+            "kind": "rate",
+            "quantity": {"kind": "number", "value": 1},
+            "per": {"kind": "number", "value": 1, "unit": "month"}
+          },
+          "time": {"source": "Currently", "phase": "ongoing"},
+          "evidence": ["Currently, focal impaired-awareness seizures occur once per month."]
+        },
+        {
+          "event": {"scope": "named", "label": "focal impaired-awareness seizures"},
+          "counted_unit": "individual_seizure",
+          "status": "stated",
+          "measurement": {
+            "kind": "rate",
+            "quantity": {"kind": "number", "value": 4},
+            "per": {"kind": "number", "value": 1, "unit": "week"}
+          },
+          "time": {"source": "Before treatment", "phase": "superseded"},
+          "evidence": ["Before treatment, they occurred four times per week."]
+        }
+      ]
+    }
+  },
+  {
+    "case": "affected_nights_not_individual_seizures",
+    "note": "Currently, generalised tonic-clonic seizures occur on three nights per week.",
+    "response": {
+      "answer": {
+        "label": "3 per week",
+        "evidence": "Currently, generalised tonic-clonic seizures occur on three nights per week.",
+        "claim_indices": [0]
+      },
+      "findings": [
+        {
+          "event": {"scope": "named", "label": "generalised tonic-clonic seizures"},
+          "counted_unit": "seizure_night",
+          "status": "stated",
+          "measurement": {
+            "kind": "rate",
+            "quantity": {"kind": "number", "value": 3},
+            "per": {"kind": "number", "value": 1, "unit": "week"}
+          },
+          "time": {"source": "Currently", "phase": "ongoing"},
+          "evidence": ["Currently, generalised tonic-clonic seizures occur on three nights per week."]
+        }
+      ]
+    }
+  },
+  {
+    "case": "cluster_days_with_unscored_within_cluster_span",
+    "note": "This month there were two cluster days, usually six seizures each within 24 hours.",
+    "response": {
+      "answer": {
+        "label": "unknown",
+        "evidence": "This month there were two cluster days, usually six seizures each within 24 hours.",
+        "claim_indices": [0]
+      },
+      "findings": [
+        {
+          "event": {"scope": "overall", "label": "seizures"},
+          "counted_unit": "cluster_day",
+          "status": "stated",
+          "measurement": {
+            "kind": "cluster",
+            "count": {"kind": "number", "value": 2},
+            "seizures_per_cluster": {"kind": "number", "value": 6}
+          },
+          "time": {"source": "This month", "phase": "ongoing"},
+          "evidence": ["This month there were two cluster days, usually six seizures each within 24 hours."]
+        }
+      ]
+    }
+  },
+  {
+    "case": "subtype_absence_does_not_erase_auras",
+    "note": "There have been no convulsions since February, but focal auras continue weekly.",
+    "response": {
+      "answer": {
+        "label": "1 per week",
+        "evidence": "focal auras continue weekly",
+        "claim_indices": [1]
+      },
+      "findings": [
+        {
+          "event": {"scope": "named", "label": "convulsions"},
+          "counted_unit": "not_applicable",
+          "status": "stated",
+          "measurement": {"kind": "seizure_free", "since": "February"},
+          "time": {"source": "since February", "phase": "ongoing"},
+          "evidence": ["There have been no convulsions since February"]
+        },
+        {
+          "event": {"scope": "named", "label": "focal auras"},
+          "counted_unit": "individual_seizure",
+          "status": "stated",
+          "measurement": {
+            "kind": "rate",
+            "quantity": {"kind": "number", "value": 1},
+            "per": {"kind": "number", "value": 1, "unit": "week"}
+          },
+          "time": {"source": "continue weekly", "phase": "ongoing"},
+          "evidence": ["focal auras continue weekly"]
+        }
+      ]
+    }
+  },
+  {
+    "case": "unlinked_symptom_excluded",
+    "note": "She sometimes has head-fog under stress. The clinician does not identify these symptoms as seizures. No seizure frequency is documented.",
+    "response": {
+      "answer": {"label": "no seizure frequency reference", "evidence": null, "claim_indices": []},
+      "findings": []
+    }
+  }
+]
