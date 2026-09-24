@@ -370,8 +370,10 @@ units; do not substitute one for the other.
    If none applies, it is outside the primary finding score.
 5. Does an existing finding already measure the same population, unit and window?
    Add corroborating evidence to that finding. Keep a different subtype,
-   counted unit or measured window separate. Do not invent arithmetic, duration,
-   subtype or seizure status to make two statements agree.
+   counted unit or measured window separate. The approved diary-total rule above
+   permits addition of disjoint, same-unit components for one measured window;
+   do not add overlapping subtype progressions or invent duration, subtype or
+   seizure status to make two statements agree.
 
 Examples that the guide and scorer must distinguish:
 
@@ -505,3 +507,79 @@ claims; it does not establish independent annotator agreement, clinical
 validation, model performance or holdout generalization.
 The candidate v0.2 schema is
 [`rich.v0_2.schema.json`](../../../results/letter-benchmarks/gan/one_shot_frequency_compact_scope_candidate_no_call/rich.v0_2.schema.json).
+
+### Prospective compact scoring clarification from saved R9 (24 September 2026)
+
+The [v2 scored-term source audit](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v02_source_audit/README.md)
+compares the unchanged v0.3 reference with saved R9 responses. It proposes
+the following operational reading of the existing compact restriction rule;
+it does **not** edit the v0.3 reference or make the provisional v2 score the
+paper endpoint.
+
+- A condition is scored when the measurement applies only to that event
+  population or exposure: an absence of jerks **on waking**, a rate measured
+  **on workdays**, or a daily rate occurring only for **brief periods**. Do not
+  promote these to unrestricted absence or continuous rate (14187, 4116,
+  16574).
+- A trigger or circumstance of a counted single event remains in exact
+  evidence, not `restriction`: the last seizure after a night shift (6029) and
+  two convulsions at work (3846). The work setting *does* limit the separate
+  two-per-day rate in 3846, so apply the rule to each claim rather than each
+  letter.
+- A condition already in the event label does not require an identical
+  restriction string. `Events during sleep` plus `during sleep` is one
+  sleep-only population (9103); `electrographic events` plus `on EEG` is one
+  EEG-observed population (9815). Preserve both literal fields and evidence
+  in source records while scoring the population once.
+- An incidental descriptor such as `brief` is optional. Broad phenomenology
+  can still distinguish populations: jerks and staring spells are separate in
+  2513; convulsion and convulsive event can share a code. Do not infer a
+  formal seizure subtype from either description alone.
+
+The source audit leaves conditional qualitative findings, mixed broad event
+sets, and contradictory observation scopes open. Those require explicit
+adjudication before a frozen successor reference or another dev750 model run.
+
+The [subsequent v3 policy audit](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v03_policy_candidate/README.md)
+narrows those questions for development scoring. Score a qualitative condition
+when the source explicitly limits the level to it: `uncommon when meals are
+regular` (6321), `convulsions if the cluster is prolonged` (10996), and an
+explicitly perimenstrual-only pattern (3468). Keep non-exclusive associations
+such as `occasional clustering on workdays when breakfast is missed` (2023)
+in evidence without making the level conditional. If a combined event set has
+an unclassified component, retain its literal combined scope and label rather
+than infer a subtype or collapse it to one named member (17146, 17189).
+
+The v0.3 owner record already retains the 5092 absence as **observed clinical**
+seizures and retains the 6077 eight-month `day-to-day` absence only
+provisionally. The latter's relation to a recent flight breakthrough is not
+settled by the source; keep its `past_or_unclear` phase and restricted literal
+wording. Do not report it as current global freedom. The v3 scorer makes these
+distinctions without changing the source reference or resolving the remaining
+source contradiction.
+
+### Diary-total prompt alignment (24 September 2026)
+
+The owner-approved v0.8.3 rule permits a total from disjoint diary components
+with the same counted unit and measured interval. A review of eight selected
+v0.3 references found such totals while the frozen R9 prompt prohibited all
+arithmetic. In 15992, for example, seven awake events is four in December plus
+three in January; the note does not state seven. R9 returned the two source
+counts, so its missing total is a prompt/reference policy mismatch, not a
+standalone model error. The same pattern occurs in 4402, 4410, 5995, 6065,
+15965, 15982 and 16041. The
+[source checks](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v03_policy_candidate/README.md#diary-arithmetic-correction)
+are selected examples, not an estimate of prevalence. A successor prompt
+should state the bounded diary-sum rule before any new development run.
+
+### Source 2023 mixed-diary question after R11 (24 September 2026)
+
+The source lists four absence seizures and one myoclonic event this month.
+The v0.3 reference retains the two named counts but no overall five-event
+count. The v0.8.3 mixed-diary rule appears to permit one overall count when
+these disjoint components can be added. Review this as a possible reference
+omission before changing the frozen v0.3 reference or scoring a successor.
+R11's single `combined absence and myoclonic` count of five still loses the
+two distinct named findings; it is not an exact match to the current
+reference. The [full R11 source audit](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r11/dev750/README.md)
+preserves the owner reasons and both model outputs.

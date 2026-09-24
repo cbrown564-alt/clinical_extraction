@@ -1,0 +1,401 @@
+{
+  "dataset": "Gan 2026 synthetic",
+  "split": "selected dev750 pilot16",
+  "selection": [
+    "4402",
+    "4410",
+    "5995",
+    "6065",
+    "15965",
+    "15982",
+    "15992",
+    "16041",
+    "467",
+    "6094",
+    "6319",
+    "6321",
+    "10996",
+    "17146",
+    "17189",
+    "5092"
+  ],
+  "scorer": "finding_compact_concepts_v04",
+  "scorer_sha256": "6ca0cb6c613a2636d983467087a0bbcdf78a0f55ac5168f99ecf1dfa2571a306",
+  "reference_sha256": "e50ecd64aece553aa22211e29c439967df6178302aa1a3905c403c3624f4189c",
+  "replay_mode": "saved first responses",
+  "repair_policy": "none",
+  "models": {
+    "R9": {
+      "prediction_sha256": "6d6735bb0951ea05439c0f21249b4b6394098b01fb467e1f7bab4dd698b3a6f8",
+      "tp": 6,
+      "fp": 45,
+      "fn": 27,
+      "precision": 0.11764705882352941,
+      "recall": 0.18181818181818182,
+      "f1": 0.14285714285714285,
+      "invalid_reasons": {},
+      "per_letter": [
+        {
+          "source_id": "467",
+          "tp": 0,
+          "fp": 2,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "4402",
+          "tp": 0,
+          "fp": 6,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "4410",
+          "tp": 2,
+          "fp": 4,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "5092",
+          "tp": 0,
+          "fp": 1,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "5995",
+          "tp": 0,
+          "fp": 4,
+          "fn": 3,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "6065",
+          "tp": 0,
+          "fp": 3,
+          "fn": 4,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "6094",
+          "tp": 0,
+          "fp": 3,
+          "fn": 2,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "6319",
+          "tp": 0,
+          "fp": 1,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "6321",
+          "tp": 0,
+          "fp": 1,
+          "fn": 2,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "10996",
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "15965",
+          "tp": 0,
+          "fp": 5,
+          "fn": 3,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "15982",
+          "tp": 0,
+          "fp": 3,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "15992",
+          "tp": 0,
+          "fp": 3,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "16041",
+          "tp": 0,
+          "fp": 5,
+          "fn": 2,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "17146",
+          "tp": 2,
+          "fp": 2,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "17189",
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "invalid_reason": null
+        }
+      ]
+    },
+    "R10": {
+      "prediction_sha256": "4f90352efbb7f2e2eda42f2f3decac3bae51e7240b50db527a3e79da2d7ae038",
+      "tp": 9,
+      "fp": 18,
+      "fn": 24,
+      "precision": 0.3333333333333333,
+      "recall": 0.2727272727272727,
+      "f1": 0.3,
+      "invalid_reasons": {},
+      "per_letter": [
+        {
+          "source_id": "467",
+          "tp": 0,
+          "fp": 2,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "4402",
+          "tp": 0,
+          "fp": 1,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "4410",
+          "tp": 2,
+          "fp": 1,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "5092",
+          "tp": 0,
+          "fp": 1,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "5995",
+          "tp": 0,
+          "fp": 1,
+          "fn": 3,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "6065",
+          "tp": 0,
+          "fp": 3,
+          "fn": 4,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "6094",
+          "tp": 0,
+          "fp": 1,
+          "fn": 2,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "6319",
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "6321",
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "10996",
+          "tp": 0,
+          "fp": 1,
+          "fn": 2,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "15965",
+          "tp": 1,
+          "fp": 2,
+          "fn": 2,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "15982",
+          "tp": 0,
+          "fp": 1,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "15992",
+          "tp": 0,
+          "fp": 1,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "16041",
+          "tp": 0,
+          "fp": 2,
+          "fn": 2,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "17146",
+          "tp": 2,
+          "fp": 1,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "17189",
+          "tp": 2,
+          "fp": 0,
+          "fn": 1,
+          "invalid_reason": null
+        }
+      ]
+    },
+    "R11": {
+      "prediction_sha256": "da7802988bbe33335eaab481a328f44e82954aba11df38a782dcc62f3cde409b",
+      "tp": 14,
+      "fp": 11,
+      "fn": 19,
+      "precision": 0.56,
+      "recall": 0.42424242424242425,
+      "f1": 0.4827586206896552,
+      "invalid_reasons": {},
+      "per_letter": [
+        {
+          "source_id": "467",
+          "tp": 0,
+          "fp": 2,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "4402",
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "4410",
+          "tp": 2,
+          "fp": 1,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "5092",
+          "tp": 0,
+          "fp": 1,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "5995",
+          "tp": 1,
+          "fp": 0,
+          "fn": 2,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "6065",
+          "tp": 1,
+          "fp": 0,
+          "fn": 3,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "6094",
+          "tp": 0,
+          "fp": 2,
+          "fn": 2,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "6319",
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "6321",
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "10996",
+          "tp": 0,
+          "fp": 1,
+          "fn": 2,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "15965",
+          "tp": 1,
+          "fp": 0,
+          "fn": 2,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "15982",
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "15992",
+          "tp": 0,
+          "fp": 1,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "16041",
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "17146",
+          "tp": 2,
+          "fp": 2,
+          "fn": 1,
+          "invalid_reason": null
+        },
+        {
+          "source_id": "17189",
+          "tp": 2,
+          "fp": 1,
+          "fn": 1,
+          "invalid_reason": null
+        }
+      ]
+    }
+  }
+}

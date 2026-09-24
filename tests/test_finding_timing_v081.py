@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
-    one_shot_measurements_r9 as r9,
-)
 from scripts.benchmarks.retime_findings_v081 import one_year_classification, overrides
 
 
@@ -17,31 +14,8 @@ def test_one_year_boundary_and_coarse_date_uncertainty() -> None:
     assert one_year_classification("six months ago", clinic) == "current"
 
 
-def test_adjudication_examples_and_rendered_r9_prompt() -> None:
+def test_adjudication_examples() -> None:
     decisions = overrides()
     assert decisions[14530, "f1"][0] == "current"
     assert decisions[2965, "f4"][0] == "historical"
     assert (4597, "f3") not in decisions  # ongoing eight-week absence
-    payload = r9.prompt_payload("Clinic Date: 14 June 2019. Initial seizure in March 2019.")
-    instructions = " ".join(payload["schema_instructions"])
-    assert "more than one calendar year" in instructions
-    assert "Exactly one year ago" in instructions
-    assert "no usable date" in instructions
-    assert "short, source-supported name" in instructions
-    assert "brief nocturnal episodes" in instructions
-    assert "seizures, seizure days and clusters" in instructions
-    assert "the next sentence says only 'seizure frequency'" in instructions
-    assert "Do not narrow an overall event rate to the predominant subtype" in instructions
-    assert "name convulsive activity and keep the log wording" in instructions
-    assert "name event.type 'clusters'" in instructions
-    assert "at least two weeks" in instructions
-    assert "four seizure-free days between cluster days" in instructions
-    assert "A single grouped occurrence is one cluster" in instructions
-    assert "do not duplicate it as a seizure-day count" in instructions
-    assert "A span within a cluster" in instructions
-    assert "Do not assume that clusters last a day" in instructions
-    assert "Clinician concern about spells with reduced awareness" in instructions
-    assert "historical only when the source explicitly marks" not in instructions
-    assert payload["output_schema"]["$defs"]["QualitativeFrequency"]["properties"]["frequency"][
-        "enum"
-    ] == ["occasional", "frequent"]

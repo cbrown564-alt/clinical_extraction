@@ -29,6 +29,99 @@ scorer before any score is reported. It does not replace the established native
 selected-frequency primary outcome, make the old inventory scores comparable to
 new ones, or permit a changed prompt to be judged against a moving reference.
 
+### Compact primary finding score
+
+The owner-reviewed compact v0.3 dev750 reference and `finding_compact_v03_v2`
+scorer are now versioned. The scorer uses all 750 synthetic development letters,
+including `row_ok=False`, and the 1,219 selected claims in the source-backed
+v0.3 candidate. Independent annotation agreement is not a prerequisite for
+this development comparison. The source review and owner adjudications establish
+its provenance; they do not establish clinical validation.
+
+Report **whole-claim precision, recall and F1** alongside **source-aligned
+precision and recall** and separate component precision and recall for event
+population, counted unit, seizure status, measurement kind, measurement value,
+phase, source window and meaning-changing restriction. The native selected
+frequency answer remains a separate primary endpoint under the existing Gan
+scorer. One whole-claim match cannot conceal an otherwise correct measurement
+with a wrong event label.
+
+A whole-claim prediction matches one reference claim when its declared event population
+(scope plus a small explicit spelling-alias list), counted unit, seizure status,
+phase, measurement, source time window, and meaning-changing restriction agree,
+and at least one exact source quotation overlaps. Numeric values, bounds and
+denominators match component by component. A seizure-free duration scores in
+place of a co-stated since anchor; anchor-only claims require the anchor. The
+scorer uses maximum one-to-one matching, so duplicate predictions receive no
+second credit. After retaining whole-claim pairs, it aligns remaining claims
+one-to-one by overlapping exact source evidence, maximising pair count and then
+component agreement. Each aligned pair earns independent component credit;
+unaligned predictions and references count as errors for every component.
+Component scores use all usable predicted claims and all reference claims as
+denominators, including unusable-response misses. Agreement among aligned pairs
+is also reported to distinguish extraction coverage from field correctness.
+No native frequency-band collapse, inferred subtype, format repair or semantic
+repair is applied.
+
+The [scorer manifest](../../../results/letter-benchmarks/gan/one_shot_frequency_compact_scope_candidate_no_call/scorer_v03_manifest.json)
+records the reference, schema, prompt and local snapshot hashes. Rebuild with
+`.venv/bin/python scripts/benchmarks/score_compact_findings_v03.py`. To score
+saved parsed R9 responses, provide `--predictions INPUT.jsonl --output OUTPUT_DIR`.
+The input must cover every source row with matching source ID, row index and
+source hash. Also provide `--run-metadata RUN.json` declaring nonempty
+`model`, `prompt_version`, `prompt_revision`, `replay_mode` and
+`repair_policy`; the prompt identifiers must match this frozen R9 revision.
+Each input line contains a `response` object or null. Invalid responses
+contribute all reference claims as misses and no predicted claims; invalid
+reasons and per-letter pairs stay in the requested local output directory.
+This command makes no model calls and does not inspect test450.
+
+The saved R9 development mismatch audit found a source-window prefix mismatch
+in the original scorer. Version `finding_compact_v03_v3` accepts optional
+leading articles and `in`/`over` on a stated `past`, `last` or `current`
+relative window while retaining the interval word and quantity. The original
+score is preserved. The [versioned audit and replay](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/window_audit_v03_v3/README.md)
+record the source examples, scorer change, remaining event/restriction
+questions and both scores. No event-population or restriction equivalence is
+added without a source-backed policy decision. This is development rescore
+evidence, not a second model result.
+
+The later [scored-term v2 development audit](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v02_source_audit/README.md)
+proposes a finite set of explicit event and population codes and keeps literal
+labels/evidence in a separate projection. It remains provisional while
+conditional qualitative findings, combined broad populations and observation
+scope are adjudicated. Its score is a diagnostic replay of the same saved R9
+responses, not a replacement endpoint or evidence of prompt improvement.
+The [v3 policy continuation](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v03_policy_candidate/README.md)
+keeps the same development whole-claim count after clarifying explicit
+qualitative conditions, incomplete combined labels, and observation-limited
+absence. Source 6077 remains a flagged provisional claim under its earlier
+owner adjudication. The literal v0.3 score remains the frozen comparison.
+
+An [eight-case diary arithmetic check](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v03_policy_candidate/README.md#diary-arithmetic-correction)
+found a prompt/reference mismatch: the reference includes owner-approved sums
+of disjoint diary components, while R9 explicitly forbids arithmetic. The
+earlier source-15992 model-error attribution is withdrawn. The score remains
+unchanged, but these misses cannot be assigned solely to model capability.
+The check is selected, so it does not quantify the full effect.
+
+### R10/R11 development pilot
+
+The fixed [R10/R11 development pilot](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r11/dev750_pilot16/README.md)
+tested prompt alignment on 16 selected dev750 letters. Its selected result
+does not estimate population performance. The calendar-window v04 scorer
+changes only month spelling and range punctuation equivalences; a saved-R9
+dev750 replay remains at 445 whole-claim matches (F1 35.21%). R11 was then
+prepared for a full dev750 first-response run with the same v0.3 reference,
+one-call output and no repair. The execution record owns completed results.
+
+The [full R11 synthetic dev750 result](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r11/dev750/README.md)
+is mixed under the same v04 scorer: F1 rises from 35.21% to 36.19% as extras
+fall, but exact matches and recall fall and the native Pragmatic answer loses
+nine correct letters. Its paired development F1 interval crosses zero.
+Keep R11 as a development comparison; do not substitute its selected pilot
+or full development score for a frozen test450 or clinical claim.
+
 ### Source-only test450 annotation
 
 On 2026-09-15, Conor requested a separate ChatGPT 6 Pro task to annotate all

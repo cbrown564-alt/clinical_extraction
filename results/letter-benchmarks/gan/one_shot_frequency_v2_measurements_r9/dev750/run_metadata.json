@@ -1,0 +1,21 @@
+{
+  "model": "deepseek-flash",
+  "prompt_version": "one_shot_frequency_v2_measurements_r9",
+  "prompt_revision": "compact_primary_finding_v03_candidate",
+  "replay_mode": "saved first responses",
+  "repair_policy": "none",
+  "transport_failures": {
+    "ReadError": 3
+  },
+  "native_answers": {
+    "purist": {
+      "n": 750,
+      "answer_correct": 652
+    },
+    "pragmatic": {
+      "n": 750,
+      "answer_correct": 676
+    }
+  },
+  "charge_upper_usd": 7.7703174
+}

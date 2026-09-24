@@ -1,0 +1,166 @@
+{
+  "scorer": "finding_compact_concepts_v01",
+  "letters": 750,
+  "usable_letters": 741,
+  "unusable_letters": 9,
+  "reference_findings": 1219,
+  "predicted_findings_usable": 1309,
+  "tp": 446,
+  "fp": 863,
+  "fn": 773,
+  "precision": 0.3407181054239878,
+  "recall": 0.36587366694011486,
+  "f1": 0.3528481012658228,
+  "exact_inventory": 178,
+  "source_aligned": {
+    "tp": 1062,
+    "fp": 247,
+    "fn": 157,
+    "precision": 0.8113063407181055,
+    "recall": 0.8712059064807219
+  },
+  "components": {
+    "event": {
+      "correct_aligned": 754,
+      "aligned_pairs": 1062,
+      "tp": 754,
+      "fp": 555,
+      "fn": 465,
+      "precision": 0.5760122230710466,
+      "recall": 0.6185397867104184,
+      "agreement_on_aligned": 0.7099811676082862
+    },
+    "counted_unit": {
+      "correct_aligned": 1001,
+      "aligned_pairs": 1062,
+      "tp": 1001,
+      "fp": 308,
+      "fn": 218,
+      "precision": 0.7647058823529411,
+      "recall": 0.8211648892534865,
+      "agreement_on_aligned": 0.9425612052730696
+    },
+    "status": {
+      "correct_aligned": 1019,
+      "aligned_pairs": 1062,
+      "tp": 1019,
+      "fp": 290,
+      "fn": 200,
+      "precision": 0.7784568372803667,
+      "recall": 0.8359310910582445,
+      "agreement_on_aligned": 0.9595103578154426
+    },
+    "measurement_kind": {
+      "correct_aligned": 1037,
+      "aligned_pairs": 1062,
+      "tp": 1037,
+      "fp": 272,
+      "fn": 182,
+      "precision": 0.7922077922077922,
+      "recall": 0.8506972928630024,
+      "agreement_on_aligned": 0.9764595103578154
+    },
+    "measurement_value": {
+      "correct_aligned": 888,
+      "aligned_pairs": 1062,
+      "tp": 888,
+      "fp": 421,
+      "fn": 331,
+      "precision": 0.6783804430863254,
+      "recall": 0.7284659557013946,
+      "agreement_on_aligned": 0.8361581920903954
+    },
+    "phase": {
+      "correct_aligned": 985,
+      "aligned_pairs": 1062,
+      "tp": 985,
+      "fp": 324,
+      "fn": 234,
+      "precision": 0.7524828113063408,
+      "recall": 0.8080393765381461,
+      "agreement_on_aligned": 0.9274952919020716
+    },
+    "window": {
+      "correct_aligned": 780,
+      "aligned_pairs": 1062,
+      "tp": 780,
+      "fp": 529,
+      "fn": 439,
+      "precision": 0.5958747135217723,
+      "recall": 0.6398687448728466,
+      "agreement_on_aligned": 0.7344632768361582
+    },
+    "restriction": {
+      "correct_aligned": 986,
+      "aligned_pairs": 1062,
+      "tp": 986,
+      "fp": 323,
+      "fn": 233,
+      "precision": 0.7532467532467533,
+      "recall": 0.8088597210828548,
+      "agreement_on_aligned": 0.928436911487759
+    }
+  },
+  "dataset": "Gan 2026 synthetic",
+  "split": "dev750",
+  "row_policy": "all 750 source rows, including row_ok=False",
+  "annotation_policy": "compact_primary_finding_candidate_v0_3",
+  "annotation_sha256": "25e1b63c71f4ddd29bee3f6cf9f40da360f840f4477c88e74d60f36387b46d06",
+  "schema_sha256": "0d73189f09b860eca9fb78350b66dbf4c3f9ccb1a7c94d08b2548eecf4c06a81",
+  "prompt_version": "one_shot_frequency_v2_measurements_r9",
+  "prompt_revision": "compact_primary_finding_v03_candidate",
+  "prompt_source_sha256": "0caa0dd1e803084a8183792597041953a4c862fa13f9676761c87ad6c2d23989",
+  "scorer_source_sha256": "2d54249279842a3dc3b53da615185653b54e50eb7850eafa31c0c12665ed428e",
+  "matching": "whole-claim maximum one-to-one match; residual source-evidence alignment for separate component precision and recall",
+  "reported_scores": [
+    "whole_claim",
+    "source_aligned",
+    "event",
+    "counted_unit",
+    "status",
+    "measurement_kind",
+    "measurement_value",
+    "phase",
+    "window",
+    "restriction"
+  ],
+  "reference_local_only": "runs/seizure_finding_annotation_compact_v0_1/dev750/scorer_v03/reference.jsonl",
+  "repair_policy": "none",
+  "scorer_model_calls": 0,
+  "term_dictionary": "compact_scored_terms_v01",
+  "term_dictionary_sha256": "1e0aed8ddd4b0127eb28a0e19687bfc277620fd86c4a248534e081037797c180",
+  "reference_projection_sha256": "5baca56d2b1b727e7ed1f916fe75f43c4cd5069a6b26062016bafbf9b52e9665",
+  "review_queue_sha256": "ff1bbc35b9afcefb842120cc620cf5e1ce32c0b6d19aaed870373d215ab8a15c",
+  "reference_projection_status": "development candidate; flagged mappings require source review",
+  "prediction_sha256": "6d6735bb0951ea05439c0f21249b4b6394098b01fb467e1f7bab4dd698b3a6f8",
+  "run_metadata_sha256": "876bd67f465921bc5436c7d355586bb999ae49f08151c196e7c9e6bd851285d1",
+  "reference_sha256": "e50ecd64aece553aa22211e29c439967df6178302aa1a3905c403c3624f4189c",
+  "invalid_reasons": {
+    "response_not_object": 3,
+    "schema:$.findings[0].measurement": 2,
+    "answer_evidence_absent": 3,
+    "finding_evidence_absent": 1
+  },
+  "run_metadata": {
+    "model": "deepseek-flash",
+    "prompt_version": "one_shot_frequency_v2_measurements_r9",
+    "prompt_revision": "compact_primary_finding_v03_candidate",
+    "replay_mode": "saved first responses",
+    "repair_policy": "none",
+    "transport_failures": {
+      "ReadError": 3
+    },
+    "native_answers": {
+      "purist": {
+        "n": 750,
+        "answer_correct": 652
+      },
+      "pragmatic": {
+        "n": 750,
+        "answer_correct": 676
+      }
+    },
+    "charge_upper_usd": 7.7703174
+  },
+  "flagged_reference_claims": 341
+}

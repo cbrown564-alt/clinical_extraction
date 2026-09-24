@@ -2,9 +2,71 @@
 
 Canonical owner of representation versions, prompt audits and their rationale.
 Reorganised 2026-09-14 from the [study protocol](one_shot_paper_protocol.md).
-R8 is the latest development representation below. Earlier dated sections describe
-their named versions; their uses of “current” refer to that decision date.
-They do not override the [source annotation guide](seizure_finding_annotation_guide.md).
+R11 is the latest synthetic development representation below. Earlier dated
+sections describe their named versions; their uses of “current” refer to that
+decision date. They do not override the
+[source annotation guide](seizure_finding_annotation_guide.md).
+
+## R11 compact prompt and calendar-window scoring (2026-09-24)
+
+R10 added the finite common-type guidance and bounded diary-sum rule after the
+R9 prompt/reference mismatch review. Its fixed 16-source development pilot
+produced the intended total in seven of eight diary cases but often copied
+the diary quotation into `time.source` or broadened a limited event population.
+R11 keeps the same output schema and one-call design. It asks for a concise
+observation window, distinguishes an unspecified count from an explicitly
+overall one, preserves awake/asleep limits, and gives two fictional arithmetic
+examples. The rendered prompt and seven fictional schema checks are under
+`results/letter-benchmarks/gan/one_shot_frequency_r11_compact_v01_no_call/`.
+
+The versioned `finding_compact_concepts_v04` scorer accepts month
+abbreviations and range punctuation as equivalent in `time.source`. It does
+not treat separately listed months as a continuous range, infer unreported
+months, or change reference claims. The same 16 saved R9/R10/R11 responses
+score 6/9/14 whole-claim matches under v04. The enriched pilot supports a
+full synthetic dev750 R11 run but is not a performance estimate. The
+[pilot record](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r11/dev750_pilot16/README.md)
+owns its source IDs, artifacts and costs.
+
+## Prospective diary arithmetic correction (2026-09-24)
+
+The R9 prompt says `Do not infer arithmetic`, but compact v0.3 reference and
+the owner-approved v0.8.3 annotation rule include totals of disjoint diary
+components. Eight selected source checks confirm this discrepancy, including
+15992 (four plus three awake events) and 6065 (three plus four plus five focal
+motor events). Correct the earlier 15992 `model_aggregation_error` attribution
+to a prompt/reference policy mismatch. A successor prompt should permit one
+observed-count total for source-listed, disjoint components of the same counted
+unit and window, preserving the source evidence and any population limit.
+Never add a subtype progression twice, treat a cluster as one individual
+seizure, assume an unreported month is zero, or sum when overlap is unclear.
+This is a prospective prompt decision; R9 and the v0.3 reference remain frozen.
+See the [source audit](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v03_policy_candidate/README.md#diary-arithmetic-correction).
+
+## R9 compact v0.3 no-call prompt (2026-09-24)
+
+R9 revision `compact_primary_finding_v03_candidate` now uses the owner-reviewed
+compact v0.3 selection policy and the existing v0.2 structural schema. It returns
+the native answer and compact findings in one response. The original answer label
+forms and ten decision cases remain, but their intermediate facts are evidence to
+consider rather than an instruction to emit a full historical inventory. The
+prompt asks for current measurements, an explicitly identified last event, the
+nearest source-linked prior comparator per current population, or the most recent
+measurement when none is current. It uses the schema's explicit counted unit,
+phase, status, restriction, evidence fragments and zero-based answer claim indices.
+
+The rendered messages, R8-to-R9 diff, schema, seven fictional structural and
+exact-evidence checks, and component hashes are in
+[the no-call artifact](../../../results/letter-benchmarks/gan/one_shot_frequency_r9_compact_v03_no_call/).
+Reproduce them with
+`.venv/bin/python scripts/benchmarks/prepare_one_shot_r9_compact.py`.
+The five earlier fictional cases are retained; two new cases exercise a
+reporting-scoped absence beside a current rate and a counted status episode.
+These checks establish prompt shape, structural validity and quotation
+occurrence, not answer correctness or clinical agreement. No model call or
+reference score is attributed to R9. The separate compact scorer and frozen
+development reference are now described in the evaluation protocol; a
+prospective R9 comparison has not been run.
 
 ## Owner-reviewed compact candidate v0.3 (2026-09-24)
 
@@ -77,6 +139,34 @@ duplicated meanings across free-text event names and measurement types:
 | `time` | Source window or occurrence expression plus `phase`: `ongoing`, `superseded`, or `past_or_unclear`. The one-year recency category is calculated from dates outside the model. | Observation window and phase. Recent does not mean ongoing. |
 | `restriction` | Optional qualifier only when it changes the counted population or denominator, such as “witnessed only” or “while asleep.” | Meaning-changing restrictions only. |
 | `evidence` | One or more exact source fragments supporting all scored fields. Each fragment must occur in the note; evidence support must also be reviewed. | Source support, not identical quotation boundaries. |
+
+The R9 saved-response audit now has a **development candidate** scored-term
+dictionary (`compact_scored_terms_v01`). It keeps the literal source label and
+restriction for evidence review, but scores an explicit finite seizure type
+instead of every adjective or word order in the label. For example, `brief`
+does not distinguish an absence episode from the same absence episode without
+that adjective. A sleep-only population remains distinct from an unrestricted
+one even when `nocturnal` appears only in the event label. Combined populations
+whose components cannot be represented by the dictionary retain their literal
+label pending source review. The [development audit](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v01_final_candidate/README.md)
+records the provisional replay and the flagged reference claims. This has not
+changed the frozen v0.3 reference or paper endpoint.
+
+The [subsequent v2 source audit](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v02_source_audit/README.md)
+adds broad convulsive/jerk/staring codes and protects several explicit
+conditional rates and limited absence claims. It retracts two v1 matches where
+R9 omitted those limits. This remains a candidate. Mixed broad event sets and
+some conditional qualitative findings still need an annotation decision before
+the scored dictionary or prompt can be frozen.
+
+The [v3 policy continuation](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v03_policy_candidate/README.md)
+uses a narrow condition rule for qualitative claims, retains literal combined
+labels when the finite type dictionary cannot represent every member, and
+scores observed clinical absence without inferring global freedom. It changes
+no whole-claim score on saved R9. The 6077 owner record remains provisional;
+the source itself does not settle the eight-month day-to-day absence against
+the recent flight event. These are development conventions, not a change to
+the frozen reference or model-facing R9 instructions.
 
 For `answer`, keep the existing native label and supporting evidence. If it
 links to findings, use validated zero-based `claim_indices` into the returned

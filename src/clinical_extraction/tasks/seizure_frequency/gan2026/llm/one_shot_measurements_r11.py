@@ -1,4 +1,4 @@
-"""No-call R9 compact v0.3 prompt candidate.
+"""R11 compact prompt candidate with bounded diary totals and field guidance.
 
 The native selected-frequency answer and its decision cases still use one call.
 The returned findings follow the owner-reviewed compact annotation policy.
@@ -14,8 +14,8 @@ from clinical_extraction.tasks.seizure_frequency.gan2026.llm import (
     one_shot_measurements_r8 as r8,
 )
 
-VERSION = "one_shot_frequency_v2_measurements_r9"
-REVISION = "compact_primary_finding_v03_candidate"
+VERSION = "one_shot_frequency_v2_measurements_r11"
+REVISION = "compact_scored_terms_v03_diary_totals_v02"
 GUIDE_VERSION = "seizure_finding_annotation_compact_v0.3"
 SCHEMA_PATH = (
     Path(__file__).resolve().parents[6]
@@ -72,7 +72,11 @@ SCHEMA_INSTRUCTIONS = [
     "every nearby symptom a seizure.",
     "Current means applying at the clinical assessment, not merely dated within a "
     "year. Set time.phase to ongoing, superseded or past_or_unclear from the clinical "
-    "sequence. Preserve time.source literally when the source gives a window or date. "
+    "sequence. Put only the concise observation window or date in time.source, "
+    "not the diary entries or their evidence quotation. For an approved diary "
+    "total, name the first through last listed months when the intervening "
+    "months are reported; otherwise name just the listed months. Include a "
+    "stated year when needed to disambiguate the window. "
     "An old count is past_or_unclear by default, not a current rate. Do not calculate "
     "recency, repair contradictory dates or invent a transition date. Preserve distinct "
     "contradictory source assertions as separate findings with their own windows and "
@@ -83,7 +87,19 @@ SCHEMA_INSTRUCTIONS = [
     "supported. Carry a subtype into its measurement only when the source links them. "
     "Do not narrow an overall total to the predominant subtype or infer tonic-clonic "
     "seizures from the broader phrase generalised seizures. Keep two named counts "
-    "separate when their overlap is unstated.",
+    "separate when their overlap is unstated. A generic 'seizures' count with no "
+    "explicit whole-population claim is unspecified, not overall. A diary total "
+    "can be overall only when it accounts for all stated seizure categories in "
+    "that measured window. A total confined to awake or asleep events remains "
+    "unspecified unless a seizure type is stated; preserve its timing restriction.",
+    "Use familiar named seizure types when the source supports them: focal aware, "
+    "focal impaired-awareness, focal to bilateral tonic-clonic, generalised "
+    "tonic-clonic, absence, myoclonic, tonic, atonic, aura, epileptic spasm, "
+    "or status epilepticus. Preserve a source-supported unclassified label "
+    "when no type is established. Words such as brief, nocturnal, awake, "
+    "clustered or provoked do not by themselves establish a formal subtype. "
+    "Use restriction and counted_unit for meaningful limits; do not make a "
+    "more specific subtype solely to repeat a descriptive modifier.",
     "Set counted_unit to individual_seizure, seizure_day, seizure_night, cluster, "
     "cluster_day, status_episode or not_applicable as the source warrants. Affected "
     "days or nights are not counts of individual seizures. Explicit seizures every "
@@ -98,6 +114,21 @@ SCHEMA_INSTRUCTIONS = [
     "An explicitly stated median inter-seizure duration is median_interval with "
     "counted_unit not_applicable, never a regular rate. A prior comparator with an "
     "irreducibly unclear counted unit is context, not a guessed rate.",
+    "For a bounded diary, return one observed_count total when its explicitly "
+    "listed components are disjoint, have the same counted unit and belong to "
+    "the same assessed window. Sum across listed months or complementary "
+    "sleep/awake counts only when overlap is ruled out by the source. Preserve "
+    "the supported population and its limits. A cluster's stated size counts "
+    "individual seizures; the cluster itself is not another seizure. Do not "
+    "add subtype progressions or other subsets twice. Do not fill unreported "
+    "months with zero, invent a recurring rate, or sum ambiguous components. "
+    "Return the diary total once; individual month or timing components are "
+    "evidence or context unless they are a distinct named subtype finding. "
+    "For example, three focal-aware motor seizures in one month and four in "
+    "the next make one seven-event focal-aware motor observed count; two of the "
+    "four that later progress are not added again. Four awake events in one "
+    "month and three awake events in the next make one seven-event count limited "
+    "to awake events, not an unrestricted overall count.",
     "Use one cluster measurement for stated cluster count, cadence and size. A "
     "single grouped occurrence can be one cluster. For two cluster days this month, "
     "usually six seizures each within 24 hours, use counted_unit cluster_day, "
@@ -125,7 +156,8 @@ SCHEMA_INSTRUCTIONS = [
     "source-supported event labels and windows separate from restrictions. Each "
     "finding.evidence is one or more exact fragments collectively supporting "
     "its event, unit, status, measurement, phase, source window and restriction. "
-    "Do not infer arithmetic, duration, subtype, seizure status or missing dates. "
+    "Apart from the bounded diary sum above, do not infer arithmetic, duration, "
+    "subtype, seizure status or missing dates. "
     "When a precise statement and a less precise one measure the same claim, "
     "return the precise one once and add the other quotation only if useful.",
 ]

@@ -1,5 +1,157 @@
 # One-call study execution record
 
+## R11 full synthetic dev750 first-response run (2026-09-24)
+
+The frozen R11 prompt made 750 first-attempt DeepSeek V4.1 Flash calls over all
+Gan synthetic dev750 rows, including `row_ok=False`. No retry, format repair
+or semantic repair was applied. Conservative usage charge: US$7.6709676.
+Including the R10/R11 pilots, cumulative conservative study charge is
+US$69.1461255 of the authorised US$100 cap.
+Nine outputs were unusable for compact scoring, matching R9's unusable count.
+The [full result](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r11/dev750/README.md)
+owns raw/output hashes, per-letter scores and selected source checks. The
+unchanged 1,219-claim compact v0.3 reference and common
+`finding_compact_concepts_v04` scorer yield R9 445/864/774 and R11
+428/718/791 whole-claim matches/extras/misses. F1 changes from 35.21% to
+36.19%, while recall falls from 36.51% to 35.11%. The paired 5,000-resample
+development interval for the F1 difference is −2.00 to +3.95 percentage
+points. Native Purist changes 652 to 651 correct and Pragmatic 676 to 667
+correct. The lower extras do not establish a better paper candidate. R11 is
+not promoted to locked-test evaluation. No test450 rows were inspected.
+
+## R10/R11 fixed development pilot (2026-09-24)
+
+R10 and R11 each made one first-attempt DeepSeek V4.1 Flash call on the same
+16 selected Gan synthetic dev750 letters, including eight diary-arithmetic
+cases. The pilot was selected for mechanism testing, not representative
+performance. R10 cost US$0.1761174 and R11 cost US$0.172701; both had 16
+usable responses and no repair. The common v04 scorer gives R9 6/45/27,
+R10 9/18/24 and R11 14/11/19 whole-claim matches/extras/misses on this fixed
+selection. All three matched 14/16 native Purist and 15/16 Pragmatic answers.
+The [pilot result](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r11/dev750_pilot16/README.md)
+owns the exact selection, prompt, response and scorer artifacts. No test450
+rows were inspected.
+
+## R9 diary arithmetic attribution correction (2026-09-24)
+
+An eight-case source check found owner-approved derived diary totals in the
+compact v0.3 reference that the frozen R9 prompt explicitly forbade computing.
+The earlier audit's `model_aggregation_error` label for 15992 is withdrawn:
+four December and three January awake events are source-stated; seven is the
+approved derived total. The same prompt/reference mismatch appears in seven
+other selected cases. The [v3 audit correction](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v03_policy_candidate/README.md#diary-arithmetic-correction)
+links the exact evidence, owner edit reasons and saved R9 findings. These
+selected cases do not establish a corpus-wide count. The saved score is
+unchanged and must be read with this attribution limit. No new model call,
+repair or test450 inspection occurred.
+
+## R9 scored-term v3 policy continuation (2026-09-24)
+
+The saved R9 dev750 responses were replayed with a third, source-reviewed
+scored-term candidate. The [v3 audit](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v03_policy_candidate/README.md)
+records the conditional qualitative rule, conservative handling of combined
+populations, and owner-established observation limits for sources 5092 and
+6077. It retains the frozen v0.3 reference and all 750 development rows.
+No model call, repair or test450 inspection occurred. The result remains
+445 whole-claim matches, 864 extras and 774 misses (precision 34.00%, recall
+36.51%, F1 35.21%), with 1,062 source-aligned pairs. One restriction component
+agreement changes, with no whole-claim score change. The 6077 source
+contradiction remains explicitly provisional in the owner record. Replay:
+`.venv/bin/python scripts/benchmarks/score_compact_concepts_v03.py`.
+
+## R9 source-policy continuation and scored-term v2 candidate (2026-09-24)
+
+The unchanged R9 dev750 first responses and compact v0.3 reference were
+compared in a second source-first review. A [39-claim mechanism sample and
+versioned v2 replay](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v02_source_audit/README.md)
+show two v1 overcredits: a work-exposure rate and a waking-only absence.
+The v2 candidate has 445 whole-claim matches, 864 extras and 774 misses
+(precision 34.00%, recall 36.51%, F1 35.21%); source-aligned pairs remain
+1,062. A review queue still flags 270 reference claims, including 198 literal
+restrictions with no scored code. Three policy questions remain before the
+dictionary can be frozen. This is a development scorer change, not a new model
+result or paper endpoint. No model call, repair, reference edit or test450
+inspection occurred. Replay with
+`.venv/bin/python scripts/benchmarks/score_compact_concepts_v02.py`.
+
+## R9 scored-term development audit (2026-09-24)
+
+The saved R9 dev750 responses were replayed without repair or model calls against
+a **candidate**, versioned scored-term projection of the unchanged compact v0.3
+reference. Literal labels and restrictions remain in the raw records. The
+projection scores declared scope, explicit standard seizure types and selected
+population restrictions while treating incidental descriptors as optional.
+It keeps the v3 window rule and all other claim components. The [candidate audit](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/concepts_v01_final_candidate/README.md)
+owns the source checks, dictionary, provenance and unresolved review queue.
+
+The candidate has 447 matches, 862 extras and 772 misses (precision 34.15%,
+recall 36.67%, F1 35.36%); source-aligned pairs remain 1,062. This is a
+**provisional scoring interpretation**, not a change in model performance.
+There are 340 flagged reference claims requiring adjudication before the
+candidate can replace the frozen score. No test450 data were opened. Replay:
+`.venv/bin/python scripts/benchmarks/score_compact_concepts_v01.py`.
+
+## R9 compact window audit and offline rescore (2026-09-24)
+
+The saved 750 R9 dev750 first responses were reviewed against the frozen compact
+v0.3 reference. A source audit of 25 selected aligned near misses found a
+narrow scorer defect in relative-window prefixes. The original
+`finding_compact_v03_v2` score is preserved. The versioned
+`finding_compact_v03_v3` accepts only optional leading articles and `in`/`over`
+before a stated `past`, `last` or `current` window; it retains the established
+seizure-free anchor comparison. `since March` and `in March` do not become
+equivalent for a rate or count. Event, measurement and restriction rules are
+unchanged. The [audit report](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/window_audit_v03_v3/README.md)
+owns the reviewed source IDs and remaining annotation-policy questions.
+
+Replay command: `.venv/bin/python scripts/benchmarks/score_compact_findings_v04.py`.
+The same 1,309 usable predictions and 1,219 reference claims now have 282
+whole-claim matches, 1,027 extras and 937 misses (precision 21.54%, recall
+23.13%, F1 22.31%). This gains 80 matches in 67 letters and loses none.
+Source-aligned pairs remain 1,062. The native answer result, response validity,
+cost, raw responses and reference have not changed. No new model call or
+test450 inspection occurred. The new score measures a corrected matching
+convention, not a model improvement.
+
+## R9 compact v0.3 dev750 first-attempt pass (2026-09-24)
+
+`scripts/benchmarks/run_r9_dev750.py prepare` froze one request for each of the
+750 Gan 2026 synthetic development rows, including `row_ok=False`. The subsequent
+`run` sent all 750 once to `deepseek-flash` (provider-documented DeepSeek V4.1
+Flash). The prompt is `one_shot_frequency_v2_measurements_r9` revision
+`compact_primary_finding_v03_candidate`, using the compact v0.2 structural
+schema and compact annotation guide v0.3. Thinking was enabled at low effort,
+temperature submitted as zero, output cap 24,000 tokens, timeout 600 seconds,
+concurrency 12. No retries, format repair, semantic repair or locked-test rows.
+
+Raw requests, first responses, attempt ledger, frozen plan, parsed predictions
+and local per-letter diagnostics are under
+`runs/one_shot_frequency_v2_measurements_r9/dev750/`. All 750 request IDs have
+one saved response entry. Of those, 747 have a provider response and three
+have `ReadError`. The 750-attempt charge is US$7.7703174, bringing the
+conservative study total to US$61.1263395 of US$100.
+
+`scripts/benchmarks/replay_r9_dev750.py` projected the saved native answer
+fields into the existing Gan answer scorer and parsed compact responses without
+repair. Native answer agreement: Purist 652/750 (86.93%) and Pragmatic 676/750
+(90.13%). The separate frozen compact scorer was run with
+`scripts/benchmarks/score_compact_findings_v03.py` using the owner-reviewed
+v0.3 dev750 reference, all 1,219 primary claims, and `finding_compact_v03_v2`.
+It found 741 usable responses, 1,309 usable predicted claims, 202 whole-claim
+matches, 1,107 extras and 1,017 misses: precision 15.43%, recall 16.57%,
+F1 15.98%. Source evidence aligned 1,062 claims (precision 81.13%, recall
+87.12%); event population and source window were the lowest agreement
+components among aligned pairs. The six non-transport unusable responses were
+two schema-invalid measurements, three absent answer quotations and one absent
+finding quotation. Invalid responses contribute misses for their reference claims.
+
+The [frozen score](../../../results/letter-benchmarks/gan/one_shot_frequency_v2_measurements_r9/dev750/frozen_score/score.json)
+and adjacent run metadata hold hashes and component counts. This is a development
+comparison under a changed reference and scorer, not holdout generalization or
+clinical validation. The prior R8 prompt and v0.8.5 reference are unchanged.
+Verification: 750 unique saved response IDs; six focused tests passed; Ruff
+passed for the two new runner scripts.
+
 ## Finding Purist dev750 rescore (2026-09-22)
 
 Saved R7 and R8 rich inventories were rescored with `finding_purist_v1`. No model

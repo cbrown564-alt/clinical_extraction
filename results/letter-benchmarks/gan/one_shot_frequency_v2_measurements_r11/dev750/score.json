@@ -1,0 +1,193 @@
+{
+  "scorer": "finding_compact_concepts_v04",
+  "letters": 750,
+  "usable_letters": 741,
+  "unusable_letters": 9,
+  "reference_findings": 1219,
+  "predicted_findings_usable": 1146,
+  "tp": 428,
+  "fp": 718,
+  "fn": 791,
+  "precision": 0.37347294938917974,
+  "recall": 0.35110746513535684,
+  "f1": 0.36194503171247355,
+  "exact_inventory": 190,
+  "source_aligned": {
+    "tp": 1032,
+    "fp": 114,
+    "fn": 187,
+    "precision": 0.900523560209424,
+    "recall": 0.8465955701394585
+  },
+  "components": {
+    "event": {
+      "correct_aligned": 807,
+      "aligned_pairs": 1032,
+      "tp": 807,
+      "fp": 339,
+      "fn": 412,
+      "precision": 0.7041884816753927,
+      "recall": 0.6620180475799836,
+      "agreement_on_aligned": 0.7819767441860465
+    },
+    "counted_unit": {
+      "correct_aligned": 977,
+      "aligned_pairs": 1032,
+      "tp": 977,
+      "fp": 169,
+      "fn": 242,
+      "precision": 0.8525305410122164,
+      "recall": 0.8014766201804758,
+      "agreement_on_aligned": 0.9467054263565892
+    },
+    "status": {
+      "correct_aligned": 1004,
+      "aligned_pairs": 1032,
+      "tp": 1004,
+      "fp": 142,
+      "fn": 215,
+      "precision": 0.8760907504363001,
+      "recall": 0.8236259228876128,
+      "agreement_on_aligned": 0.9728682170542635
+    },
+    "measurement_kind": {
+      "correct_aligned": 997,
+      "aligned_pairs": 1032,
+      "tp": 997,
+      "fp": 149,
+      "fn": 222,
+      "precision": 0.8699825479930192,
+      "recall": 0.8178835110746514,
+      "agreement_on_aligned": 0.9660852713178295
+    },
+    "measurement_value": {
+      "correct_aligned": 868,
+      "aligned_pairs": 1032,
+      "tp": 868,
+      "fp": 278,
+      "fn": 351,
+      "precision": 0.7574171029668412,
+      "recall": 0.712059064807219,
+      "agreement_on_aligned": 0.8410852713178295
+    },
+    "phase": {
+      "correct_aligned": 961,
+      "aligned_pairs": 1032,
+      "tp": 961,
+      "fp": 185,
+      "fn": 258,
+      "precision": 0.8385689354275742,
+      "recall": 0.7883511074651354,
+      "agreement_on_aligned": 0.9312015503875969
+    },
+    "window": {
+      "correct_aligned": 697,
+      "aligned_pairs": 1032,
+      "tp": 697,
+      "fp": 449,
+      "fn": 522,
+      "precision": 0.6082024432809773,
+      "recall": 0.571780147662018,
+      "agreement_on_aligned": 0.6753875968992248
+    },
+    "restriction": {
+      "correct_aligned": 946,
+      "aligned_pairs": 1032,
+      "tp": 946,
+      "fp": 200,
+      "fn": 273,
+      "precision": 0.8254799301919721,
+      "recall": 0.7760459392945037,
+      "agreement_on_aligned": 0.9166666666666666
+    }
+  },
+  "dataset": "Gan 2026 synthetic",
+  "split": "dev750",
+  "row_policy": "all 750 source rows, including row_ok=False",
+  "annotation_policy": "compact_primary_finding_candidate_v0_3",
+  "annotation_sha256": "25e1b63c71f4ddd29bee3f6cf9f40da360f840f4477c88e74d60f36387b46d06",
+  "schema_sha256": "0d73189f09b860eca9fb78350b66dbf4c3f9ccb1a7c94d08b2548eecf4c06a81",
+  "prompt_version": "one_shot_frequency_v2_measurements_r11",
+  "prompt_revision": "compact_scored_terms_v03_diary_totals_v02",
+  "prompt_source_sha256": "89240cd0e224b069957d74131224b878f510bd2818d0836610a7126e96f26ad6",
+  "scorer_source_sha256": "6ca0cb6c613a2636d983467087a0bbcdf78a0f55ac5168f99ecf1dfa2571a306",
+  "matching": "whole-claim maximum one-to-one match; residual source-evidence alignment for separate component precision and recall",
+  "reported_scores": [
+    "whole_claim",
+    "source_aligned",
+    "event",
+    "counted_unit",
+    "status",
+    "measurement_kind",
+    "measurement_value",
+    "phase",
+    "window",
+    "restriction"
+  ],
+  "reference_local_only": "runs/seizure_finding_annotation_compact_v0_1/dev750/scorer_v03/reference.jsonl",
+  "repair_policy": "none",
+  "scorer_model_calls": 0,
+  "run_metadata": {
+    "dataset": "Gan 2026 synthetic",
+    "split": "dev750",
+    "row_policy": "all 750 split rows including row_ok=False",
+    "selected_source_ids": null,
+    "dataset_sha256": "cf13b498609079d37ba7ccd4cb9886b7d8a60a8bcd75e48ab5b4debb939b1c21",
+    "manifest_sha256": "c5f512d8744261916bd6d92562430489a3ba0494b0bf7c6575bfaa9e58680143",
+    "reference_sha256": "e50ecd64aece553aa22211e29c439967df6178302aa1a3905c403c3624f4189c",
+    "prompt_version": "one_shot_frequency_v2_measurements_r11",
+    "prompt_revision": "compact_scored_terms_v03_diary_totals_v02",
+    "guide_version": "seizure_finding_annotation_compact_v0.3",
+    "prompt_sha256": "89240cd0e224b069957d74131224b878f510bd2818d0836610a7126e96f26ad6",
+    "schema_sha256": "0d73189f09b860eca9fb78350b66dbf4c3f9ccb1a7c94d08b2548eecf4c06a81",
+    "model": "deepseek-flash",
+    "provider_documented_version": "DeepSeek-V4.1-Flash",
+    "thinking": "enabled",
+    "reasoning_effort": "low",
+    "max_tokens": 24000,
+    "timeout_seconds": 600,
+    "concurrency": 12,
+    "budget_usd": 100.0,
+    "retry_policy": "none; first response only",
+    "repair_policy": "none",
+    "replay_mode": "saved first responses",
+    "scorer": "finding_compact_concepts_v04; native Purist/Pragmatic answer",
+    "native_answers": {
+      "purist": {
+        "n": 750,
+        "answer_correct": 651
+      },
+      "pragmatic": {
+        "n": 750,
+        "answer_correct": 667
+      }
+    },
+    "charge_upper_usd": 7.6709676,
+    "invalid_reasons": {
+      "answer_evidence_absent": 5,
+      "finding_evidence_absent": 1,
+      "schema:$.findings[0].measurement": 1,
+      "no_response": 1,
+      "response_not_object": 1,
+      "schema:$.findings[0].time.phase": 1
+    }
+  },
+  "prediction_sha256": "fcd6da8ea4a4ae6d2f660aaff3e5f623e4851103268a059962e5fa9a352bed25",
+  "reference_sha256": "e50ecd64aece553aa22211e29c439967df6178302aa1a3905c403c3624f4189c",
+  "selected_source_ids": null,
+  "invalid_reasons": {
+    "answer_evidence_absent": 5,
+    "finding_evidence_absent": 1,
+    "schema:$.findings[0].measurement": 1,
+    "no_response": 1,
+    "response_not_object": 1,
+    "schema:$.findings[0].time.phase": 1
+  },
+  "term_dictionary": "compact_scored_terms_v03",
+  "term_dictionary_sha256": "0a70f8cb3923a51d1129a14d0dbd78287e00ff31b2cb4098ee6826e63d2f8fe7",
+  "requests_sha256": "fb25d042d797c59dbcd4b8c18edcdaceea30badacd936f03dd4f1f707dc8e8e7",
+  "responses_sha256": "872efd40f4972b5efa7eab335a39573bbf558cb09fb36bd519851d3da271b79b",
+  "attempts_sha256": "082202ecef33b22d70f1a3e66d41884f48dd7e966409bbdb78ccf3ac0b092bff",
+  "per_letter_sha256": "01ebcd6597f6d5fd0275097dd232b821d77b3707e3c8af0ea9c49ac54465aaba",
+  "run_metadata_sha256": "548a5ba6cfd8bd430cd57b89654846d02deb82c245a13f2c3e77b04dcb4b9654"
+}

@@ -1,0 +1,21 @@
+{
+  "version": "one_shot_frequency_v2_measurements_r9",
+  "revision": "compact_primary_finding_v03_candidate",
+  "guide_version": "seizure_finding_annotation_compact_v0.3",
+  "fixture_count": 7,
+  "model_calls": 0,
+  "components": {
+    "/Users/cobro/code/clinical-extraction/src/clinical_extraction/tasks/seizure_frequency/gan2026/llm/one_shot_measurements_r9.py": "0caa0dd1e803084a8183792597041953a4c862fa13f9676761c87ad6c2d23989",
+    "/Users/cobro/code/clinical-extraction/results/letter-benchmarks/gan/one_shot_frequency_compact_scope_candidate_no_call/rich.v0_2.schema.json": "0d73189f09b860eca9fb78350b66dbf4c3f9ccb1a7c94d08b2548eecf4c06a81",
+    "results/letter-benchmarks/gan/one_shot_frequency_compact_scope_candidate_no_call/fictional_fixtures.json": "e54d569cd14f2b33575adc6fba4f29960f17eaa1a60143505509c4dc3acfe422",
+    "results/letter-benchmarks/gan/one_shot_frequency_r9_compact_v03_no_call/v03_fictional_fixtures.json": "84d1773e041b212fe9c4bed4133d321928febecfa5ffb13fa1ef2415929c04f9",
+    "/Users/cobro/code/clinical-extraction/scripts/benchmarks/prepare_one_shot_r9_compact.py": "47c372a6a0d95006fecf6e1db2cafc7f2d6a5c9f21ac102da8f01f5783377bd1"
+  },
+  "artifacts": {
+    "fictional_checks.json": "5427bd673d9c99ccdc234b19a384fc5efbeb6e10890caf112cdb189cc3e07ff2",
+    "r8_r9.diff": "f169714e7a29785a54488ba8ac141219c483f71c514a15661c6e9171230a06c6",
+    "rich.messages.json": "7cd20aac33765907fded0f463624dee8152b3256d574f90ea8c47f1900f577c7",
+    "rich.schema.json": "0d73189f09b860eca9fb78350b66dbf4c3f9ccb1a7c94d08b2548eecf4c06a81",
+    "v03_fictional_fixtures.json": "84d1773e041b212fe9c4bed4133d321928febecfa5ffb13fa1ef2415929c04f9"
+  }
+}
