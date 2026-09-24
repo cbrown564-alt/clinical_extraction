@@ -1,0 +1,72 @@
+{
+  "policy": "compact_primary_finding_candidate_v0_1",
+  "dataset": "Gan 2026 synthetic",
+  "split": "dev750",
+  "row_policy": "all 750 development letters including row_ok=False",
+  "base_reference": "runs/seizure_finding_annotation_v0_8_5/dev750_r8_saved/reference.jsonl",
+  "base_reference_sha256": "a4d8f8bce79db88e10cd23cd84c0ecf79c9a8bca5382da2f2a7ccee95d4c3ea1",
+  "source_bundle": "runs/seizure_finding_annotation_v0_8_5/dev750_r8_saved/review_bundle.json",
+  "source_bundle_sha256": "f60730d16a4673cab72299a523db280b21e0e02ebdfe614ced5407e037e2e320",
+  "schema": "results/letter-benchmarks/gan/one_shot_frequency_compact_scope_candidate_no_call/rich.schema.json",
+  "schema_sha256": "e9cf20f2bbecb40a5743de7170ba41a89abac0b837f2d797563b103b9c33d9c9",
+  "scorer": "none; no finding score produced",
+  "model": "none; deterministic migration",
+  "prompt_version": "none; Pro review not yet started",
+  "replay_mode": "deterministic structural migration; no model call",
+  "repair_policy": "none",
+  "rows": 750,
+  "legacy_findings": 1524,
+  "structural_candidates": 1510,
+  "review_only_non_seizure": 14,
+  "measurement_types": {
+    "rate": 352,
+    "qualitative": 212,
+    "cluster": 121,
+    "observed_count": 432,
+    "last_event": 73,
+    "seizure_free": 320
+  },
+  "review_flags": {
+    "affected_period_unit_review": 217,
+    "clinical_phase_review": 1524,
+    "event_scope_review": 767,
+    "period_detail_review": 292,
+    "primary_scope_review": 1524,
+    "condition_scope_review": 415,
+    "legacy_count_as_cluster_review": 1,
+    "non_seizure_scope_review": 14,
+    "cluster_day_unit_review": 3
+  },
+  "batches": [
+    {
+      "batch": 1,
+      "path": "runs/seizure_finding_annotation_compact_v0_1/dev750/batches/batch_01_input.json",
+      "rows": 150,
+      "sha256": "0606f90fbacfae204afa677f642e8d9cfce693c853d92d1dfadc610b9bf7b0fe"
+    },
+    {
+      "batch": 2,
+      "path": "runs/seizure_finding_annotation_compact_v0_1/dev750/batches/batch_02_input.json",
+      "rows": 150,
+      "sha256": "930a42265a357bbf4fcffaab9a99595042ff8d811b91f7c58206aeefab00e818"
+    },
+    {
+      "batch": 3,
+      "path": "runs/seizure_finding_annotation_compact_v0_1/dev750/batches/batch_03_input.json",
+      "rows": 150,
+      "sha256": "ff4426136d39b96cd5e02aae2d5405288a5747dec99f3929e6348f47a109e580"
+    },
+    {
+      "batch": 4,
+      "path": "runs/seizure_finding_annotation_compact_v0_1/dev750/batches/batch_04_input.json",
+      "rows": 150,
+      "sha256": "de26f44a8ba5cb00d98545a8efb68406fb85f2678818acc83df431fafe3081b5"
+    },
+    {
+      "batch": 5,
+      "path": "runs/seizure_finding_annotation_compact_v0_1/dev750/batches/batch_05_input.json",
+      "rows": 150,
+      "sha256": "c2f210a67ac9f0247379c0e4b584caeb1123e5d7b630f28f56b3c57080ceeecf"
+    }
+  ]
+}
