@@ -23,20 +23,21 @@ current or historical, under the letter's own label, with an exact quotation.
 
 | Measurement kind | Use for | Default reading |
 | --- | --- | --- |
-| `rate` | A stated recurrence: "twice weekly", "every 4–6 weeks", "daily", "3 seizure days per week" | A bare cadence is 1 per interval. "Bimonthly" is 1 per 2 months unless the letter defines it. |
+| `rate` | A stated recurrence: "twice weekly", "every 4–6 weeks", "daily", "3 seizure days per week" | A bare cadence is 1 per interval. "Bimonthly" is 1 per 2 months and "biweekly" 1 per 2 weeks unless the letter defines them; "fortnightly" is 1 per 2 weeks; "alternate days" is 1 per 2 days. |
 | `observed_count` | Events in a stated window or on a date: "three in the past month", "one on 12 May" | The window goes in `time.source`. "N or M" is the range N–M. |
 | `cluster` | Cluster count, cadence and seizures per cluster: "monthly clusters of 3–4" | One finding holds all stated cluster parts. The span within a cluster ("over 24 hours") stays in evidence. |
 | `seizure_free` | Absence with a duration or since-anchor: "seizure-free for 14 months", "none since March" | Only for at least two weeks, or an anchor not known to be shorter. |
-| `last_event` | An event the letter calls the last or most recent, with its time | A dated event that is not called the latest is an `observed_count`. |
+| `last_event` | An event the letter calls the last or most recent, with its time | Needs a stated time. A dated event that is not called the latest is an `observed_count`. |
 | `median_interval` | A stated median time between events | Not a regular rate. |
-| `qualitative` | A standalone level with no number: `occasional` or `frequent` | "Rare", "infrequent", "sporadic" → occasional; "most days", "near-daily" → frequent. Only when no more precise measurement of the same events and window exists. |
+| `qualitative` | A standalone level with no number: `occasional` or `frequent` | "Rare", "infrequent", "sporadic", "intermittent" → occasional; "most days", "near-daily" → frequent. Only when no more precise measurement of the same events and window exists. |
 
 **Not findings:** plans, thresholds and expectations; family history; medication
 schedules; explicitly non-epileptic events; symptoms the letter does not link to
 seizures; denials with no duration or anchor ("no auras"); occurrence-only
 wording ("ongoing seizures", "history of epilepsy"); trend-only or pattern-only
 wording ("improved", "predominantly nocturnal"); typical gaps between recurring
-events ("may go five days without").
+events ("may go five days without") and the longest seizure-free interval
+within an ongoing pattern; rescue-medication use, which is not a cluster count.
 
 ## Filling a finding
 
@@ -46,26 +47,30 @@ The machine-readable shape is
 | Field | Rule |
 | --- | --- |
 | `event.label` | The letter's words for the counted events. Do not infer a subtype from the diagnosis. |
-| `event.scope` | `overall` only for an explicit whole-population total; `named` for a stated seizure type; `combined` for an explicit joint total of several types; otherwise `unspecified`. |
+| `event.scope` | `overall` only for an explicit whole-population total; `named` for a stated seizure type; `combined` for an explicit joint total of several types; otherwise `unspecified`. Timing alone ("nocturnal events", "daytime episodes") is not a seizure type. |
 | `counted_unit` | `individual_seizure` unless the letter counts affected days (`seizure_day`), affected nights (`seizure_night`), clusters (`cluster`), cluster days (`cluster_day`) or status epilepticus episodes (`status_episode`). Seizure-free, last-event and median-interval findings use `not_applicable`. |
 | `status` | `stated`, or `uncertain` only when the letter questions whether the events are seizures. |
 | `measurement` | The stated number, range (`2 to 3`) or bound (`at most 4`). Use `verbatim` for vague amounts or intervals ("few weeks", "several months"). Never convert units or compute values. |
 | `time.phase` | `ongoing` when the finding describes the patient at this assessment; `superseded` when the letter states a later state that replaces it; `past_or_unclear` otherwise. |
-| `time.source` | The letter's concise window or date wording, when stated. Do not resolve relative dates or compute durations. |
-| `restriction` | Only a stated limit on which events were counted: "while asleep", "witnessed only". |
-| `evidence` | One or more short exact quotations that together support the finding. |
+| `time.source` | The letter's concise window or date wording, when stated. Never just restate the cadence. Do not resolve relative dates or compute durations. |
+| `restriction` | Only a stated limit on which events were counted: "while asleep", "witnessed only". Not wording the label already carries. |
+| `evidence` | One or more short exact quotations that together support the finding. Copy characters exactly, including non-breaking hyphens. |
 
 ## Counting each claim once
 
 - A restatement of the same events, measurement and window is one finding;
   add its quotation to that finding's evidence.
-- Trend or variability wording about a measured claim belongs in that finding's
-  evidence, not in another finding.
+- Trend or variability wording about a measured claim ("occasionally escalates
+  to daily") belongs in that finding's evidence, not in another finding.
+- A subset of events already counted (witnessed, at work, triggered by X) is
+  not a separate finding. Keep a subset count only when it is the letter's only
+  count for those events.
 - Different seizure types, windows or measurements are separate findings. Never
   sum, split or link counts across seizure types unless the letter states the
   joint total.
 - A diary or list of counts for the same events across listed months or dates
-  is one `observed_count` over that span when the parts do not overlap. Do not
+  is one `observed_count` over that span when the parts do not overlap; merge
+  asleep/awake or day/night splits of the same events. Do not
   fill unreported months with zero, count a subtype twice, or count a cluster as
   one seizure.
 - A correction ("in fact five, not four") keeps only the corrected value.
@@ -151,3 +156,11 @@ aggregate-only for evaluation; disclose annotation exposure.
 
 - 2026-09-24: Locked. Full inventory with phase tag, compact schema, lenient
   descriptive score.
+- 2026-09-25: Owner decision (Conor Brown) after the test450 annotation pass.
+  Wrote in the readings already applied to test450 and train300: biweekly,
+  fortnightly and alternate-day cadences; intermittent as occasional; last
+  event needs a time; longest seizure-free interval and rescue-medication use
+  are not findings; timing alone is not a named type; subsets of counted events
+  are not separate findings; asleep/awake splits merge in dated lists;
+  `time.source` and `restriction` do not repeat the cadence or label; quotations
+  keep exact characters. No schema, prompt or scorer change.
