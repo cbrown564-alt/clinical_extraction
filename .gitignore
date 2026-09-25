@@ -80,3 +80,6 @@ output/
 
 # Diagnosis canonical row-analysis working output (regenerable from experiments/exectv2_dx_canonical_*.py)
 /_dx_canonical/
+
+# Local transfer bundles moved between machines (e.g. GLiNER annotations).
+/transfer/
