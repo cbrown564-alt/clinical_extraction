@@ -122,31 +122,38 @@ are expected and are not a reason to reopen this guide.
 ## References
 
 **dev750.** Local file `runs/seizure_frequency/reference/dev750.jsonl`
-(sha256 `e40755d7…9943`), 750 letters including `row_ok=False`. It was derived
-once, on 2026-09-24, from the owner-adjudicated compact v0.3 annotation, which
-had source-reviewed every v0.8.5 finding:
+(sha256 `0bd91f2b…8393`), 750 letters including `row_ok=False`. It was first
+derived on 2026-09-24 from the owner-adjudicated compact v0.3 annotation
+(sha256 `e40755d7…9943`, kept locally as `dev750.pre_review_2026-09-25.jsonl`).
+On 2026-09-25 every letter was re-read against this guide and the reference was
+corrected in place: overall scope, restrictions, restatements, subsets, hedges,
+dated lists, denial status and missing findings. Findings added by that review
+carry `origin` `review-2026-09-25`. It now holds 1,295 findings; 57 letters
+have none.
 
-- **core** (1,219): the owner-reviewed current activity, explicit last events
-  and linked prior states;
-- **supporting** (131): the remaining reviewed historical or contextual
-  measurements that had a structured record, excluding 103 restatements
-  already merged into a core finding's evidence.
+- **core** (1,235): current activity, explicit last events and linked prior
+  states;
+- **supporting** (60): remaining historical or contextual measurements, such
+  as dated events of unclear phase.
 
-Findings the compact review excluded (non-seizure or unlinked events) are
-absent. Because the reference predates this guide, a small number of full
-inventory claims (for example some excluded affected-day counts) may be
-missing; that limits all-reference recall only. Every finding validates against
-the schema and every quotation is an exact substring of its letter. The
-derivation inputs are in the archived runs tarball
+Findings the compact review excluded as non-seizure or unlinked events stay
+absent unless the 2026-09-25 review restored them. Every finding validates
+against the schema and every quotation is an exact substring of its letter.
+Scores recorded before 2026-09-25 used the earlier reference and are not
+comparable with scores on this one. The original derivation inputs are in the
+archived runs tarball
 (`~/code/archives/clinical-extraction-runs-2026-09-24.tar.gz`).
 
-**test450.** Not yet annotated under this guide; the earlier test450
-annotations were discarded with the old guides. The source-only package is
-built by `scripts/benchmarks/prepare_test450_annotation.py` into ignored
-`runs/seizure_frequency/annotation/test450/`: all 450 letters (including
-`row_ok=False`) in nine batches of 50, instructions taken verbatim from this
-guide's rules, the record schema, a worked example and
+**test450 and train300.** Annotated from source under this guide on
+2026-09-25: test450 has 754 findings over 450 letters (37 with none) and
+train300 has 480 findings over 300 letters (21 with none). The source-only
+packages are built by `scripts/benchmarks/prepare_annotation_package.py` into
+ignored `runs/seizure_frequency/annotation/<split>/package/`: every letter
+(including `row_ok=False`) in batches of 50, instructions taken verbatim from
+this guide's rules, the record schema, a worked example and
 `validate_annotations.py` (identity, coverage, schema and exact quotations).
+Rebuilding a package replaces its `annotations/` directory, so the finished
+annotations are also kept in `annotations_final_backup/` beside it.
 No native labels, references, predictions or row-quality flags are exported.
 The test450 reference has a single tier, so its findings are imported as core
 and all-reference recall is the reported measure. Test450 stays
@@ -164,3 +171,8 @@ aggregate-only for evaluation; disclose annotation exposure.
   are not separate findings; asleep/awake splits merge in dated lists;
   `time.source` and `restriction` do not repeat the cadence or label; quotations
   keep exact characters. No schema, prompt or scorer change.
+- 2026-09-25: Owner decision (Conor Brown). Re-read all 750 dev750 letters
+  against this guide and corrected the reference in place (see
+  [References](#references)); the prior file is kept locally. The `expanded`
+  prompt's finding instructions now restate the readings added earlier today.
+  The `minimal` prompt, schema and scorer are unchanged.
