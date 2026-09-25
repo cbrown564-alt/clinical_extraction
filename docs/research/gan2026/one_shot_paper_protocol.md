@@ -131,8 +131,9 @@ holds the local `runs/` directory, including raw responses and ledgers.
 ### Expanded rerun after the answer-separation instruction (2026-09-24)
 
 750 new first-attempt expanded calls; the saved minimal responses are reused.
-This is the locked expanded result. Aggregate: `score.json`; the first
-expanded run is `score_expanded_initial.json`.
+This was the locked expanded result until the 2026-09-25 rerun below; its
+aggregate is kept as `score_expanded_locked.json`, and the first expanded run
+is `score_expanded_initial.json`.
 
 | Measure | minimal | expanded (initial) | expanded (locked) |
 | --- | --- | --- | --- |
@@ -151,6 +152,36 @@ answer within about two Purist points while returning the finding inventory;
 the paired interval narrowly excludes zero. Median latency 26.9 s versus
 6.3 s; completion tokens 4.97M versus 1.65M.
 
+### Expanded rerun after the guide readings and dev750 review (2026-09-25)
+
+750 new first-attempt expanded calls with the expanded finding instructions
+aligned to the guide's 2026-09-25 readings; the answer instructions, minimal
+responses, model and settings are unchanged. Findings are scored against the
+reviewed dev750 reference (sha256 `0bd91f2b…8393`). Aggregate: `score.json`.
+To separate the reference change from the prompt change, the 2026-09-24
+responses were rescored offline against the reviewed reference
+(`score_expanded_locked_newref.json`).
+
+| Measure | minimal | expanded 09-24, old ref | expanded 09-24, new ref | expanded 09-25 |
+| --- | --- | --- | --- | --- |
+| Purist, whole response | 659/750 | 644/750 | 644/750 | 657/750 (87.6%, 85.0–89.8) |
+| Pragmatic | 680/750 | 668/750 | 668/750 | 675/750 (90.0%) |
+| Unusable responses | 2 | 8 | 8 | 14 |
+| Paired Purist, expanded − minimal | — | −2.00 (−3.73 to −0.27) | same | −0.27 (−2.00 to 1.47) |
+| Paired Pragmatic | — | −1.60 (−3.20 to −0.13) | same | −0.67 (−2.40 to 1.07) |
+| Findings precision / core recall / all recall | — | 0.838 / 0.906 / 0.853 | 0.832 / 0.910 / 0.882 | 0.877 / 0.906 / 0.890 |
+
+On the same reference, the aligned instructions raised findings precision by
+4.6 points (1,313 predicted findings versus 1,373) with core recall unchanged
+and all-reference recall up 0.8 points. The answer gap narrowed to −0.27
+Purist points (23 wins, 25 losses, 702 ties) and the paired interval now
+includes zero, although the answer instructions did not change; this is
+within run-to-run variation and is not claimed as a prompt effect. Unusable
+responses rose to 14: 6 invalid labels (four invented per-hour or
+seizure-free labels), 4 schema violations and 4 empty responses finishing
+normally. Median latency 27.4 s; completion tokens 5.02M. This is the current
+expanded result.
+
 ## Change log
 
 - 2026-09-24: Owner decision after the first paired run. The expanded answer
@@ -162,6 +193,12 @@ the paired interval narrowly excludes zero. Median latency 26.9 s versus
   rerun; the saved minimal responses are reused. The first expanded result is
   kept as `score_expanded_initial.json`. This is a single bounded attempt: if
   the gap remains, the cost is reported and the prompt is not changed again.
+- 2026-09-25: Owner decision (Conor Brown) to rerun the expanded condition once
+  after the expanded finding instructions were aligned with the annotation
+  guide's 2026-09-25 readings and dev750 was re-reviewed. This overrides the
+  2026-09-24 stopping rule for this one rerun only; the answer instructions
+  are unchanged. The earlier locked result is kept as
+  `score_expanded_locked.json`.
 
 ## Out of scope
 

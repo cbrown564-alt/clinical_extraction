@@ -75,7 +75,7 @@ context mode, projection and normaliser versions, packages and device.
 
 1. **Zero-shot answer.** Purist agreement on all 750 dev letters for minimal-full
    and minimal-chunked. Comparators: the majority band (196/750, 26.1%) and the
-   locked DeepSeek results (minimal 659/750, expanded 644/750; paired,
+   DeepSeek results (minimal 659/750, expanded 657/750 after the 2026-09-25 rerun; paired,
    descriptive only, since the task contract differs).
 2. **Context.** Agreement split by letter length (≤384 vs >384 words), full vs chunked.
 3. **Grounding.** Evidence span rate, and overlap with a verbatim Gan quotation.
