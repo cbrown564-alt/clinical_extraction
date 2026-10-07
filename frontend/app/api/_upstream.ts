@@ -1,3 +1,5 @@
+import { isDemoSurface } from "@/lib/demoSurface";
+
 /**
  * Local Next route handlers exist so Vercel can serve fixtures. When the
  * Python trace-explorer is running, prefer it so paper cells hydrate from
@@ -7,7 +9,7 @@ export async function proxyPython(
   path: string,
   init?: RequestInit
 ): Promise<Response | null> {
-  if (process.env.VERCEL === "1") return null;
+  if (isDemoSurface()) return null;
   try {
     const upstream = await fetch(`http://127.0.0.1:8000${path}`, init);
     if (!upstream.ok) return null;

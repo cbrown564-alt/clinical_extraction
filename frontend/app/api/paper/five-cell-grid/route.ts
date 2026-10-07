@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { readSavedJson, savedDataExists } from "@/lib/server/fixture-store";
 import { join } from "node:path";
 import {
   COMPARISON_KEY_TO_CELL,
@@ -27,7 +27,7 @@ type ComparisonFile = {
 };
 
 function gridPath(task: "gan" | "exect", slug: string): { path: string; split: string } | null {
-  const repoRoot = join(process.cwd(), "..");
+  const repoRoot = "";
   if (task === "gan") {
     const path = join(
       repoRoot,
@@ -38,7 +38,7 @@ function gridPath(task: "gan" | "exect", slug: string): { path: string; split: s
       "test450",
       "comparison.json"
     );
-    return existsSync(path) ? { path, split: "test450" } : null;
+    return savedDataExists(path) ? { path, split: "test450" } : null;
   }
   const test60 = join(
     repoRoot,
@@ -49,7 +49,7 @@ function gridPath(task: "gan" | "exect", slug: string): { path: string; split: s
     "test60",
     "comparison.json"
   );
-  if (existsSync(test60)) return { path: test60, split: "test60" };
+  if (savedDataExists(test60)) return { path: test60, split: "test60" };
   const test450 = join(
     repoRoot,
     "results/letter-benchmarks",
@@ -59,7 +59,7 @@ function gridPath(task: "gan" | "exect", slug: string): { path: string; split: s
     "test450",
     "comparison.json"
   );
-  if (existsSync(test450)) return { path: test450, split: "test450" };
+  if (savedDataExists(test450)) return { path: test450, split: "test450" };
   return null;
 }
 
@@ -99,7 +99,7 @@ export function GET(request: Request) {
       { status: 404 }
     );
   }
-  const payload = JSON.parse(readFileSync(found.path, "utf8")) as ComparisonFile;
+  const payload = readSavedJson<ComparisonFile>(found.path);
   const rel = found.path.split("results/letter-benchmarks/")[1];
   return Response.json({
     task: taskParam,

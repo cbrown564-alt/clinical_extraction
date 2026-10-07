@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { resolve } from "node:path";
 import { demoCases } from "@/lib/viva";
+import { isDemoSurface } from "@/lib/demoSurface";
 
 export const runtime = "nodejs";
 const execute = promisify(execFile);
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
   if (typeof id !== "number" || !demoCases.some(c => c.id === id)) {
     return Response.json({ error: "Choose a bundled development case." }, { status: 400 });
   }
-  if (process.env.VERCEL === "1") {
+  if (isDemoSurface()) {
     return Response.json({ error: "Live rules require the local Python environment. The saved decision is available." }, { status: 503 });
   }
   try {

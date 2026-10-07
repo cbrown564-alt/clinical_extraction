@@ -154,3 +154,55 @@ npm test -- --runInBand
 npm run lint
 npm run build
 ```
+
+## Cloudflare hosting
+
+The public demonstration uses vinext 1.0.1 on Cloudflare Workers. Ordinary
+Next.js development and Vercel recovery builds remain available. The Python
+research pipeline, clinical rules, paper results and saved fixture contents are
+unchanged by this hosting move.
+
+Use Node 24 (`frontend/.nvmrc`) and run from `frontend`:
+
+```sh
+npm ci
+npm test -- --runInBand
+npm run lint
+npm run build:cloudflare -- migration-preview
+NEXT_PUBLIC_DEMO_SURFACE=1 CF_MIGRATION_MODE=migration-preview npm run start:vinext -- --port 3001 --mode migration-preview
+npm run test:cloudflare
+npx cf deploy --prebuilt --mode migration-preview
+```
+
+Production uses `npm run build:cloudflare -- production` followed by
+`npx cf deploy --prebuilt --mode production`. Workers Builds must use repository
+root directory `frontend`, branch `main`, and those same commands. No Python
+installation, model credential, corpus access or external API is required.
+
+The build bundles the 24 existing public demo JSON fixtures, four previously
+published paper aggregate panels, the synthetic patient catalog and 96 authored
+synthetic frames into the server. Raw model captures remain excluded. It also
+packages 68 existing development-score API responses as private assets, served
+only through their original API URLs; direct `/_saved-api/` URLs return 404.
+The paper holdout comparison inputs contain existing aggregates only; locked
+row files are never bundled. Its fixture adapter returns fresh objects and lists the same validation
+record IDs. It removes `mock-data/` from the static asset output; direct fixture
+URLs return 404. `NEXT_PUBLIC_DEMO_SURFACE=1` is defined in the compiled app and
+bound at Worker runtime. Public routes never proxy to a loopback Python server
+or execute Python; local Next development keeps that capability. Hosted rule
+replay returns the existing 503 recovery message and retains the saved decision.
+
+Preview responses carry noindex headers. Production keeps existing redirects,
+including `/architect` → `/workbench`. No custom domain is attached.
+The Vite/Cloudflare plugin beta is pinned because its typed configuration
+support produces the prebuilt package expected by cf; stable 1.x does not.
+Tailwind uses its Vite plugin in this build; ordinary Next retains PostCSS.
+
+Next and vinext generate incompatible route-type files in `.next/types`.
+The Cloudflare build clears only that rebuildable provider output before vinext
+regenerates it, then type-checks all source and the configuration/fixture adapter.
+A subsequent ordinary Next build regenerates its own route types.
+
+Verification here proves hosting and synthetic demonstration behavior. It does
+not run models, inspect locked-test failures, regenerate research artifacts or
+establish clinical validation. Presenter and device rehearsal remain separate.

@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readSavedJson } from "@/lib/server/fixture-store";
 import { join } from "node:path";
 import { isDemoSurface, lockDemoGanFamilies } from "@/lib/demoSurface";
 import { ganFamiliesFromDev750Panel } from "@/lib/ganPipelineOptions";
@@ -8,14 +8,14 @@ import { proxyPython } from "../_upstream";
 export const dynamic = "force-static";
 
 function panelPath() {
-  return join(process.cwd(), "..", "results/letter-benchmarks", "gan", "dev750_panel.json");
+  return join("results/letter-benchmarks", "gan", "dev750_panel.json");
 }
 
 export async function GET() {
   const upstream = await proxyPython("/pipeline-families");
   if (upstream) return upstream;
   try {
-    const panel = JSON.parse(readFileSync(panelPath(), "utf8")) as {
+    const panel = readSavedJson(panelPath()) as {
       claim_boundary?: string;
       cells: Array<{
         model_slug: string;

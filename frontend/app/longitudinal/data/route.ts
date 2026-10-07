@@ -1,9 +1,9 @@
-import { readFile } from "node:fs/promises";
+import { readSavedJson } from "@/lib/server/fixture-store";
 import path from "node:path";
 import { type Frame, type Patient } from "@/lib/longitudinal";
 
 export const runtime = "nodejs";
-const root = path.resolve(process.cwd(), "../results/longitudinal/prototype_v0.1");
+const root = "results/longitudinal/prototype_v0.1";
 
 export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
@@ -18,10 +18,10 @@ export async function GET(request: Request) {
     return Response.json({ error: "Choose a listed patient, view and query." }, { status: 400 });
   }
   try {
-    const catalog: { program_version: string; patients: Patient[] } = JSON.parse(await readFile(path.join(root, "patients.json"), "utf8"));
+    const catalog: { program_version: string; patients: Patient[] } = readSavedJson(path.join(root, "patients.json"));
     if (!catalog.patients.some(p => p.id === patient)) return Response.json({ error: "Patient not found." }, { status: 404 });
     const frames = await Promise.all(catalog.patients.map(async p => {
-      const frame: Frame = JSON.parse(await readFile(path.join(root, "frames", p.id, `${index}_${view}.${mode}.json`), "utf8"));
+      const frame: Frame = readSavedJson(path.join(root, "frames", p.id, `${index}_${view}.${mode}.json`));
       // A frame file contains only letters allowed by its selected cutoff.
       if (frame.documents.some(d => d.available_date > frame.requests[0].information_cutoff)) throw new Error("Invalid frame cutoff");
       return { patient: p, frame };
