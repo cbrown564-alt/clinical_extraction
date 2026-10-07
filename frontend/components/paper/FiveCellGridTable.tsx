@@ -42,7 +42,6 @@ export default function FiveCellGridTable() {
 
   useEffect(() => {
     let cancelled = false;
-    setError(null);
     fetch(`/api/paper/five-cell-grid?task=${task}&model=gemini37flash`)
       .then(async (res) => {
         if (!res.ok) throw new Error(await res.text());
@@ -73,7 +72,7 @@ export default function FiveCellGridTable() {
             <button
               key={id}
               type="button"
-              onClick={() => setTask(id)}
+              onClick={() => { setError(null); setTask(id); }}
               className={`h-7 rounded-md px-2.5 text-xs ${
                 task === id
                   ? "bg-deterministic/10 font-semibold text-deterministic"

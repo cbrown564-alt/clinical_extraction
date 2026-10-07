@@ -1,7 +1,7 @@
 import { ganRecord } from "../../_mock";
 import { proxyPython } from "../../_upstream";
 
-export const dynamic = "force-static";
+// POST consumes the request body; static mode discards it in vinext.
 
 export async function POST(request: Request) {
   const raw = await request.text();

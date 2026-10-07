@@ -7,7 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest"
+    "test": "jest",
+    "dev:vinext": "vite dev --port 3001",
+    "build:vinext": "vite build",
+    "start:vinext": "vite preview",
+    "deploy:vinext": "vinext-cloudflare deploy",
+    "build:cloudflare": "node scripts/build-cloudflare.mjs",
+    "test:cloudflare": "node scripts/verify-cloudflare.mjs"
   },
   "dependencies": {
     "@radix-ui/react-collapsible": "^1.1.12",
@@ -17,21 +23,33 @@
     "@xyflow/react": "^12.11.0",
     "lucide-react": "^1.17.0",
     "next": "16.2.7",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "2.0.0-beta.sha-52b0dc0e9",
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/vite": "4.3.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vinext/cloudflare": "1.0.1",
+    "@vitejs/plugin-react": "5.2.0",
+    "@vitejs/plugin-rsc": "0.5.36",
+    "cf": "1.0.0-beta.12",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "jest": "^29.7.0",
+    "react-server-dom-webpack": "19.2.6",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.11",
-    "typescript": "^5"
-  }
+    "typescript": "^5",
+    "vinext": "1.0.1",
+    "vite": "8.3.3",
+    "vite-css-modules": "1.16.0",
+    "wrangler": "4.148.0"
+  },
+  "type": "module"
 }

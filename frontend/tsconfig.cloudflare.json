@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": [
+      "node",
+      "vite/client"
+    ],
+    "incremental": false
+  },
+  "include": [
+    "lib/server/fixture-store.cloudflare.ts",
+    "vite.config.ts",
+    "cloudflare.config.ts",
+    "deploy/cloudflare-worker.ts",
+    ".cloudflare/types/index.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".cloudflare/output"
+  ]
+}

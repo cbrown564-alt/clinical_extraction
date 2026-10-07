@@ -1,11 +1,8 @@
-import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { readFixture, validationRecordIds } from "@/lib/server/fixture-store";
 import { DEMO_GAN_RUN_ID } from "@/lib/demoSurface";
 
-export const MOCK_ROOT = join(process.cwd(), "public", "mock-data");
-
 export function readMockJson<T>(relativePath: string): T {
-  return JSON.parse(readFileSync(join(MOCK_ROOT, relativePath), "utf8")) as T;
+  return readFixture<T>(relativePath);
 }
 
 export function jsonError(status: number, message: string) {
@@ -13,10 +10,7 @@ export function jsonError(status: number, message: string) {
 }
 
 export function ganRecordIds(): number[] {
-  return readdirSync(join(MOCK_ROOT, "records", "validation"))
-    .filter((name) => /^\d+\.json$/.test(name))
-    .map((name) => Number(name.slice(0, -5)))
-    .sort((a, b) => a - b);
+  return validationRecordIds();
 }
 
 export function ganRecord(sourceRowIndex: string) {
