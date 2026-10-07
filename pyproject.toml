@@ -72,3 +72,10 @@ python_version = "3.11"
 [[tool.mypy.overrides]]
 module = ["dspy", "dspy.*"]
 ignore_missing_imports = true
+
+# GPU training libraries are optional and absent from the public-clone CI
+# environment. Keep checking all project source; tolerate only these missing
+# third-party imports, as with the existing DSPy import configuration.
+[[tool.mypy.overrides]]
+module = ["torch", "gliner2", "gliner2.*"]
+ignore_missing_imports = true
